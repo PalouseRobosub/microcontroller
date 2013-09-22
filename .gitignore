@@ -1,0 +1,5 @@
+*.dll
+build/
+dist/
+nbproject/
+Makefile
