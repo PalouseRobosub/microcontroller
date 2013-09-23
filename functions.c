@@ -65,8 +65,10 @@ void i2c_1_isr(void)
     //variables
     extern I2C_STATE i2c_state;
     I2C_STATUS current_status;
-    static I2C_Node* current_sensor;
-    uint8 received_data;
+    static I2C_Node current_sensor;
+    uint8 received_data[I2C_MAX_DATA_SIZE];
+    static uint8 sub_address_index;
+    static uint8 data_index;
 
     //disable interrupts
     //<code to disable interrupts>
@@ -86,7 +88,7 @@ void i2c_1_isr(void)
 
         case SENDING_START:
             //current_sensor = <dequeue node function>
-                if (current_sensor == NULL)  //error, queue is empty!
+                if (current_sensor.device_address == 0)  //error, queue is empty!
                 {
                     return;
                 }
@@ -100,7 +102,7 @@ void i2c_1_isr(void)
             if ((current_status & I2C_START) == I2C_START)
             {
                 //shifting the address left and adding the write bit
-                I2CSendByte(I2C1, ((current_sensor->device_address << 1) & 0xFE));
+                I2CSendByte(I2C1, ((current_sensor.device_address << 1) & 0xFE));
                 i2c_state = WRITING_SUB_ADDR;
             }
             else
@@ -112,8 +114,24 @@ void i2c_1_isr(void)
             //confirm the device acknowledged the hail
             if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
             {
-                I2CSendByte(I2C1, current_sensor->device_sub_address);
-                i2c_state = SENDING_RESTART;
+                //send the sub address
+                I2CSendByte(I2C1, current_sensor.sub_address[sub_address_index]);
+
+                //increment the sub address index and check if we have
+                //written the full address
+                ++sub_address_index;
+                if (sub_address_index == current_sensor.sub_address_size)
+                {
+                    if (current_sensor.write_nread == TRUE) //writing data
+                    {
+                        i2c_state = SENDING_DATA;
+
+                    }
+                    else //reading_data
+                    {
+                        i2c_state = SENDING_RESTART;
+                    }
+                }
             }
             else
             {
@@ -124,7 +142,7 @@ void i2c_1_isr(void)
              //confirm the device acknowledged sub address
             if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
             {
-                I2CRepeatStart(I2C1)
+                I2CRepeatStart(I2C1);
                 i2c_state = SELECTING_DEVICE_R;
             }
             else
@@ -137,7 +155,7 @@ void i2c_1_isr(void)
             if ((current_status & I2C_START) == I2C_START)
             {
                 //shifting the address left and adding the write bit
-                I2CSendByte(I2C1, ((current_sensor->device_address << 1) | 0x01));
+                I2CSendByte(I2C1, ((current_sensor.device_address << 1) | 0x01));
                 i2c_state = RECEIVING_DATA;
             }
             else
@@ -149,12 +167,36 @@ void i2c_1_isr(void)
             //confirm the device acknowledged the hail
             if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED) 
             { 
-                received_data = I2CGetByte(I2C1);
-                i2c_state = SENDING_STOP;
+                received_data[data_index] = I2CGetByte(I2C1);
+
+                ++data_index;
+                if (data_index == current_sensor.data_size)
+                {
+                 i2c_state = SENDING_STOP;
+                }
+                
             }
             else
             {
                 //error, device did not acknowledge the hail
+            }
+            break;
+        case SENDING_DATA:
+            //confirm the device acknowledged the sent data
+            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
+            {
+                I2CSendByte(I2C1, current_sensor.tx_data[data_index]);
+
+                ++data_index;
+                if (data_index == current_sensor.data_size)
+                {
+                 i2c_state = SENDING_STOP;
+                }
+
+            }
+            else
+            {
+                //error, device did not acknowledge the sent data
             }
             break;
         case SENDING_STOP:
@@ -162,8 +204,8 @@ void i2c_1_isr(void)
             i2c_state = IDLE;
             break;
         default:
-            break;
             //error
+            break;            
     }
 
     
