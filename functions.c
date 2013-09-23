@@ -1,5 +1,21 @@
+/********************************************************
+ *   File Name: functions.c
+ *
+ *   Description:
+ *              Main source code file
+ *
+ *
+ *********************************************************/
+
 #include "functions.h"
 
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 unsigned int read_buttons(void)
 {
     unsigned int buttons = 0;
@@ -9,12 +25,25 @@ unsigned int read_buttons(void)
     buttons = buttons << 4;
 }
 
-
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 void write_leds(unsigned int current_state)
 {
     PORTWrite(IOPORT_B, current_state);
 }
 
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 void setup_i2c (I2C_MODULE i2c_id)
 {
 
@@ -24,10 +53,17 @@ void setup_i2c (I2C_MODULE i2c_id)
     return;
 }
 
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 void i2c_1_isr(void)
 {
     
-    
+    uint i2c_status;
     
     i2c_status = I2CGetStatus(I2C1);
 
@@ -46,34 +82,17 @@ void i2c_1_isr(void)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //======================================================
 //=============FORTRESS OF THE LINK MASTER==============
 //==================(NO GIRLS ALLOWED)==================
 //======================================================
-
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 Node* makeNode( int item )
 {
    Node*    tmp;
@@ -84,7 +103,13 @@ Node* makeNode( int item )
 
    return   tmp;
 }
-
+  /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 void freeNode( Node* tmp )
 {
    if ( NULL != tmp->next )

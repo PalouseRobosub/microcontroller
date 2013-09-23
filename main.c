@@ -1,13 +1,11 @@
-/* 
- * File:   main.c
- * Author: James
+ /********************************************************
+ *   File Name: main.c
  *
- * Created on September 21, 2013, 7:03 PM
- */
-
-//#include <stdio.h>
-//#include <stdlib.h>
-
+ *   Description:
+ *              Main file
+ *
+ *
+ *********************************************************/
 
 
 #include "functions.h"
