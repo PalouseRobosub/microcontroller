@@ -21,9 +21,10 @@
 
 
 /*************************************************************************
- Macros
+ Typedefs
  ************************************************************************/
-#define uint unsigned int
+typedef unsigned int uint;
+typedef unsigned char uint8;
 
 /*************************************************************************
  Constants
@@ -40,14 +41,37 @@ typedef struct node
    struct node*   next;    // may be repeated for different data structures.
 }Node;
 
+typedef struct i2c_node
+{
+    uint8 device_address; //device to read from
+    uint8 device_sub_address; //sub address to read from
+    uint8 receive_size; //number of bytes expected back
+   struct i2c_node*   next;
+}I2C_Node;
+
 /*************************************************************************
  Enums
  ************************************************************************/
+typedef enum //state of the I2C bus
+{
+    IDLE,
+    SENDING_START,
+    SELECTING_DEVICE_W,
+    WRITING_SUB_ADDR,
+    SENDING_RESTART,
+    SELECTING_DEVICE_R,
+    RECEIVING_DATA,
+    SENDING_STOP
+
+
+} I2C_STATE;
+
+
 
 /*************************************************************************
  Variables
  ************************************************************************/
-
+I2C_STATE i2c_state;
 
 /*************************************************************************
  Function Declarations

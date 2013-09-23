@@ -62,21 +62,114 @@ void setup_i2c (I2C_MODULE i2c_id)
  *********************************************************/
 void i2c_1_isr(void)
 {
-    
-    uint i2c_status;
-    
-    i2c_status = I2CGetStatus(I2C1);
+    //variables
+    extern I2C_STATE i2c_state;
+    I2C_STATUS current_status;
+    static I2C_Node* current_sensor;
+    uint8 received_data;
 
-    if ((i2c_status & I2C_START) == I2C_START)
+    //disable interrupts
+    //<code to disable interrupts>
+
+    //clear interrupt flag
+    //<code to clear interrupt flag>
+
+    //get I2C status
+    current_status = I2CGetStatus(I2C1);
+
+
+    switch (i2c_state)
     {
-        //start condition was just sent, add code for sending
+        case IDLE:
+            break;
 
+
+        case SENDING_START:
+            //current_sensor = <dequeue node function>
+                if (current_sensor == NULL)  //error, queue is empty!
+                {
+                    return;
+                }
+            I2CStart(I2C1);
+            i2c_state = SELECTING_DEVICE_W;
+            break;
+
+
+        case SELECTING_DEVICE_W:
+            //confirm start signal was sent
+            if ((current_status & I2C_START) == I2C_START)
+            {
+                //shifting the address left and adding the write bit
+                I2CSendByte(I2C1, ((current_sensor->device_address << 1) & 0xFE));
+                i2c_state = WRITING_SUB_ADDR;
+            }
+            else
+            {
+                //error, start signal was not sent
+            }
+            break;
+        case WRITING_SUB_ADDR:
+            //confirm the device acknowledged the hail
+            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
+            {
+                I2CSendByte(I2C1, current_sensor->device_sub_address);
+                i2c_state = SENDING_RESTART;
+            }
+            else
+            {
+                //error, device did not acknowledge the hail
+            }
+            break;
+        case SENDING_RESTART:
+             //confirm the device acknowledged sub address
+            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
+            {
+                I2CRepeatStart(I2C1)
+                i2c_state = SELECTING_DEVICE_R;
+            }
+            else
+            {
+                //error, device did not acknowledge the sub address
+            }
+            break;
+        case SELECTING_DEVICE_R:
+             //confirm restart signal was sent
+            if ((current_status & I2C_START) == I2C_START)
+            {
+                //shifting the address left and adding the write bit
+                I2CSendByte(I2C1, ((current_sensor->device_address << 1) | 0x01));
+                i2c_state = RECEIVING_DATA;
+            }
+            else
+            {
+                //error, restart signal was not sent
+            }
+            break;
+        case RECEIVING_DATA:
+            //confirm the device acknowledged the hail
+            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED) 
+            { 
+                received_data = I2CGetByte(I2C1);
+                i2c_state = SENDING_STOP;
+            }
+            else
+            {
+                //error, device did not acknowledge the hail
+            }
+            break;
+        case SENDING_STOP:
+            I2CStop(I2C1);
+            i2c_state = IDLE;
+            break;
+        default:
+            break;
+            //error
     }
-    else if ((i2c_status & I2C_START) == I2C_START)
-    {
 
-    }
+    
 
+    //re-enable interrupts
+    return;
 }
 
 
@@ -97,7 +190,7 @@ Node* makeNode( int item )
 {
    Node*    tmp;
 
-   tmp         =  (Node*)malloc( sizeof ( Node )  );
+   //tmp         =  (Node*)malloc( sizeof ( Node )  );
    tmp->data  =  item;
    tmp->next  =  NULL;
 
@@ -116,7 +209,7 @@ void freeNode( Node* tmp )
    {
       freeNode( tmp->next );
    }
-   free( tmp );
+   //free( tmp );
 }
 
 //======================================================
