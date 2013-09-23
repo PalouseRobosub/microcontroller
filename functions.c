@@ -74,12 +74,12 @@ void i2c_1_isr(void)
 //==================(NO GIRLS ALLOWED)==================
 //======================================================
 
-Node* makeNode(  )
+Node* makeNode( int item )
 {
    Node*    tmp;
 
    tmp         =  (Node*)malloc( sizeof ( Node )  );
-   //tmp->next  =  item;
+   tmp->data  =  item;
    tmp->next  =  NULL;
 
    return   tmp;
