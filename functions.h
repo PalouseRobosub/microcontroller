@@ -43,10 +43,11 @@ extern int i2c_status;
 //======================================================
 struct node
 {
+    int data;
    struct node*   next;    // may be repeated for different data structures.
 };
 typedef struct node Node;
-Node* makeNode(  );
+Node* makeNode( int item );
 void freeNode( Node*   thisNode );
 
 //======================================================
