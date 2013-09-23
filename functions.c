@@ -43,3 +43,58 @@ void i2c_1_isr(void)
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//======================================================
+//=============FORTRESS OF THE LINK MASTER==============
+//==================(NO GIRLS ALLOWED)==================
+//======================================================
+
+Node* makeNode(  )
+{
+   Node*    tmp;
+
+   tmp         =  (Node*)malloc( sizeof ( Node )  );
+   //tmp->next  =  item;
+   tmp->next  =  NULL;
+
+   return   tmp;
+}
+
+void freeNode( Node* tmp )
+{
+   if ( NULL != tmp->next )
+   {
+      freeNode( tmp->next );
+   }
+   free( tmp );
+}
+
+//======================================================
+//=============FORTRESS OF THE LINK MASTER==============
+//========http://orteil.dashnet.org/cookieclicker/ =====
+//======================================================

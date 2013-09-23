@@ -34,5 +34,25 @@ void i2c_1_isr(void);
 extern int i2c_status;
 
 
+
+
+
+//======================================================
+//=============FORTRESS OF THE LINK MASTER==============
+//==================(NO GIRLS ALLOWED)==================
+//======================================================
+struct node
+{
+   struct node*   next;    // may be repeated for different data structures.
+};
+typedef struct node Node;
+Node* makeNode(  );
+void freeNode( Node*   thisNode );
+
+//======================================================
+//=============FORTRESS OF THE LINK MASTER==============
+//========http://orteil.dashnet.org/cookieclicker/ =====
+//======================================================
+
 #endif	/* FUNCTIONS_H */
 
