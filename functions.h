@@ -31,7 +31,6 @@ typedef uint8 boolean;
  Constants
  ************************************************************************/
 #define SYS_CLK_FREQ (40000000) //40MHz CLK
-#define I2C_CLK_FREQ (100000) //100kHz CLK
 #define TRUE  (1)
 #define FALSE (0)
 #define I2C_MAX_DATA_SIZE 3
@@ -61,27 +60,11 @@ typedef struct i2c_node
 /*************************************************************************
  Enums
  ************************************************************************/
-typedef enum //state of the I2C bus
-{
-    IDLE,
-    SENDING_START,
-    SELECTING_DEVICE_W,
-    WRITING_SUB_ADDR,
-    SENDING_RESTART,
-    SELECTING_DEVICE_R,
-    SENDING_DATA,
-    RECEIVING_DATA,
-    SENDING_STOP
-
-
-} I2C_STATE;
-
 
 
 /*************************************************************************
  Variables
  ************************************************************************/
-extern I2C_STATE i2c_state;
 extern uint8 QueueStart;
 extern uint8 QueueEnd;
 extern uint8 QueueLength;
@@ -109,14 +92,7 @@ unsigned int read_buttons(void);
  *********************************************************/
 void write_leds(unsigned int);
 
- /********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-void setup_i2c (I2C_MODULE i2c_id);
+ 
 
  /********************************************************
  *   Function Name:
@@ -125,16 +101,6 @@ void setup_i2c (I2C_MODULE i2c_id);
  *
  *
  *********************************************************/
-void i2c_1_isr(void);
-
- /********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-extern int i2c_status;
 
 /********************************************************
  *   Function Name:

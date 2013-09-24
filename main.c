@@ -9,6 +9,7 @@
 
 
 #include "functions.h"
+#include "I2C_ISR.h"
 #include "Testbench.h"
 
  I2C_STATE i2c_state;
