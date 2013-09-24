@@ -222,21 +222,45 @@ void i2c_1_isr(void)
 //==================(NO GIRLS ALLOWED)==================
 //======================================================
  /********************************************************
+ *   Function Name: InitializeQueue()
+ *
+ *   Description: Initiallizes a blank queue.  Returns pointer to array
+ *
+ *
+ *********************************************************/
+void InitializeQueue( Node root[] )
+{
+    uint i=0;
+    for (i=0;i<QueueSize;i++)
+    {
+        root[i].data = 0;
+    }
+    QueueLength = 0;
+}
+ /********************************************************
  *   Function Name:
  *
  *   Description:
  *
  *
  *********************************************************/
-Node* makeNode( int item )
+int addToQueue( Node Queue[], int item )
 {
-   Node*    tmp;
-
-   //tmp         =  (Node*)malloc( sizeof ( Node )  );
-   tmp->data  =  item;
-   tmp->next  =  NULL;
-
-   return   tmp;
+    if (QueueEnd == QueueStart && QueueLength > 0)
+    {
+        return 1; //Error, would overwrite start of list
+    }
+    Queue[QueueEnd].data = item;
+    QueueLength++;
+    if (QueueEnd == QueueSize-1)
+    {
+        QueueEnd = 0;
+    }
+    else
+    {
+        QueueEnd++;
+    }
+    return 0;
 }
   /********************************************************
  *   Function Name:
@@ -245,13 +269,18 @@ Node* makeNode( int item )
  *
  *
  *********************************************************/
-void freeNode( Node* tmp )
+int freeNode( Node Queue[], Node* Free )
 {
-   if ( NULL != tmp->next )
-   {
-      freeNode( tmp->next );
-   }
-   //free( tmp );
+    if (QueueLength == 0)
+    {
+        return 1; //Can't read from queue if empty
+    }
+    Free = &(Queue[QueueStart]);
+    QueueStart++;
+    QueueLength--;
+    return 0;
+
+
 }
 
 //======================================================

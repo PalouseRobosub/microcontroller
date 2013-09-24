@@ -37,14 +37,17 @@ typedef uint8 boolean;
 #define I2C_MAX_DATA_SIZE 3
 #define I2C_MAX_ADDR_SIZE 2
 
+#define QueueSize 15
+
 /*************************************************************************
  Structure Definitions
  ************************************************************************/
 typedef struct node
 {
     int data;
-   struct node*   next;    // may be repeated for different data structures.
-}Node;
+    int position; //For static queue - element position
+   //struct node*   next;    // for dynamic list
+}Node;  
 
 typedef struct i2c_node
 {
@@ -81,6 +84,10 @@ typedef enum //state of the I2C bus
  Variables
  ************************************************************************/
 I2C_STATE i2c_state;
+Node I2CQueue[QueueSize];
+extern uint8 QueueStart;
+extern uint8 QueueEnd;
+extern uint8 QueueLength;
 
 /*************************************************************************
  Function Declarations
@@ -138,7 +145,7 @@ extern int i2c_status;
  *
  *
  *********************************************************/
-Node* makeNode( int item );
+int addToQueue( Node Queue[], int item );
 
 /********************************************************
  *   Function Name:
@@ -147,11 +154,22 @@ Node* makeNode( int item );
  *
  *
  *********************************************************/
-void freeNode( Node*   thisNode );
+void InitializeQueue( Node root[] );
 
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+int freeNode( Node Queue[], Node* Free );
 
-
-
+//  |=                                                |=
+// /\                                                /\
+//|  |                                              |  |
+//|  |                                              |  |
+//|  | ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  |  |
 //======================================================
 //=============FORTRESS OF THE LINK MASTER==============
 //==================(NO GIRLS ALLOWED)==================

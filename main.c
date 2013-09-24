@@ -11,6 +11,9 @@
 #include "functions.h"
 
  int i2c_isr_state = 0;
+ uint8 QueueStart = 0;
+ uint8 QueueEnd = 0;
+ uint8 QueueLength = 0;
 
 int main(void)
 {
