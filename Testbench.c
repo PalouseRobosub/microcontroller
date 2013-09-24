@@ -1,5 +1,6 @@
 
 #include "functions.h"
+#include "Queue.h"
 
 void queueTest()
 {

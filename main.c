@@ -11,6 +11,7 @@
 #include "functions.h"
 #include "I2C_ISR.h"
 #include "Testbench.h"
+#include "Queue.h"
 
  I2C_STATE i2c_state;
  Queue I2CQ;

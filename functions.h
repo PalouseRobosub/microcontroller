@@ -41,18 +41,7 @@ typedef uint8 boolean;
 /*************************************************************************
  Structure Definitions
  ************************************************************************/
-typedef struct node
-{
-    int data;  //Placeholder for actual data
-}Node;
 
-typedef struct queue
-{
-    Node I2CQueue[QueueSize];
-    uint8 QueueStart;
-    uint8 QueueEnd;
-    uint8 QueueLength;
-}Queue;
 
 typedef struct i2c_node
 {
@@ -73,7 +62,6 @@ typedef struct i2c_node
 /*************************************************************************
  Variables
  ************************************************************************/
-extern Queue I2CQ;
 
 /*************************************************************************
  Function Declarations
@@ -107,32 +95,7 @@ void write_leds(unsigned int);
  *
  *********************************************************/
 
-/********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-int addToQueue( Queue* root, int item );
 
-/********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-void InitializeQueue( Queue* root );
-
-/********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-int freeNode( Queue* root, Node* Free );
 
 //  |=                                                |=
 // /\                                                /\
