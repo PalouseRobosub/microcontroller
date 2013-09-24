@@ -275,8 +275,15 @@ int freeNode( Node Queue[], Node* Free )
     {
         return 1; //Can't read from queue if empty
     }
-    Free = &(Queue[QueueStart]);
-    QueueStart++;
+    *Free = (Queue[QueueStart]); //Returns the Node
+    if (QueueStart == QueueSize-1)
+    {
+        QueueStart = 0;
+    }
+    else
+    {
+        QueueStart++;
+    }
     QueueLength--;
     return 0;
 

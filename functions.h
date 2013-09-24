@@ -44,9 +44,7 @@ typedef uint8 boolean;
  ************************************************************************/
 typedef struct node
 {
-    int data;
-    int position; //For static queue - element position
-   //struct node*   next;    // for dynamic list
+    int data;  //Placeholder for actual data
 }Node;  
 
 typedef struct i2c_node
@@ -84,10 +82,10 @@ typedef enum //state of the I2C bus
  Variables
  ************************************************************************/
 I2C_STATE i2c_state;
-Node I2CQueue[QueueSize];
 extern uint8 QueueStart;
 extern uint8 QueueEnd;
 extern uint8 QueueLength;
+extern Node I2CQueue[QueueSize];
 
 /*************************************************************************
  Function Declarations

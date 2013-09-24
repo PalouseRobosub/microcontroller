@@ -9,14 +9,17 @@
 
 
 #include "functions.h"
+#include "Testbench.h"
 
  int i2c_isr_state = 0;
  uint8 QueueStart = 0;
  uint8 QueueEnd = 0;
  uint8 QueueLength = 0;
+ Node I2CQueue[QueueSize];
 
 int main(void)
 {
+    queueTest();
     uint current_state = 0;
     
     i2c_isr_state = 0;
