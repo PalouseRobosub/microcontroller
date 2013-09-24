@@ -81,7 +81,7 @@ typedef enum //state of the I2C bus
 /*************************************************************************
  Variables
  ************************************************************************/
-I2C_STATE i2c_state;
+extern I2C_STATE i2c_state;
 extern uint8 QueueStart;
 extern uint8 QueueEnd;
 extern uint8 QueueLength;

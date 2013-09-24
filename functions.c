@@ -63,7 +63,6 @@ void setup_i2c (I2C_MODULE i2c_id)
 void i2c_1_isr(void)
 {
     //variables
-    extern I2C_STATE i2c_state;
     I2C_STATUS current_status;
     static I2C_Node current_sensor;
     uint8 received_data[I2C_MAX_DATA_SIZE];
