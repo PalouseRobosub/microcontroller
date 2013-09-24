@@ -13,10 +13,7 @@
 #include "Testbench.h"
 
  I2C_STATE i2c_state;
- uint8 QueueStart = 0;
- uint8 QueueEnd = 0;
- uint8 QueueLength = 0;
- Node I2CQueue[QueueSize];
+ Queue I2CQ;
 
 int main(void)
 {

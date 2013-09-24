@@ -49,18 +49,20 @@ void write_leds(unsigned int current_state)
  /********************************************************
  *   Function Name: InitializeQueue()
  *
- *   Description: Initiallizes a blank queue.  Returns pointer to array
+ *   Description: Clears the queue and resets parameters
  *
  *
  *********************************************************/
-void InitializeQueue( Node root[] )
+void InitializeQueue( Queue* root )
 {
     uint i=0;
     for (i=0;i<QueueSize;i++)
     {
-        root[i].data = 0;
+        root->I2CQueue[i].data = 0;
     }
-    QueueLength = 0;
+    root->QueueLength = 0;
+    root->QueueStart = 0;
+    root->QueueEnd = 0;
 }
  /********************************************************
  *   Function Name:
@@ -69,21 +71,21 @@ void InitializeQueue( Node root[] )
  *
  *
  *********************************************************/
-int addToQueue( Node Queue[], int item )
+int addToQueue( Queue* root, int item )
 {
-    if (QueueEnd == QueueStart && QueueLength > 0)
+    if (root->QueueEnd == root->QueueStart && root->QueueLength > 0)
     {
         return 1; //Error, would overwrite start of list
     }
-    Queue[QueueEnd].data = item;
-    QueueLength++;
-    if (QueueEnd == QueueSize-1)
+    root->I2CQueue[root->QueueEnd].data = item;
+    root->QueueLength++;
+    if (root->QueueEnd == QueueSize-1)
     {
-        QueueEnd = 0;
+        root->QueueEnd = 0;
     }
     else
     {
-        QueueEnd++;
+        root->QueueEnd++;
     }
     return 0;
 }
@@ -94,22 +96,22 @@ int addToQueue( Node Queue[], int item )
  *
  *
  *********************************************************/
-int freeNode( Node Queue[], Node* Free )
+int freeNode( Queue* root, Node* Free )
 {
-    if (QueueLength == 0)
+    if (root->QueueLength == 0)
     {
         return 1; //Can't read from queue if empty
     }
-    *Free = (Queue[QueueStart]); //Returns the Node
-    if (QueueStart == QueueSize-1)
+    *Free = (root->I2CQueue[root->QueueStart]); //Returns the Node
+    if (root->QueueStart == QueueSize-1)
     {
-        QueueStart = 0;
+        root->QueueStart = 0;
     }
     else
     {
-        QueueStart++;
+        root->QueueStart++;
     }
-    QueueLength--;
+    root->QueueLength--;
     return 0;
 
 

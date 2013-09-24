@@ -4,11 +4,13 @@
 void queueTest()
 {
     Node Check;
-    InitializeQueue(I2CQueue);
-    addToQueue(I2CQueue, 8);
-    addToQueue(I2CQueue, 9);
-    addToQueue(I2CQueue, 10);
-    freeNode( I2CQueue, &Check );
-
-    addToQueue(I2CQueue, 11);
+    InitializeQueue(&I2CQ);
+    addToQueue(&I2CQ, 8);
+    addToQueue(&I2CQ, 9);
+    addToQueue(&I2CQ, 10);
+    freeNode( &I2CQ, &Check );
+    freeNode( &I2CQ, &Check );
+    freeNode( &I2CQ, &Check );
+    freeNode( &I2CQ, &Check );
+    freeNode( &I2CQ, &Check );
 }
