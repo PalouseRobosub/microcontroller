@@ -75,7 +75,7 @@ unsigned int read_buttons(void);
  *********************************************************/
 void write_leds(unsigned int);
 
- 
+ void delay(void);
 
 #endif	/* FUNCTIONS_H */
 

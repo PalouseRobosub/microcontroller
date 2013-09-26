@@ -33,6 +33,9 @@ int main(void)
     //PORTSetPinsDigitalOut(IOPORT_B, BIT_10 | BIT_11);
 
     //setup_i2c(I2C1);
+    i2c_1_setup();
+i2c_1_begin();
+INTEnableSystemMultiVectoredInt();
 
 
     while (1)

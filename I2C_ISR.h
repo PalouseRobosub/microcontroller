@@ -35,18 +35,20 @@ typedef struct i2c_node
 /*************************************************************************
  Enums
  ************************************************************************/
+
+
 typedef enum //state of the I2C bus
 {
-    IDLE,
-    SENDING_START,
-    SELECTING_DEVICE_W,
-    WRITING_SUB_ADDR,
-    SENDING_RESTART,
-    SELECTING_DEVICE_R,
-    SENDING_DATA,
-    RECEIVING_DATA,
-    SENDING_STOP
-
+    STARTED,
+    DEV_ADDR_W_SENT,
+    SUB_ADDR_SENT,
+    DATA_SENT,
+    RESTARTED,
+    STOPPED_TEMP,
+    STARTED_TEMP,
+    DEV_ADDR_R_SENT,
+    DATA_RECEIVED,
+    STOPPED
 
 } I2C_STATE;
 
@@ -66,7 +68,9 @@ extern I2C_STATE i2c_state;
  *
  *
  *********************************************************/
-void setup_i2c (I2C_MODULE i2c_id);
+ void i2c_1_setup(void);
+
+  inline void i2c_1_begin(void);
 
  /********************************************************
  *   Function Name:
@@ -75,7 +79,7 @@ void setup_i2c (I2C_MODULE i2c_id);
  *
  *
  *********************************************************/
-void i2c_1_isr(void);
+ //void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void);
 
 
 #endif	/* I2C_ISR_H */

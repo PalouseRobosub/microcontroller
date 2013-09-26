@@ -37,6 +37,12 @@ void write_leds(unsigned int current_state)
     PORTWrite(IOPORT_B, current_state);
 }
 
+void delay(void)
+{
+    uint i;
+    for (i=0; i<10000; ++i);
+    return;
+}
  
 
 
