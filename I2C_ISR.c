@@ -50,10 +50,11 @@ uint8 data;
     static uint8 data_index;
 
     current_node.device_address = 0x1D;
-    current_node.sub_address[0] = 0x00;
+    current_node.sub_address[0] = 0x32;
     current_node.sub_address_size = 1;
     current_node.mode = READ;
-    current_node.data_size = 2;
+    current_node.data_size = 1;
+    current_node.tx_data[0] = 0x08;
 
  IFS0bits.I2C1MIF = 0; //clear the interrupt
  //PORTGbits.RG1 = !PORTGbits.RG1; //toggle pin
@@ -83,7 +84,25 @@ uint8 data;
          I2C1CONbits.RSEN = 1;
          state = RESTARTED;
          }
-         //else
+         else
+         {
+             I2C1TRN = current_node.tx_data[data_index];
+             state = DATA_SENT;
+         }
+         break;
+
+     case DATA_SENT:
+         ++data_index;
+
+         if (data_index == current_node.data_size)
+         {
+             I2C1CONbits.PEN = 1;
+             state = STOPPED;
+         }
+         else
+         {
+             I2C1TRN = current_node.tx_data[data_index];           
+         }
          break;
 
      case RESTARTED:

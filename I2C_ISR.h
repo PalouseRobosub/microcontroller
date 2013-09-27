@@ -43,7 +43,7 @@ typedef enum //state of the I2C bus
 
 } I2C_STATE;
 
-typedef enum
+typedef enum    //reading or writing from the sensor
 {
     READ,
     WRITE
@@ -70,7 +70,6 @@ typedef struct i2c_node
 /*************************************************************************
  Variables
  ************************************************************************/
-extern I2C_STATE i2c_state;
 
 
 /*************************************************************************
@@ -85,8 +84,6 @@ extern I2C_STATE i2c_state;
  *********************************************************/
  void i2c_1_setup(void);
 
-  inline void i2c_1_begin(void);
-
  /********************************************************
  *   Function Name:
  *
@@ -94,7 +91,7 @@ extern I2C_STATE i2c_state;
  *
  *
  *********************************************************/
- //void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void);
+ inline void i2c_1_begin(void);
 
 
 #endif	/* I2C_ISR_H */
