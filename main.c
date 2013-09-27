@@ -12,6 +12,7 @@
 #include "I2C_ISR.h"
 #include "Testbench.h"
 #include "Queue.h"
+#include "Timer_ISR.h"
 
 /*************************************************************************
  Processor Configuration
@@ -26,11 +27,12 @@
 int main(void)
 {
     //setup/configure hardware modules
-    i2c_1_setup();
+    //i2c_1_setup();
+    timer_1_setup();
 
 
     //start each ISR
-    i2c_1_begin();
+    //i2c_1_begin();
     
     
     //Global interrupt enable. Do this last!
@@ -38,6 +40,7 @@ int main(void)
     while (1)
     {
         //nothing should be in here
+        timer_1_begin();
     }
 
     return 0;
