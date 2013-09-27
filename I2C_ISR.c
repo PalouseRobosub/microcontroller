@@ -53,7 +53,7 @@ uint8 data;
     current_node.sub_address[0] = 0x00;
     current_node.sub_address_size = 1;
     current_node.mode = READ;
-    current_node.data_size = 1;
+    current_node.data_size = 2;
 
  IFS0bits.I2C1MIF = 0; //clear the interrupt
  //PORTGbits.RG1 = !PORTGbits.RG1; //toggle pin
@@ -102,11 +102,28 @@ uint8 data;
         ++data_index;
         if (data_index == current_node.data_size)
         {
-            I2C1CONbits.PEN = 1;
-            state = STOPPED;
+            I2C1CONbits.ACKDT = 1;
+            state = NOACK_SENT;
+        }
+        else
+        {
+            I2C1CONbits.ACKDT = 0;
+            state = ACK_SENT;
         }
 
+        I2C1CONbits.ACKEN = 1;
+
         break;
+
+     case ACK_SENT:
+         I2C1CONbits.RCEN = 1;
+         state = DATA_RECEIVED;
+         break;
+
+     case NOACK_SENT:
+         I2C1CONbits.PEN = 1;
+         state = STOPPED;
+         break;
 
      case STOPPED:
          delay();

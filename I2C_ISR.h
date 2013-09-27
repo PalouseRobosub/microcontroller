@@ -37,6 +37,8 @@ typedef enum //state of the I2C bus
     STARTED_TEMP,
     DEV_ADDR_R_SENT,
     DATA_RECEIVED,
+    ACK_SENT,
+    NOACK_SENT,
     STOPPED
 
 } I2C_STATE;
