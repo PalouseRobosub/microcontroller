@@ -2,6 +2,8 @@
 #include "functions.h"
 #include "Queue.h"
 
+Queue I2CQ;
+
 void queueTest()
 {
     Node Check;

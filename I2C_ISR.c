@@ -15,6 +15,7 @@
  ************************************************************************/
 I2C_STATE state;
 I2C_Queue I2C_1_Queue;
+
 /********************************************************
  *   Function Name:
  *
@@ -25,13 +26,15 @@ I2C_Queue I2C_1_Queue;
  void i2c_1_setup(void)
  {
      I2C_Node temp;
-     //actualClock = I2CSetFrequency(I2C_BUS, SYS_FREQ, I2C_FREQ);
-    I2C1BRG = 0x2F;
+    
+     
+    //configure the clock for the I2C1
+    I2C1BRG = 0x2F; //if main clock is 80 MHz, use 0x2F for 100kHz I2C
 
-    //I2CEnable(I2C_BUS, TRUE);
+    //enable the I2C1 module
     I2C1CONbits.ON = 1;
 
-    //Setup I2C interrupts
+    //Setup I2C1 interrupts
     IEC0SET = (1 << 31); //enable interrupt
     IPC6SET = (2 << 10); //set priority
 
@@ -54,13 +57,32 @@ I2C_Queue I2C_1_Queue;
     I2C_addToQueue(&I2C_1_Queue, temp);
  }
 
+
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
  inline void i2c_1_begin(void)
  {
-    // I2C1CONbits.SEN = 1; //start the I2C transaction
-     state = STOPPED;
+     state = STOPPED; //initialize state machine
+
+     /* this sets the I2C1 interrupt flag. Setting the flag will
+     cause the ISR to be entered as soon as the global interrupt
+     flag is enabled */
      IFS0bits.I2C1MIF = 1;
  }
 
+
+ /********************************************************
+ *   Function Name: _I2C_1_Handler
+ *
+ *   Description:
+ *          ISR for the I2C1 module
+ *
+ *********************************************************/
  void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void)
  {
     static I2C_Node current_node;
@@ -68,106 +90,102 @@ I2C_Queue I2C_1_Queue;
     static uint8 sub_address_index;
     static uint8 data_index;
 
-//    current_node.device_address = 0x1D;
-//    current_node.sub_address[0] = 0x32;
-//    current_node.sub_address_size = 1;
-//    current_node.mode = READ;
-//    current_node.data_size = 1;
-//    current_node.tx_data[0] = 0x08;
+ IFS0bits.I2C1MIF = 0; //clear the interrupt flag
 
- IFS0bits.I2C1MIF = 0; //clear the interrupt
- //PORTGbits.RG1 = !PORTGbits.RG1; //toggle pin
 
  switch(state)
  {
-     case STARTED:
-         I2C1TRN = get_write_addr(current_node.device_address);
+     case STARTED: //start signal has been sent, now to send the device addresss + write bit
+         I2C1TRN = get_write_addr(current_node.device_address); //send device address + write bit
+         
+         //initialize indexes
          sub_address_index = 0;
          data_index = 0;
+         //move on to next state
          state = DEV_ADDR_W_SENT;
          break;
 
-     case DEV_ADDR_W_SENT:
-         I2C1TRN = current_node.sub_address[sub_address_index];
-         
+     case DEV_ADDR_W_SENT: //device addresss + write bit has been sent, now to send the sub address
+         I2C1TRN = current_node.sub_address[sub_address_index]; //send first sub address byte
+         //logic for sending more than one sub address byte
          ++sub_address_index;
          if (sub_address_index == current_node.sub_address_size)
          {
-            state = SUB_ADDR_SENT;
+            state = SUB_ADDR_SENT; //we have sent all sub address bytes, move to next state
          }
          break;
 
-     case SUB_ADDR_SENT:
-         if (current_node.mode == READ)
+     case SUB_ADDR_SENT: //sub address has been sent, need logic to determine next step
+         if (current_node.mode == READ) //if we want to read
          {
-         I2C1CONbits.RSEN = 1;
-         state = RESTARTED;
+         I2C1CONbits.RSEN = 1; //send restart signal
+         state = RESTARTED; //move onto next state
          }
-         else
+         else   //if we want to write
          {
-             I2C1TRN = current_node.tx_data[data_index];
-             state = DATA_SENT;
+             I2C1TRN = current_node.tx_data[data_index]; //send first data byte
+             state = DATA_SENT; //move on to next state
          }
          break;
 
-     case DATA_SENT:
+     case DATA_SENT: //we have just sent a data byte
          ++data_index;
 
-         if (data_index == current_node.data_size)
+         if (data_index == current_node.data_size) //if we have sent all data bytes
          {
-             I2C1CONbits.PEN = 1;
-             state = STOPPED;
+             I2C1CONbits.PEN = 1;   //send the stop signal
+             state = STOPPED;       //move onto next state
          }
-         else
+         else //if we have more bytes to send
          {
-             I2C1TRN = current_node.tx_data[data_index];           
+             I2C1TRN = current_node.tx_data[data_index]; //start sending next bit
          }
          break;
 
-     case RESTARTED:
-         I2C1TRN = get_read_addr(current_node.device_address);
-         state = DEV_ADDR_R_SENT;
+     case RESTARTED: //restart signal has been sent, now to send device address + read bit
+         I2C1TRN = get_read_addr(current_node.device_address); //send device address + read bit
+         state = DEV_ADDR_R_SENT; //move onto next state
          break;
 
-     case DEV_ADDR_R_SENT:
-         I2C1CONbits.RCEN = 1;
-         state = DATA_RECEIVED;
+     case DEV_ADDR_R_SENT: //device address + read bit has been sent, get ready to receive byte(s)
+         I2C1CONbits.RCEN = 1;  //enable receiver mode
+         state = DATA_RECEIVED; //move onto next state
          break;
 
-     case DATA_RECEIVED:
-         received_data[data_index] = I2C1RCV;
+     case DATA_RECEIVED: //we have just received a byte
+         received_data[data_index] = I2C1RCV; //read the received data
 
         ++data_index;
-        if (data_index == current_node.data_size)
+        if (data_index == current_node.data_size) //if we have read all the data we want
         {
-            I2C1CONbits.ACKDT = 1;
-            state = NOACK_SENT;
+            I2C1CONbits.ACKDT = 1;  //configure to send NACK signal
+            state = NOACK_SENT; //move onto next state
         }
-        else
+        else    //we want to read another byte
         {
-            I2C1CONbits.ACKDT = 0;
-            state = ACK_SENT;
+            I2C1CONbits.ACKDT = 0; //configure to send ACK signal
+            state = ACK_SENT;      //move onto next state
         }
 
-        I2C1CONbits.ACKEN = 1;
+        I2C1CONbits.ACKEN = 1; //send the ACK/NACK signal
 
         break;
 
-     case ACK_SENT:
-         I2C1CONbits.RCEN = 1;
-         state = DATA_RECEIVED;
+     case ACK_SENT: //we have sent an ACK signal, prepare to receive another byte
+         I2C1CONbits.RCEN = 1;  //enable the receiver mode
+         state = DATA_RECEIVED; //move onto next state
          break;
 
-     case NOACK_SENT:
-         I2C1CONbits.PEN = 1;
-         state = STOPPED;
+     case NOACK_SENT:   //we have sent an NACK signal, prepare to stop transaction
+         I2C1CONbits.PEN = 1; //send the stop signal
+         state = STOPPED; //move onto next state
          break;
 
-     case STOPPED:
-         delay();
-         I2C_freeNode(&I2C_1_Queue, &current_node);
-         I2C1CONbits.SEN = 1;
-         state = STARTED;
+     case STOPPED:  //we have just sent the stop signal
+         delay(); //this is for testing (spaces out the I2C transactions). Remove in final code!
+         I2C_freeNode(&I2C_1_Queue, &current_node); //load next node from the queue
+         I2C1CONbits.SEN = 1; //send the start signal
+         state = STARTED; //move onto next state
          break;
  }
 

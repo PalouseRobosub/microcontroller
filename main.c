@@ -13,41 +13,31 @@
 #include "Testbench.h"
 #include "Queue.h"
 
-/*processor configuration*/
+/*************************************************************************
+ Processor Configuration
+ ************************************************************************/
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_8
 
- Queue I2CQ;
- extern I2C_Queue I2C_1_Queue;
-
+ 
+/*************************************************************************
+ Main Function
+ ************************************************************************/
 int main(void)
 {
-    //queueTest();
-
-    
-    //i2c_state = SENDING_START;
-    //setup buttons
-    //PORTSetPinsDigitalIn(IOPORT_A, BIT_6 | BIT_7);
-    
-    //setup LEDs
-    //PORTSetPinsDigitalOut(IOPORT_B, BIT_10 | BIT_11);
-
-    //setup_i2c(I2C1);
+    //setup/configure hardware modules
     i2c_1_setup();
 
 
+    //start each ISR
     i2c_1_begin();
+    
+    
+    //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
-
-
     while (1)
     {
-
-
-        //i2c_1_isr();
-//        current_state = read_buttons();
-//
-//        write_leds(current_state);
+        //nothing should be in here
     }
 
     return 0;
