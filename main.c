@@ -17,8 +17,8 @@
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_8
 
- I2C_STATE i2c_state;
  Queue I2CQ;
+ extern I2C_Queue I2C_1_Queue;
 
 int main(void)
 {
@@ -34,8 +34,10 @@ int main(void)
 
     //setup_i2c(I2C1);
     i2c_1_setup();
-i2c_1_begin();
-INTEnableSystemMultiVectoredInt();
+
+
+    i2c_1_begin();
+    INTEnableSystemMultiVectoredInt();
 
 
     while (1)

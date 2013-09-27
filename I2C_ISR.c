@@ -14,8 +14,7 @@
  Variables
  ************************************************************************/
 I2C_STATE state;
-uint8 data;
-
+I2C_Queue I2C_1_Queue;
 /********************************************************
  *   Function Name:
  *
@@ -25,6 +24,7 @@ uint8 data;
  *********************************************************/
  void i2c_1_setup(void)
  {
+     I2C_Node temp;
      //actualClock = I2CSetFrequency(I2C_BUS, SYS_FREQ, I2C_FREQ);
     I2C1BRG = 0x2F;
 
@@ -34,12 +34,31 @@ uint8 data;
     //Setup I2C interrupts
     IEC0SET = (1 << 31); //enable interrupt
     IPC6SET = (2 << 10); //set priority
+
+    I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
+
+    //data for initializing the PmodALC
+    temp.device_address = 0x1D;
+    temp.sub_address[0] = 0x2D;
+    temp.sub_address_size = 1;
+    temp.mode = WRITE;
+    temp.data_size = 1;
+    temp.tx_data[0] = 0x08;
+    I2C_addToQueue(&I2C_1_Queue, temp);
+    temp.device_address = 0x1D;
+    temp.sub_address[0] = 0x32;
+    temp.sub_address_size = 1;
+    temp.mode = READ;
+    temp.data_size = 6;
+    temp.tx_data[0] = 0x08;
+    I2C_addToQueue(&I2C_1_Queue, temp);
  }
 
  inline void i2c_1_begin(void)
  {
-     I2C1CONbits.SEN = 1; //start the I2C transaction
-     state = STARTED;
+    // I2C1CONbits.SEN = 1; //start the I2C transaction
+     state = STOPPED;
+     IFS0bits.I2C1MIF = 1;
  }
 
  void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void)
@@ -49,12 +68,12 @@ uint8 data;
     static uint8 sub_address_index;
     static uint8 data_index;
 
-    current_node.device_address = 0x1D;
-    current_node.sub_address[0] = 0x32;
-    current_node.sub_address_size = 1;
-    current_node.mode = READ;
-    current_node.data_size = 1;
-    current_node.tx_data[0] = 0x08;
+//    current_node.device_address = 0x1D;
+//    current_node.sub_address[0] = 0x32;
+//    current_node.sub_address_size = 1;
+//    current_node.mode = READ;
+//    current_node.data_size = 1;
+//    current_node.tx_data[0] = 0x08;
 
  IFS0bits.I2C1MIF = 0; //clear the interrupt
  //PORTGbits.RG1 = !PORTGbits.RG1; //toggle pin
@@ -146,6 +165,7 @@ uint8 data;
 
      case STOPPED:
          delay();
+         I2C_freeNode(&I2C_1_Queue, &current_node);
          I2C1CONbits.SEN = 1;
          state = STARTED;
          break;
@@ -155,163 +175,65 @@ uint8 data;
  }
 
  /********************************************************
+ *   Function Name: I2C_InitializeQueue()
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void I2C_InitializeQueue( I2C_Queue* queue )
+{
+    memset(queue, 0, sizeof(I2C_Queue));
+}
+ /********************************************************
  *   Function Name:
  *
  *   Description:
  *
  *
  *********************************************************/
-//void i2c_1_isr(void)
-//{
-//    //variables
-//    I2C_STATUS current_status;
-//    static I2C_Node current_sensor;
-//    uint8 received_data[I2C_MAX_DATA_SIZE];
-//    static uint8 sub_address_index;
-//    static uint8 data_index;
-//
-//    current_sensor.device_address = 0X17;
-//
-//    //disable interrupts
-//    //<code to disable interrupts>
-//
-//    //clear interrupt flag
-//    //<code to clear interrupt flag>
-//
-//    //get I2C status
-//    current_status = I2CGetStatus(I2C1);
-//
-//
-//    switch (i2c_state)
-//    {
-//        case IDLE:
-//            break;
-//
-//
-//        case SENDING_START:
-//            //current_sensor = <dequeue node function>
-//                if (current_sensor.device_address == 0)  //error, queue is empty!
-//                {
-//                    return;
-//                }
-//            I2CStart(I2C1);
-//            i2c_state = SELECTING_DEVICE_W;
-//            break;
-//
-//
-//        case SELECTING_DEVICE_W:
-//            //confirm start signal was sent
-//            if ((current_status & I2C_START) == I2C_START)
-//            {
-//                //shifting the address left and adding the write bit
-//                I2CSendByte(I2C1, ((current_sensor.device_address << 1) & 0xFE));
-//                i2c_state = WRITING_SUB_ADDR;
-//            }
-//            else
-//            {
-//                //error, start signal was not sent
-//            }
-//            break;
-//        case WRITING_SUB_ADDR:
-//            //confirm the device acknowledged the hail
-//            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
-//            {
-//                //send the sub address
-//                I2CSendByte(I2C1, current_sensor.sub_address[sub_address_index]);
-//
-//                //increment the sub address index and check if we have
-//                //written the full address
-//                ++sub_address_index;
-//                if (sub_address_index == current_sensor.sub_address_size)
-//                {
-//                    if (current_sensor.write_nread == TRUE) //writing data
-//                    {
-//                        i2c_state = SENDING_DATA;
-//
-//                    }
-//                    else //reading_data
-//                    {
-//                        i2c_state = SENDING_RESTART;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                //error, device did not acknowledge the hail
-//            }
-//            break;
-//        case SENDING_RESTART:
-//             //confirm the device acknowledged sub address
-//            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
-//            {
-//                I2CRepeatStart(I2C1);
-//                i2c_state = SELECTING_DEVICE_R;
-//            }
-//            else
-//            {
-//                //error, device did not acknowledge the sub address
-//            }
-//            break;
-//        case SELECTING_DEVICE_R:
-//             //confirm restart signal was sent
-//            if ((current_status & I2C_START) == I2C_START)
-//            {
-//                //shifting the address left and adding the write bit
-//                I2CSendByte(I2C1, ((current_sensor.device_address << 1) | 0x01));
-//                i2c_state = RECEIVING_DATA;
-//            }
-//            else
-//            {
-//                //error, restart signal was not sent
-//            }
-//            break;
-//        case RECEIVING_DATA:
-//            //confirm the device acknowledged the hail
-//            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
-//            {
-//                received_data[data_index] = I2CGetByte(I2C1);
-//
-//                ++data_index;
-//                if (data_index == current_sensor.data_size)
-//                {
-//                 i2c_state = SENDING_STOP;
-//                }
-//
-//            }
-//            else
-//            {
-//                //error, device did not acknowledge the hail
-//            }
-//            break;
-//        case SENDING_DATA:
-//            //confirm the device acknowledged the sent data
-//            if ((current_status & I2C_BYTE_ACKNOWLEDGED) == I2C_BYTE_ACKNOWLEDGED)
-//            {
-//                I2CSendByte(I2C1, current_sensor.tx_data[data_index]);
-//
-//                ++data_index;
-//                if (data_index == current_sensor.data_size)
-//                {
-//                 i2c_state = SENDING_STOP;
-//                }
-//
-//            }
-//            else
-//            {
-//                //error, device did not acknowledge the sent data
-//            }
-//            break;
-//        case SENDING_STOP:
-//            I2CStop(I2C1);
-//            i2c_state = IDLE;
-//            break;
-//        default:
-//            //error
-//            break;
-//    }
-//
-//
-//
-//    //re-enable interrupts
-//    return;
-//}
+int I2C_addToQueue( I2C_Queue* queue, I2C_Node new_node )
+{
+    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0)
+    {
+        return 1; //Error, would overwrite start of list
+    }
+    queue->DataBank[queue->QueueEnd] = new_node;
+    queue->QueueLength++;
+    if (queue->QueueEnd == I2CQueueSize-1)
+    {
+        queue->QueueEnd = 0;
+    }
+    else
+    {
+        queue->QueueEnd++;
+    }
+    return 0;
+}
+  /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+int I2C_freeNode( I2C_Queue* queue, I2C_Node* return_node )
+{
+    if (queue->QueueLength == 0)
+    {
+        return 1; //Can't read from queue if empty
+    }
+    *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
+    if (queue->QueueStart == I2CQueueSize-1)
+    {
+        queue->QueueStart = 0;
+    }
+    else
+    {
+        queue->QueueStart++;
+    }
+    queue->QueueLength--;
+    return 0;
+
+
+}
