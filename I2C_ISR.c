@@ -44,7 +44,16 @@ uint8 data;
 
  void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void)
  {
+    static I2C_Node current_node;
+    static uint8 received_data[I2C_MAX_DATA_SIZE];
+    static uint8 sub_address_index;
+    static uint8 data_index;
 
+    current_node.device_address = 0x1D;
+    current_node.sub_address[0] = 0x00;
+    current_node.sub_address_size = 1;
+    current_node.mode = READ;
+    current_node.data_size = 1;
 
  IFS0bits.I2C1MIF = 0; //clear the interrupt
  //PORTGbits.RG1 = !PORTGbits.RG1; //toggle pin
@@ -52,22 +61,33 @@ uint8 data;
  switch(state)
  {
      case STARTED:
-         I2C1TRN = 0x3A;
+         I2C1TRN = get_write_addr(current_node.device_address);
+         sub_address_index = 0;
+         data_index = 0;
          state = DEV_ADDR_W_SENT;
          break;
 
      case DEV_ADDR_W_SENT:
-         I2C1TRN = 0x2D;
-         state = SUB_ADDR_SENT;
+         I2C1TRN = current_node.sub_address[sub_address_index];
+         
+         ++sub_address_index;
+         if (sub_address_index == current_node.sub_address_size)
+         {
+            state = SUB_ADDR_SENT;
+         }
          break;
 
      case SUB_ADDR_SENT:
+         if (current_node.mode == READ)
+         {
          I2C1CONbits.RSEN = 1;
          state = RESTARTED;
+         }
+         //else
          break;
 
      case RESTARTED:
-         I2C1TRN = 0x3B;
+         I2C1TRN = get_read_addr(current_node.device_address);
          state = DEV_ADDR_R_SENT;
          break;
 
@@ -77,10 +97,16 @@ uint8 data;
          break;
 
      case DATA_RECEIVED:
-         data = I2C1RCV;
-         I2C1CONbits.PEN = 1;
-         state = STOPPED;
-         break;
+         received_data[data_index] = I2C1RCV;
+
+        ++data_index;
+        if (data_index == current_node.data_size)
+        {
+            I2C1CONbits.PEN = 1;
+            state = STOPPED;
+        }
+
+        break;
 
      case STOPPED:
          delay();
