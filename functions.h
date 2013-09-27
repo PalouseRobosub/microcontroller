@@ -31,8 +31,6 @@ typedef uint8 boolean;
  Constants
  ************************************************************************/
 #define SYS_CLK_FREQ (40000000) //40MHz CLK
-#define TRUE  (1)
-#define FALSE (0)
 #define I2C_MAX_DATA_SIZE 3
 #define I2C_MAX_ADDR_SIZE 2
 
@@ -47,7 +45,11 @@ typedef uint8 boolean;
 /*************************************************************************
  Enums
  ************************************************************************/
-
+typedef enum
+{
+    FALSE,
+    TRUE
+}boolean;
 
 /*************************************************************************
  Variables

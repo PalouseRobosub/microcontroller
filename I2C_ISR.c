@@ -15,6 +15,7 @@
  ************************************************************************/
 I2C_STATE state;
 I2C_Queue I2C_1_Queue;
+boolean I2C1_is_idle;
 
 /********************************************************
  *   Function Name:
@@ -39,6 +40,8 @@ I2C_Queue I2C_1_Queue;
     IPC6SET = (2 << 10); //set priority
 
     I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
+
+    I2C1_is_idle = TRUE; //set that bus is currently idle
 
      //data for initializing the PmodALC
     temp.device_address = 0x1D;
@@ -194,10 +197,17 @@ I2C_Queue I2C_1_Queue;
          break;
 
      case STOPPED:  //we have just sent the stop signal
-         delay(); //this is for testing (spaces out the I2C transactions). Remove in final code!
-         I2C_freeNode(&I2C_1_Queue, &current_node); //load next node from the queue
+         //delay(); //this is for testing (spaces out the I2C transactions). Remove in final code!
+         if (I2C_freeNode(&I2C_1_Queue, &current_node)) //load next node from the queue
+         {
+             I2C1_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
+         }
+         else
+         {
          I2C1CONbits.SEN = 1; //send the start signal
+         I2C1_is_idle = FALSE; //flag that the bus is working now
          state = STARTED; //move onto next state
+         }
          break;
  }
 
