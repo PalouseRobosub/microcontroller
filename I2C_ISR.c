@@ -40,7 +40,7 @@ I2C_Queue I2C_1_Queue;
 
     I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
 
-    //data for initializing the PmodALC
+     //data for initializing the PmodALC
     temp.device_address = 0x1D;
     temp.sub_address[0] = 0x2D;
     temp.sub_address_size = 1;
@@ -48,6 +48,19 @@ I2C_Queue I2C_1_Queue;
     temp.data_size = 1;
     temp.tx_data[0] = 0x08;
     I2C_addToQueue(&I2C_1_Queue, temp);
+ }
+
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+ void i2c_ACL(void)
+ {
+     I2C_Node temp;
+
     temp.device_address = 0x1D;
     temp.sub_address[0] = 0x32;
     temp.sub_address_size = 1;
@@ -56,7 +69,6 @@ I2C_Queue I2C_1_Queue;
     temp.tx_data[0] = 0x08;
     I2C_addToQueue(&I2C_1_Queue, temp);
  }
-
 
  /********************************************************
  *   Function Name:

@@ -9,6 +9,7 @@
 #include "functions.h"
 #include "Timer_ISR.h"
 #include "peripheral/timer.h"
+#include "I2C_ISR.h"
 
 
 /*************************************************************************
@@ -52,7 +53,13 @@ inline void timer_1_begin(void)
  *********************************************************/
 void __ISR(_TIMER_1_VECTOR,ipl2) Timer1Handler(void)
 {
+    static uint count;
     IFS0bits.T1IF = 0; //clear the interrupt flag
-    
-    
+    count++;
+    if (count == 20)
+    {
+        i2c_ACL();
+        //i2c_1_begin();
+        count = 0;
+    }
 }

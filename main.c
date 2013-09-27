@@ -29,6 +29,8 @@ int main(void)
     //setup/configure hardware modules
     //i2c_1_setup();
     timer_1_setup();
+    i2c_1_setup();
+    i2c_1_begin();
 
 
     //start each ISR
@@ -40,7 +42,7 @@ int main(void)
     while (1)
     {
         //nothing should be in here
-        timer_1_begin();
+        //timer_1_begin();
     }
 
     return 0;
