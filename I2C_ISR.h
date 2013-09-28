@@ -83,18 +83,36 @@ typedef struct i2c_queue
  Function Declarations
  ************************************************************************/
 /********************************************************
- *   Function Name:
+ *   Function Name: i2c_1_setup()
  *
- *   Description:
+ *   Description: Initializes I2C ISR
  *
  *
  *********************************************************/
  void i2c_1_setup(void);
 
  /********************************************************
- *   Function Name:
+ *   Function Name: i2c_ACL_Read()
  *
- *   Description:
+ *   Description: Sets the I2C for reading from the PMOD accelerometer
+ *
+ *
+ *********************************************************/
+ void i2c_ACL_Read(void);
+
+ /********************************************************
+ *   Function Name: i2c_ACL_Initialize()
+ *
+ *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
+ *
+ *
+ *********************************************************/
+ void i2c_ACL_Initialize(void);
+ 
+ /********************************************************
+ *   Function Name: i2c_1_begin()
+ *
+ *   Description: Starts the I2C state machine
  *
  *
  *********************************************************/
@@ -127,14 +145,6 @@ int I2C_addToQueue( I2C_Queue* queue, I2C_Node new_node );
  *********************************************************/
 int I2C_popNode( I2C_Queue* queue, I2C_Node* return_node );
 
-/********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-void i2c_ACL(void);
 
 #endif	/* I2C_ISR_H */
 

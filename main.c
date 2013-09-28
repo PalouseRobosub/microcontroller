@@ -29,6 +29,7 @@ int main(void)
     //setup/configure hardware modules
     timer_1_setup();
     i2c_1_setup();
+    i2c_ACL_Initialize();
 
 
     //start each ISR

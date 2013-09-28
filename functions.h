@@ -55,18 +55,18 @@ typedef uint8 boolean;
  ************************************************************************/
 
  /********************************************************
- *   Function Name:
+ *   Function Name: read_buttons()
  *
- *   Description:
+ *   Description: Reads buttons from board
  *
  *
  *********************************************************/
 unsigned int read_buttons(void);
 
  /********************************************************
- *   Function Name:
+ *   Function Name: write_leds(unsigned int)
  *
- *   Description:
+ *   Description: writes to LED's on board
  *
  *
  *********************************************************/

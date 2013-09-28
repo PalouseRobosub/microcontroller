@@ -58,7 +58,7 @@ void __ISR(_TIMER_1_VECTOR,ipl2) Timer1Handler(void)
     count++;
     if (count == 20)
     {
-        i2c_ACL();
+        i2c_ACL_Read();
         //i2c_1_begin();
         count = 0;
     }

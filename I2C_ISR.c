@@ -18,16 +18,14 @@ I2C_Queue I2C_1_Queue;
 boolean I2C1_is_idle;
 
 /********************************************************
- *   Function Name:
+ *   Function Name: i2c_1_setup()
  *
- *   Description:
+ *   Description: Initializes I2C ISR
  *
  *
  *********************************************************/
  void i2c_1_setup(void)
  {
-     I2C_Node temp;
-    
      
     //configure the clock for the I2C1
     I2C1BRG = 0x2F; //if main clock is 80 MHz, use 0x2F for 100kHz I2C
@@ -42,25 +40,16 @@ boolean I2C1_is_idle;
     I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
 
     I2C1_is_idle = TRUE; //set that bus is currently idle
-
-     //data for initializing the PmodALC
-    temp.device_address = 0x1D;
-    temp.sub_address[0] = 0x2D;
-    temp.sub_address_size = 1;
-    temp.mode = WRITE;
-    temp.data_size = 1;
-    temp.tx_data[0] = 0x08;
-    I2C_addToQueue(&I2C_1_Queue, temp);
  }
 
  /********************************************************
- *   Function Name:
+ *   Function Name: i2c_ACL_Read()
  *
- *   Description:
+ *   Description: Sets the I2C for reading from the PMOD accelerometer
  *
  *
  *********************************************************/
- void i2c_ACL(void)
+ void i2c_ACL_Read(void)
  {
      I2C_Node temp;
 
@@ -74,9 +63,30 @@ boolean I2C1_is_idle;
  }
 
  /********************************************************
- *   Function Name:
+ *   Function Name: i2c_ACL_Initialize()
  *
- *   Description:
+ *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
+ *
+ *
+ *********************************************************/
+ void i2c_ACL_Initialize(void)
+ {
+     I2C_Node temp;
+
+     //data for initializing the PmodALC
+    temp.device_address = 0x1D;
+    temp.sub_address[0] = 0x2D;
+    temp.sub_address_size = 1;
+    temp.mode = WRITE;
+    temp.data_size = 1;
+    temp.tx_data[0] = 0x08;
+    I2C_addToQueue(&I2C_1_Queue, temp);
+ }
+
+ /********************************************************
+ *   Function Name: i2c_1_begin()
+ *
+ *   Description: Starts the I2C state machine
  *
  *
  *********************************************************/
