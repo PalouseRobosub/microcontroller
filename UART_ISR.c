@@ -49,39 +49,67 @@ inline void uart_begin(void)
 }
 
 /********************************************************
- *   Function Name:
+ *   Function Name: uart_InitializeQueue(UART_QUEUE* queue)
  *
- *   Description:
+ *   Description: Clears the queue and resets parameters
  *
  *
  *********************************************************/
 void uart_InitializeQueue(UART_QUEUE* queue)
 {
-
+    memset(queue, 0, sizeof(UART_QUEUE));
 }
 
 /********************************************************
- *   Function Name:
+ *   Function Name: uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node)
  *
- *   Description:
+ *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
 int uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node)
 {
-
+    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0)
+    {
+        return 1; //Error, would overwrite start of list
+    }
+    queue->DataBank[queue->QueueEnd] = new_node;
+    queue->QueueLength++;
+    if (queue->QueueEnd == UARTQueueSize-1)
+    {
+        queue->QueueEnd = 0;
+    }
+    else
+    {
+        queue->QueueEnd++;
+    }
+    return 0;
 }
 
 /********************************************************
- *   Function Name:
+ *   Function Name: uart_popNode(UART_QUEUE* queue, UART_NODE* return_node)
  *
- *   Description:
+ *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
 int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node)
 {
-
+    if (queue->QueueLength == 0)
+    {
+        return 1; //Can't read from queue if empty
+    }
+    *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
+    if (queue->QueueStart == UARTQueueSize-1)
+    {
+        queue->QueueStart = 0;
+    }
+    else
+    {
+        queue->QueueStart++;
+    }
+    queue->QueueLength--;
+    return 0;
 }
 
  /********************************************************

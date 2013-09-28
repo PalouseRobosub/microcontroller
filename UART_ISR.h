@@ -38,10 +38,10 @@ typedef struct uart_node
 
 typedef struct uart_queue
 {
-    UART_NODE DataBank[UARTQueueSize];
-    uint8 QueueStart;
-    uint8 QueueEnd;
-    uint8 QueueLength;
+    UART_NODE DataBank[UARTQueueSize]; //Array of Nodes of the #defined size QueueSize
+    uint8 QueueStart; //Location of oldest node
+    uint8 QueueEnd; //Location of next free slot
+    uint8 QueueLength; //Length of queue
 }UART_QUEUE;
 
 /*************************************************************************
@@ -67,11 +67,38 @@ UINT16 brevSize;
  *********************************************************/
 void uart_setup(UART_MODULE uart_id);
 inline void uart_begin(void);
-void uart_InitializeQueue(UART_QUEUE* queue);
-int uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node);
-int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node);
+
+
+
 void send_data(UART_MODULE uart_id, UINT8* bsndData, UINT16 size);
 void read_data(UART_MODULE uart_id);
+
+/********************************************************
+ *   Function Name: uart_InitializeQueue(UART_QUEUE* queue)
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void uart_InitializeQueue(UART_QUEUE* queue);
+
+/********************************************************
+ *   Function Name: uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node)
+ *
+ *   Description: Adds a node to the queue - Pass a node by reference
+ *
+ *
+ *********************************************************/
+int uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node);
+
+/********************************************************
+ *   Function Name: uart_popNode(UART_QUEUE* queue, UART_NODE* return_node)
+ *
+ *   Description: Pulls the next node off the queue
+ *
+ *
+ *********************************************************/
+int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node);
 
 #endif	/* UART_H */
 
