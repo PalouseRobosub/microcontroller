@@ -31,7 +31,7 @@ void uart_setup(UART_MODULE uart_id)
     IEC0SET = (1 << 28); //enable interrupt
     IPC6SET = (2 << 2); //set priority
     
-    uart_InitializeQueue(&UART_1_Queue);//initialize the queue
+//    uart_InitializeQueue(&UART_1_Queue);//initialize the queue
 
     UART1_is_idle = TRUE;//set that bus is currently idle
 }
@@ -45,7 +45,10 @@ void uart_setup(UART_MODULE uart_id)
  *********************************************************/
 inline void uart_begin(void)
 {
-
+    /* this sets the UART1TX interrupt flag. Setting the flag will
+     cause the ISR to be entered as soon as the global interrupt
+     flag is enabled */
+    IFS0bits.U1TXIF = 1;
 }
 
 /********************************************************
@@ -153,32 +156,39 @@ void read_data(UART_MODULE uart_id)
 }
 
  /********************************************************
- *   Function Name:
+ *   Function Name: _UART_1_Handler
  *
  *   Description:
- *
+ *             ISR for the UART1 module
  *
  *********************************************************/
 void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
 {
-	// Is this an RX interrupt?
-	if(INTGetFlag(INT_SOURCE_UART_RX(UART_ID)))
-	{
-            // Clear the RX interrupt Flag
-	    INTClearFlag(INT_SOURCE_UART_RX(UART_ID));
+    int i;
 
-            //get data
-            read_data(UART_ID);
+    UART_NODE current_node;
+    current_node.uart_data[0] = 'a';
+    current_node.uart_data[1] = 'b';
+    current_node.uart_data[2] = 'c';
+    current_node.uart_data[3] = 'd';
 
-            // Echo what we just received.
-            send_data(UART_ID, brecvData, sizeof(brecvData));
-	}
 
-	// TX interrupt
-	if ( INTGetFlag(INT_SOURCE_UART_TX(UART_ID)) )
-	{
-            // Clear the TX interrupt Flag
-            INTClearFlag(INT_SOURCE_UART_TX(UART_ID));
+    IFS0bits.U1TXIF = 0; //clear the interrupt flag
 
-	}
+//    if(uart_popNode(&UART_1_Queue, &current_node))
+//    {
+//        UART1_is_idle = TRUE;
+//    }
+//    else
+//    {
+        for(i = 0; i < 4; i++)
+        {
+            U1STAbits.UTXBRK = 1;
+            U1STAbits.UTXEN = 1;
+            U1TXREG = 0xFF;
+            //U1TXREG = current_node.uart_data[i];
+            U1STAbits.UTXBRK = 0;
+        }
+        UART1_is_idle = FALSE;
+//    }
 }
