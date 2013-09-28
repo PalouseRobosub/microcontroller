@@ -12,7 +12,8 @@
 /*************************************************************************
  Variables
  ************************************************************************/
-UART_QUEUE I2C_1_Queue;
+UART_QUEUE UART_1_Queue;
+boolean UART1_is_idle;
 
  /********************************************************
  *   Function Name:
@@ -26,7 +27,13 @@ void uart_setup(UART_MODULE uart_id)
     U1BRG = 259; //if main clock is 40 MHz, use  259. 10MHz, use 64
     U1MODEbits.ON = 1;
 
-    //Setup UART1 interrupts
+    //Setup UART1 TX interrupts
+    IEC0SET = (1 << 28); //enable interrupt
+    IPC6SET = (2 << 2); //set priority
+    
+    uart_InitializeQueue(&UART_1_Queue);//initialize the queue
+
+    UART1_is_idle = TRUE;//set that bus is currently idle
 }
 
 /********************************************************
