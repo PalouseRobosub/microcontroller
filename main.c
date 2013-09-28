@@ -13,6 +13,7 @@
 #include "Testbench.h"
 #include "Queue.h"
 #include "Timer_ISR.h"
+#include "UART_ISR.h"
 
 /*************************************************************************
  Processor Configuration
@@ -28,6 +29,7 @@
 int main(void)
 {
     int dummy;
+    uint Byte1 = 0x41, Byte2 = 0x42, Byte3 = 0x43;
 
     TRISGbits.TRISG0 = 0;
     TRISGbits.TRISG1 = 0;
@@ -45,7 +47,8 @@ int main(void)
 
     //start each ISR
     i2c_1_begin();
-    uart_setup(UART1);
+    uart_setup();
+    uart_CreateNode( Byte1, Byte2, Byte3 );
     uart_begin();
     
     
