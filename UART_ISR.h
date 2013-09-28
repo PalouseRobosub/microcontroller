@@ -93,5 +93,14 @@ int uart_addToQueue(UART_QUEUE* queue, UART_NODE new_node);
  *********************************************************/
 int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node);
 
+ /********************************************************
+ *   Function Name: uart_SetNode( uint Byte1, uint Byte2, uint Byte3 )
+ *
+ *   Description: Creates a node using three bytes
+ *
+ *
+ *********************************************************/
+void uart_CreateNode( uint Byte1, uint Byte2, uint Byte3 );
+
 #endif	/* UART_H */
 

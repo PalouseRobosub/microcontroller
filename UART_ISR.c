@@ -25,6 +25,7 @@ void uart_setup(void)
 {
     U1BRG = 64; //if main clock is 40 MHz, use  259. 10MHz, use 64
     U1MODEbits.PDSEL = 0;
+    uart_InitializeQueue(&UART_1_Queue);
 
 
     //Setup UART1 TX interrupts
@@ -126,7 +127,6 @@ int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node)
 void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
 {
     int i, k;
-
     UART_NODE current_node;
 
     if(uart_popNode(&UART_1_Queue, &current_node))
@@ -147,3 +147,22 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
 
         IFS0bits.U1TXIF = 0; //clear the interrupt flag
 }
+
+ /********************************************************
+ *   Function Name: uart_SetNode( uint Byte1, uint Byte2, uint Byte3 )
+ *
+ *   Description: Creates a node using three bytes
+ *
+ *
+ *********************************************************/
+ void uart_CreateNode( uint Byte1, uint Byte2, uint Byte3 )
+ {
+    UART_NODE temp;
+
+    temp.uart_data[0] = Byte1;
+    temp.uart_data[1] = Byte2;
+    temp.uart_data[2] = Byte3;
+    temp.uart_data[3] = '\n';
+
+    uart_addToQueue(&UART_1_Queue, temp);
+ }
