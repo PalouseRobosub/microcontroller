@@ -114,6 +114,7 @@ boolean I2C1_is_idle;
     static uint8 received_data[I2C_MAX_DATA_SIZE];
     static uint8 sub_address_index;
     static uint8 data_index;
+    extern boolean UART1_is_idle;
 
 
     PORTGbits.RG0 = !PORTGbits.RG0; //for testing, remove in final code
@@ -203,6 +204,14 @@ boolean I2C1_is_idle;
 
      case NOACK_SENT:   //we have sent an NACK signal, prepare to stop transaction
          I2C1CONbits.PEN = 1; //send the stop signal
+
+         //create uart node
+         uart_CreateNode( 0x13, received_data[0], received_data[1] );
+         if (UART1_is_idle)
+         {
+            uart_begin();
+         }
+
          state = STOPPED; //move onto next state
          break;
 

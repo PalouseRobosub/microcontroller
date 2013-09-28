@@ -10,6 +10,7 @@
 #include "Timer_ISR.h"
 #include "peripheral/timer.h"
 #include "I2C_ISR.h"
+#include "UART_ISR.h"
 
 
 /*************************************************************************
@@ -25,7 +26,7 @@
  *********************************************************/
 void timer_1_setup(void)
 {
-    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x080);
+    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x0F0);
 
     IPC1bits.T1IP = 7;
     IEC0bits.T1IE = 1;
@@ -52,7 +53,6 @@ inline void timer_1_begin(void)
  *********************************************************/
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
-    static long int count;
     extern boolean I2C1_is_idle;
 
     PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
