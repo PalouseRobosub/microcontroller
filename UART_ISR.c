@@ -26,6 +26,8 @@ void uart_setup(UART_MODULE uart_id)
 {
     U1BRG = 259; //if main clock is 40 MHz, use  259. 10MHz, use 64
     U1MODEbits.ON = 1;
+    U1MODEbits.PDSEL = 0;
+
 
     //Setup UART1 TX interrupts
     IEC0SET = (1 << 28); //enable interrupt
@@ -172,9 +174,6 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
     current_node.uart_data[2] = 'c';
     current_node.uart_data[3] = 'd';
 
-
-    IFS0bits.U1TXIF = 0; //clear the interrupt flag
-
 //    if(uart_popNode(&UART_1_Queue, &current_node))
 //    {
 //        UART1_is_idle = TRUE;
@@ -183,12 +182,14 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
 //    {
         for(i = 0; i < 4; i++)
         {
-            U1STAbits.UTXBRK = 1;
             U1STAbits.UTXEN = 1;
+            U1STAbits.UTXBRK = 1;
             U1TXREG = 0xFF;
             //U1TXREG = current_node.uart_data[i];
             U1STAbits.UTXBRK = 0;
         }
         UART1_is_idle = FALSE;
 //    }
+
+        IFS0bits.U1TXIF = 0; //clear the interrupt flag
 }

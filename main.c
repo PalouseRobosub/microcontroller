@@ -19,6 +19,7 @@
  ************************************************************************/
 #pragma config FPLLMUL = MUL_20, FPLLIDIV = DIV_2, FPLLODIV = DIV_1, FWDTEN = OFF
 #pragma config POSCMOD = HS, FNOSC = PRIPLL, FPBDIV = DIV_8
+#pragma config ICESEL = ICS_PGx2
 
  
 /*************************************************************************
