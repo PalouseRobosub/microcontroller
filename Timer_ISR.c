@@ -17,9 +17,9 @@
  ************************************************************************/
 
 /********************************************************
- *   Function Name:
+ *   Function Name: timer_1_setup()
  *
- *   Description:
+ *   Description: Setup the timer 1 (clock speeds and interrupt priority)
  *
  *
  *********************************************************/
@@ -33,9 +33,9 @@ void timer_1_setup(void)
 }
 
 /********************************************************
- *   Function Name:
+ *   Function Name: timer_1_begin()
  *
- *   Description:
+ *   Description: Set the timer 1 interrupt flag (eneable the interrupt)
  *
  *
  *********************************************************/
@@ -45,9 +45,9 @@ inline void timer_1_begin(void)
 }
 
 /********************************************************
- *   Function Name:
+ *   Function Name: Timer1Handler()
  *
- *   Description:
+ *   Description: ISR for Timer 1
  *
  *
  *********************************************************/

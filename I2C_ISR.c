@@ -102,7 +102,7 @@ boolean I2C1_is_idle;
 
 
  /********************************************************
- *   Function Name: _I2C_1_Handler
+ *   Function Name: _I2C_1_Handler()
  *
  *   Description:
  *          ISR for the I2C1 module
