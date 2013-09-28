@@ -22,8 +22,6 @@
  Constants
  ************************************************************************/
 #define UARTQueueSize 16
-#define BAUD_RATE 9600 //UxBRG = 119
-#define UART_ID UART1
 /*************************************************************************
  Structure Definitions
  ************************************************************************/
@@ -65,13 +63,8 @@ UINT16 brevSize;
  *
  *
  *********************************************************/
-void uart_setup(UART_MODULE uart_id);
+void uart_setup(void);
 inline void uart_begin(void);
-
-
-
-void send_data(UART_MODULE uart_id, UINT8* bsndData, UINT16 size);
-void read_data(UART_MODULE uart_id);
 
 /********************************************************
  *   Function Name: uart_InitializeQueue(UART_QUEUE* queue)

@@ -14,7 +14,6 @@
  ************************************************************************/
 UART_QUEUE UART_1_Queue;
 boolean UART1_is_idle;
-
  /********************************************************
  *   Function Name:
  *
@@ -22,17 +21,17 @@ boolean UART1_is_idle;
  *
  *
  *********************************************************/
-void uart_setup(UART_MODULE uart_id)
+void uart_setup(void)
 {
-    U1BRG = 259; //if main clock is 40 MHz, use  259. 10MHz, use 64
-    U1MODEbits.ON = 1;
+    U1BRG = 64; //if main clock is 40 MHz, use  259. 10MHz, use 64
     U1MODEbits.PDSEL = 0;
 
 
     //Setup UART1 TX interrupts
     IEC0SET = (1 << 28); //enable interrupt
     IPC6SET = (2 << 2); //set priority
-    
+    U1STAbits.UTXEN = 1;
+    U1MODEbits.ON = 1;
 //    uart_InitializeQueue(&UART_1_Queue);//initialize the queue
 
     UART1_is_idle = TRUE;//set that bus is currently idle
@@ -118,46 +117,6 @@ int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node)
 }
 
  /********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-void send_data(UART_MODULE uart_id, UINT8* bsndData, UINT16 size)
-{
-    int i;
-
-    for(i = 0; i < size; i++)
-    {
-        while(!UARTTransmitterIsReady(uart_id));
-
-        UARTSendDataByte(uart_id, bsndData[i]);
-
-        while(!UARTTransmissionHasCompleted(uart_id));
-    }
-}
-
- /********************************************************
- *   Function Name:
- *
- *   Description:
- *
- *
- *********************************************************/
-void read_data(UART_MODULE uart_id)
-{
-    int i = 0;
-
-    while(UARTReceivedDataIsAvailable(uart_id))
-    {
-        brecvData[i] = UARTGetDataByte(uart_id);
-        i++;
-    }
-
-}
-
- /********************************************************
  *   Function Name: _UART_1_Handler
  *
  *   Description:
@@ -166,30 +125,25 @@ void read_data(UART_MODULE uart_id)
  *********************************************************/
 void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void)
 {
-    int i;
+    int i, k;
 
     UART_NODE current_node;
-    current_node.uart_data[0] = 'a';
-    current_node.uart_data[1] = 'b';
-    current_node.uart_data[2] = 'c';
-    current_node.uart_data[3] = 'd';
 
-//    if(uart_popNode(&UART_1_Queue, &current_node))
-//    {
-//        UART1_is_idle = TRUE;
-//    }
-//    else
-//    {
-        for(i = 0; i < 4; i++)
+    if(uart_popNode(&UART_1_Queue, &current_node))
+    {
+        UART1_is_idle = TRUE;
+    }
+    else
+    {
+      for(i = 0; i < 4; i++)
         {
-            U1STAbits.UTXEN = 1;
-            U1STAbits.UTXBRK = 1;
-            U1TXREG = 0xFF;
-            //U1TXREG = current_node.uart_data[i];
-            U1STAbits.UTXBRK = 0;
+//            U1STAbits.UTXBRK = 1;
+            U1TXREG = current_node.uart_data[i];
+            for(k = 0; k < 500; k++); //delay to keep the FIFO from overflowing
+//            U1STAbits.UTXBRK = 0;
         }
         UART1_is_idle = FALSE;
-//    }
+    }
 
         IFS0bits.U1TXIF = 0; //clear the interrupt flag
 }
