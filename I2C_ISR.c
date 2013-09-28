@@ -30,12 +30,12 @@ boolean I2C1_is_idle;
     //configure the clock for the I2C1
     I2C1BRG = 0x2F; //if main clock is 80 MHz, use 0x2F for 100kHz I2C
 
-    //enable the I2C1 module
-    I2C1CONbits.ON = 1;
-
     //Setup I2C1 interrupts
+    IPC6SET = (7 << 10); //set priority
     IEC0SET = (1 << 31); //enable interrupt
-    IPC6SET = (2 << 10); //set priority
+
+    //enable the I2C1 module
+    I2C1CONbits.ON = 1;   
 
     I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
 
@@ -102,21 +102,21 @@ boolean I2C1_is_idle;
 
 
  /********************************************************
- *   Function Name: _I2C_1_Handler()
+ *   Function Name: _I2C_1_Handler
  *
  *   Description:
  *          ISR for the I2C1 module
  *
  *********************************************************/
- void __ISR(_I2C_1_VECTOR, ipl2) _I2C_1_Handler(void)
+ void __ISR(_I2C_1_VECTOR, IPL7AUTO) _I2C_1_Handler(void)
  {
     static I2C_Node current_node;
     static uint8 received_data[I2C_MAX_DATA_SIZE];
     static uint8 sub_address_index;
     static uint8 data_index;
 
- IFS0bits.I2C1MIF = 0; //clear the interrupt flag
 
+    PORTGbits.RG0 = !PORTGbits.RG0; //for testing, remove in final code
 
  switch(state)
  {
@@ -214,12 +214,14 @@ boolean I2C1_is_idle;
          }
          else
          {
-         I2C1CONbits.SEN = 1; //send the start signal
-         I2C1_is_idle = FALSE; //flag that the bus is working now
-         state = STARTED; //move onto next state
+            I2C1CONbits.SEN = 1; //send the start signal
+            I2C1_is_idle = FALSE; //flag that the bus is working now
+            state = STARTED; //move onto next state
          }
          break;
  }
+
+ IFS0bits.I2C1MIF = 0; //clear the interrupt flag
 
  return;
  }

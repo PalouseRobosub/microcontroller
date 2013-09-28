@@ -40,18 +40,18 @@
  Function Declarations
  ************************************************************************/
 /********************************************************
- *   Function Name: timer_1_setup()
+ *   Function Name:
  *
- *   Description: Setup the timer 1 (clock speeds and interrupt flag)
+ *   Description:
  *
  *
  *********************************************************/
 void timer_1_setup(void);
 
 /********************************************************
- *   Function Name: timer_1_begin()
+ *   Function Name:
  *
- *   Description: Set the timer 1 interrupt flag (eneable the interrupt)
+ *   Description:
  *
  *
  *********************************************************/

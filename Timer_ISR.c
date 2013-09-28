@@ -17,25 +17,24 @@
  ************************************************************************/
 
 /********************************************************
- *   Function Name: timer_1_setup()
+ *   Function Name:
  *
- *   Description: Setup the timer 1 (clock speeds and interrupt priority)
+ *   Description:
  *
  *
  *********************************************************/
 void timer_1_setup(void)
 {
-    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x0FF);
+    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x080);
 
+    IPC1bits.T1IP = 7;
     IEC0bits.T1IE = 1;
-    IPC1bits.T1IP = 2;
-
 }
 
 /********************************************************
- *   Function Name: timer_1_begin()
+ *   Function Name:
  *
- *   Description: Set the timer 1 interrupt flag (eneable the interrupt)
+ *   Description:
  *
  *
  *********************************************************/
@@ -45,21 +44,24 @@ inline void timer_1_begin(void)
 }
 
 /********************************************************
- *   Function Name: Timer1Handler()
+ *   Function Name:
  *
- *   Description: ISR for Timer 1
+ *   Description:
  *
  *
  *********************************************************/
-void __ISR(_TIMER_1_VECTOR,ipl2) Timer1Handler(void)
+void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
-    static uint count;
-    IFS0bits.T1IF = 0; //clear the interrupt flag
-    count++;
-    if (count == 20)
-    {
+    static long int count;
+    extern boolean I2C1_is_idle;
+
+    PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
+    
         i2c_ACL_Read();
-        //i2c_1_begin();
-        count = 0;
-    }
+        if (I2C1_is_idle)
+        {
+            i2c_1_begin();
+        }
+
+    IFS0bits.T1IF = 0; //clear the interrupt flag
 }

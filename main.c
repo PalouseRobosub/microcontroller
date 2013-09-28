@@ -26,9 +26,19 @@
  ************************************************************************/
 int main(void)
 {
+    int dummy;
+
+    TRISGbits.TRISG0 = 0;
+    TRISGbits.TRISG1 = 0;
+    PORTGbits.RG0 = 0;
+    PORTGbits.RG1 = 0;
+    dummy = 0;
+
     //setup/configure hardware modules
     timer_1_setup();
     i2c_1_setup();
+
+    //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();
 
 
@@ -38,10 +48,12 @@ int main(void)
     
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
+    INTEnableInterrupts();
     while (1)
     {
         //nothing should be in here
         //timer_1_begin();
+        ++dummy;
     }
 
     return 0;
