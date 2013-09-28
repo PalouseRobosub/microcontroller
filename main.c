@@ -45,6 +45,8 @@ int main(void)
 
     //start each ISR
     i2c_1_begin();
+    uart_setup(UART1);
+    uart_begin();
     
     
     //Global interrupt enable. Do this last!
