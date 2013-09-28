@@ -3,7 +3,7 @@
 
 
  /********************************************************
- *   Function Name: InitializeQueue()
+ *   Function Name: InitializeQueue(Queue* root)
  *
  *   Description: Clears the queue and resets parameters
  *
@@ -20,10 +20,10 @@ void InitializeQueue( Queue* root )
     root->QueueStart = 0;
     root->QueueEnd = 0;
 }
- /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: addToQueue(Queue* root, int item)
  *
- *   Description:
+ *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
@@ -45,14 +45,14 @@ int addToQueue( Queue* root, int item )
     }
     return 0;
 }
-  /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: popNode(Queue* root, Node* Free)
  *
- *   Description:
+ *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
-int freeNode( Queue* root, Node* Free )
+int popNode( Queue* root, Node* Free )
 {
     if (root->QueueLength == 0)
     {

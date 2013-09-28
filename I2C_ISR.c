@@ -198,7 +198,7 @@ boolean I2C1_is_idle;
 
      case STOPPED:  //we have just sent the stop signal
          //delay(); //this is for testing (spaces out the I2C transactions). Remove in final code!
-         if (I2C_freeNode(&I2C_1_Queue, &current_node)) //load next node from the queue
+         if (I2C_popNode(&I2C_1_Queue, &current_node)) //load next node from the queue
          {
              I2C1_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
          }
@@ -214,8 +214,8 @@ boolean I2C1_is_idle;
  return;
  }
 
- /********************************************************
- *   Function Name: I2C_InitializeQueue()
+/********************************************************
+ *   Function Name: I2C_InitializeQueue(I2C_Queue* queue)
  *
  *   Description: Clears the queue and resets parameters
  *
@@ -225,10 +225,10 @@ void I2C_InitializeQueue( I2C_Queue* queue )
 {
     memset(queue, 0, sizeof(I2C_Queue));
 }
- /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: I2C_addToQueue(I2C_Queue* queue, I2C_Node new_node)
  *
- *   Description:
+ *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
@@ -250,14 +250,14 @@ int I2C_addToQueue( I2C_Queue* queue, I2C_Node new_node )
     }
     return 0;
 }
-  /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: I2C_popNode(I2C_Queue* queue, I2C_Node* return_node)
  *
- *   Description:
+ *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
-int I2C_freeNode( I2C_Queue* queue, I2C_Node* return_node )
+int I2C_popNode( I2C_Queue* queue, I2C_Node* return_node )
 {
     if (queue->QueueLength == 0)
     {

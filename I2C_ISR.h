@@ -67,10 +67,10 @@ typedef struct i2c_node
 
 typedef struct i2c_queue
 {
-    I2C_Node DataBank[I2CQueueSize];
-    uint8 QueueStart;
-    uint8 QueueEnd;
-    uint8 QueueLength;
+    I2C_Node DataBank[I2CQueueSize]; //Array of Nodes of the #defined size QueueSize
+    uint8 QueueStart; //Location of oldest node
+    uint8 QueueEnd; //Location of next free slot
+    uint8 QueueLength; //Length of queue
 }I2C_Queue;
 
 
@@ -100,32 +100,32 @@ typedef struct i2c_queue
  *********************************************************/
  inline void i2c_1_begin(void);
 
- /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: I2C_InitializeQueue(I2C_Queue* queue)
  *
- *   Description:
+ *   Description: Clears the queue and resets parameters
  *
  *
  *********************************************************/
 void I2C_InitializeQueue( I2C_Queue* queue );
 
- /********************************************************
- *   Function Name:
+/********************************************************
+ *   Function Name: I2C_addToQueue(I2C_Queue* queue, I2C_Node new_node)
  *
- *   Description:
+ *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
 int I2C_addToQueue( I2C_Queue* queue, I2C_Node new_node );
 
 /********************************************************
- *   Function Name:
+ *   Function Name: I2C_popNode(I2C_Queue* queue, I2C_Node* return_node)
  *
- *   Description:
+ *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
-int I2C_freeNode( I2C_Queue* queue, I2C_Node* return_node );
+int I2C_popNode( I2C_Queue* queue, I2C_Node* return_node );
 
 /********************************************************
  *   Function Name:

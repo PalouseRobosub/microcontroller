@@ -19,10 +19,10 @@ typedef struct node
 
 typedef struct queue
 {
-    Node I2CQueue[QueueSize];
-    uint8 QueueStart;
-    uint8 QueueEnd;
-    uint8 QueueLength;
+    Node I2CQueue[QueueSize]; //Array of Nodes of the #defined size QueueSize
+    uint8 QueueStart; //Location of oldest node
+    uint8 QueueEnd; //Location of next free slot
+    uint8 QueueLength; //Length of queue
 }Queue;
 
 /*************************************************************************
@@ -31,31 +31,31 @@ typedef struct queue
 extern Queue I2CQ;
 
 /********************************************************
- *   Function Name:
+ *   Function Name: addToQueue(Queue* root, int item)
  *
- *   Description:
+ *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
 int addToQueue( Queue* root, int item );
 
 /********************************************************
- *   Function Name:
+ *   Function Name: InitializeQueue(Queue* root)
  *
- *   Description:
+ *   Description: Clears the queue and resets parameters
  *
  *
  *********************************************************/
 void InitializeQueue( Queue* root );
 
 /********************************************************
- *   Function Name:
+ *   Function Name: popNode(Queue* root, Node* Free)
  *
- *   Description:
+ *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
-int freeNode( Queue* root, Node* Free );
+int popNode( Queue* root, Node* Free );
 
 #endif	/* QUEUE_H */
 
