@@ -27,14 +27,12 @@
 int main(void)
 {
     //setup/configure hardware modules
-    //i2c_1_setup();
     timer_1_setup();
     i2c_1_setup();
-    i2c_1_begin();
 
 
     //start each ISR
-    //i2c_1_begin();
+    i2c_1_begin();
     
     
     //Global interrupt enable. Do this last!
