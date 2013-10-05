@@ -70,7 +70,7 @@ unsigned int read_buttons(void);
  *
  *
  *********************************************************/
-void write_leds(unsigned int);
+void write_leds(uint8 value);
 
  void delay(void);
 

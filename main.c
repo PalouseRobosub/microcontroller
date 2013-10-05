@@ -37,6 +37,9 @@ int main(void)
     PORTGbits.RG1 = 0;
     dummy = 0;
 
+    //setup led pins for write
+    setup_leds();
+
     //setup/configure hardware modules
     timer_1_setup();
     i2c_1_setup();

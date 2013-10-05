@@ -25,6 +25,11 @@ unsigned int read_buttons(void)
     buttons = buttons << 4;
 }
 
+void setup_leds(void)
+{
+    TRISBCLR = (0x0F << 10);
+}
+
  /********************************************************
  *   Function Name: write_leds(unsigned int)
  *
@@ -32,9 +37,11 @@ unsigned int read_buttons(void)
  *
  *
  *********************************************************/
-void write_leds(unsigned int current_state)
+void write_leds(uint8 value)
 {
-    PORTWrite(IOPORT_B, current_state);
+    value = value & 0x0F; //mask to only 4 bits
+    PORTBCLR = (0x0F << 10);
+    PORTBSET = (value << 10);
 }
 
 void delay(void)
