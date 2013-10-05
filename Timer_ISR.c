@@ -26,7 +26,7 @@
  *********************************************************/
 void timer_1_setup(void)
 {
-    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x0F0);
+    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x0f0);
 
     IPC1bits.T1IP = 7;
     IEC0bits.T1IE = 1;
@@ -54,6 +54,7 @@ inline void timer_1_begin(void)
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
     extern boolean I2C1_is_idle;
+    INTDisableInterrupts();
 
     PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
     
@@ -64,4 +65,5 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
         }
 
     IFS0bits.T1IF = 0; //clear the interrupt flag
+    INTEnableInterrupts();
 }

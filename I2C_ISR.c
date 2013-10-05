@@ -116,7 +116,9 @@ boolean I2C1_is_idle;
     static uint8 data_index;
     extern boolean UART1_is_idle;
 
-
+    INTDisableInterrupts();
+    IFS0bits.I2C1MIF = 0; //clear the interrupt flag
+    
     PORTGbits.RG0 = !PORTGbits.RG0; //for testing, remove in final code
 
  switch(state)
@@ -207,8 +209,8 @@ boolean I2C1_is_idle;
 
          //create uart node
          uart_CreateNode( 0x58, received_data[0], received_data[1] );
-         //uart_CreateNode( 0x59, received_data[2], received_data[3] );
-         //uart_CreateNode( 0x60, received_data[4], received_data[5] );
+         uart_CreateNode( 0x59, received_data[2], received_data[3] );
+         uart_CreateNode( 0x5A, received_data[4], received_data[5] );
          if (UART1_is_idle)
          {
             uart_begin();
@@ -232,8 +234,8 @@ boolean I2C1_is_idle;
          break;
  }
 
- IFS0bits.I2C1MIF = 0; //clear the interrupt flag
 
+INTEnableInterrupts();
  return;
  }
 

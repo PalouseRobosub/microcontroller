@@ -23,14 +23,15 @@ boolean UART1_is_idle;
  *
  *********************************************************/
 void uart_setup(void) {
-    U1BRG = 64; //if main clock is 40 MHz, use  259. 10MHz, use 64
+    //U1BRG = 64; //divider of 64 for 9600 baud
+    U1BRG = 10; //divider of 10 for 56818.2 baud
     U1MODEbits.PDSEL = 0;
     uart_InitializeQueue(&UART_1_Queue);
 
 
     //Setup UART1 TX interrupts
     IEC0SET = (1 << 28); //enable interrupt Tx
-    IPC6SET = (2 << 2); //set priority
+    IPC6SET = (7 << 2); //set priority
     U1STAbits.UTXISEL = 2; //Set interrupt to fire when transmit buffer is empty
     U1STAbits.UTXEN = 1; //enable Tx
 
@@ -119,9 +120,10 @@ int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node) {
  *             ISR for the UART1 module
  *
  *********************************************************/
-void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void) {
+void __ISR(_UART1_VECTOR, IPL7AUTO) IntUart1Handler(void) {
     int i, k;
     UART_NODE current_node;
+    INTDisableInterrupts();
 
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
@@ -147,6 +149,8 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void) {
 
         IFS0bits.U1TXIF = 0; //clear the interrupt flag
     }
+
+    INTEnableInterrupts();
 
 }
 

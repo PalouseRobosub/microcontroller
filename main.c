@@ -63,7 +63,7 @@ int main(void)
     {
         //nothing should be in here
         //timer_1_begin();
-        ++dummy;
+        //++dummy;
     }
 
     return 0;
