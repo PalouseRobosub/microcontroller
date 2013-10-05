@@ -39,6 +39,7 @@ int main(void)
 
     //setup led pins for write
     setup_leds();
+    
 
     //setup/configure hardware modules
     timer_1_setup();

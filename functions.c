@@ -28,6 +28,7 @@ unsigned int read_buttons(void)
 void setup_leds(void)
 {
     TRISBCLR = (0x0F << 10);
+    write_leds(0);
 }
 
  /********************************************************

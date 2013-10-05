@@ -33,7 +33,7 @@ void uart_setup(void) {
     IPC6SET = (2 << 2); //set priority
     U1STAbits.UTXISEL = 2; //Set interrupt to fire when transmit buffer is empty
     U1STAbits.UTXEN = 1; //enable Tx
-    
+
     //Setup UART1 RX interrupts
     IEC0SET = (1 << 27); //enable interrupt Rx
     //set by default - U1STAbits.URXISEL = 0; //Set interrupt to fire when a character is recieved
@@ -129,6 +129,21 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void) {
 
     if (IFS0bits.U1RXIF == 1) {
 
+        switch (U1RXREG) {
+            case '0':
+                write_leds(0);
+                break;
+            case '1':
+                write_leds(1);
+                break;
+            case '2':
+                write_leds(2);
+                break;
+            case '3':
+                write_leds(3);
+                break;
+        }
+
         //U1RXREG is the recieve register that data will come into
         IFS0bits.U1RXIF = 0; //clear the interrupt flag
     }
@@ -136,14 +151,13 @@ void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void) {
 
         ++data_index;
 
-         if (data_index == 4) //if we have sent all data bytes
-         {
-             data_index = 0;
-         }
-         else //if we have more bytes to send
-         {
-             U1TXREG = current_node.uart_data[data_index];
-         }
+        if (data_index == 4) //if we have sent all data bytes
+        {
+            data_index = 0;
+        } else //if we have more bytes to send
+        {
+            U1TXREG = current_node.uart_data[data_index];
+        }
         /*if (uart_popNode(&UART_1_Queue, &current_node)) {
             UART1_is_idle = TRUE;
         } else {
