@@ -206,7 +206,9 @@ boolean I2C1_is_idle;
          I2C1CONbits.PEN = 1; //send the stop signal
 
          //create uart node
-         uart_CreateNode( 0x13, received_data[0], received_data[1] );
+         uart_CreateNode( 0x58, received_data[0], received_data[1] );
+         //uart_CreateNode( 0x59, received_data[2], received_data[3] );
+         //uart_CreateNode( 0x60, received_data[4], received_data[5] );
          if (UART1_is_idle)
          {
             uart_begin();

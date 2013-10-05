@@ -121,54 +121,29 @@ int uart_popNode(UART_QUEUE* queue, UART_NODE* return_node) {
  *********************************************************/
 void __ISR(_UART1_VECTOR, ipl2) IntUart1Handler(void) {
     int i, k;
-    static UART_NODE current_node;
-    static uint8 data_index;
+    UART_NODE current_node;
 
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
 
     if (IFS0bits.U1RXIF == 1) {
 
-        switch (U1RXREG) {
-            case '0':
-                write_leds(0);
-                break;
-            case '1':
-                write_leds(1);
-                break;
-            case '2':
-                write_leds(2);
-                break;
-            case '3':
-                write_leds(3);
-                break;
-        }
+        write_leds(U1RXREG - '0'); //write to LEDs to test UART Rx
 
         //U1RXREG is the recieve register that data will come into
         IFS0bits.U1RXIF = 0; //clear the interrupt flag
     }
     if (IFS0bits.U1TXIF == 1) {
-
-        ++data_index;
-
-        if (data_index == 4) //if we have sent all data bytes
-        {
-            data_index = 0;
-        } else //if we have more bytes to send
-        {
-            U1TXREG = current_node.uart_data[data_index];
-        }
-        /*if (uart_popNode(&UART_1_Queue, &current_node)) {
+        if (uart_popNode(&UART_1_Queue, &current_node)) {
             UART1_is_idle = TRUE;
         } else {
             for (i = 0; i < 4; i++) {
                 //            U1STAbits.UTXBRK = 1;
                 U1TXREG = current_node.uart_data[i];
-                for (k = 0; k < 500; k++); //delay to keep the FIFO from overflowing
                 //            U1STAbits.UTXBRK = 0;
             }
             UART1_is_idle = FALSE;
-        }*/
+        }
 
         IFS0bits.U1TXIF = 0; //clear the interrupt flag
     }
