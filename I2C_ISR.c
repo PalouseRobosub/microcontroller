@@ -7,6 +7,7 @@
  *
  *********************************************************/
 #include "functions.h"
+#include "Sensors.h"
 #include "I2C_ISR.h"
 
 
@@ -40,47 +41,6 @@ boolean I2C1_is_idle;
     I2C_InitializeQueue(&I2C_1_Queue); //initialize the queue
 
     I2C1_is_idle = TRUE; //set that bus is currently idle
- }
-
- /********************************************************
- *   Function Name: i2c_ACL_Read()
- *
- *   Description: Sets the I2C for reading from the PMOD accelerometer
- *
- *
- *********************************************************/
- void i2c_ACL_Read(void)
- {
-     I2C_Node temp;
-
-    temp.device_address = 0x1D;
-    temp.sub_address[0] = 0x32;
-    temp.sub_address_size = 1;
-    temp.mode = READ;
-    temp.data_size = 6;
-    temp.tx_data[0] = 0x08;
-    I2C_addToQueue(&I2C_1_Queue, temp);
- }
-
- /********************************************************
- *   Function Name: i2c_ACL_Initialize()
- *
- *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
- *
- *
- *********************************************************/
- void i2c_ACL_Initialize(void)
- {
-     I2C_Node temp;
-
-     //data for initializing the PmodALC
-    temp.device_address = 0x1D;
-    temp.sub_address[0] = 0x2D;
-    temp.sub_address_size = 1;
-    temp.mode = WRITE;
-    temp.data_size = 1;
-    temp.tx_data[0] = 0x08;
-    I2C_addToQueue(&I2C_1_Queue, temp);
  }
 
  /********************************************************
@@ -208,9 +168,8 @@ boolean I2C1_is_idle;
          I2C1CONbits.PEN = 1; //send the stop signal
 
          //create uart node
-         uart_CreateNode( 0x58, received_data[0], received_data[1] );
-         uart_CreateNode( 0x59, received_data[2], received_data[3] );
-         uart_CreateNode( 0x5A, received_data[4], received_data[5] );
+         I2C_Load_UART(current_node.sensor_id, received_data);
+         
          if (UART1_is_idle)
          {
             uart_begin();
@@ -237,6 +196,32 @@ boolean I2C1_is_idle;
 
 INTEnableInterrupts();
  return;
+ }
+
+ /********************************************************
+ *   Function Name: I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
+ *
+ *   Description: Packages the received data and puts it
+ *                on the UART queue
+ *
+ *
+ *********************************************************/
+ void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
+ {
+
+     switch (sensor)
+     {
+         case ACL_0:
+         uart_CreateNode( ACL_1_X, received_data[0], received_data[1] );
+         uart_CreateNode( ACL_1_Y, received_data[2], received_data[3] );
+         uart_CreateNode( ACL_1_Z, received_data[4], received_data[5] );
+             break;
+
+         case GYRO_0:
+             break;
+     }
+
+     return;
  }
 
 /********************************************************

@@ -1,47 +1,41 @@
 /********************************************************
- *   File Name: functions.h
+ *   File Name: Sensors.h
  *
  *   Description:
- *              Main header file
+ *              header file for the sensor definitions
  *
  *
  *********************************************************/
 
-#ifndef FUNCTIONS_H
-#define	FUNCTIONS_H
-
-
-/*************************************************************************
- System Includes
- ************************************************************************/
-//#include <plib.h> //includes absolutely everything
-#include <peripheral/ports.h>
-#include <peripheral/i2c.h>
-
-
-
-/*************************************************************************
- Typedefs
- ************************************************************************/
-typedef unsigned int uint;
-typedef unsigned char uint8;
-typedef uint8 boolean;
+#ifndef SENSORS_H
+#define	SENSORS_H
 
 /*************************************************************************
  Constants
  ************************************************************************/
-#define SYS_CLK_FREQ (40000000) //40MHz CLK
 
-#define QueueSize 15
+#define ACL_1_X 0x01
+#define ACL_1_Y 0x02
+#define ACL_1_Z 0x03
 
 /*************************************************************************
- Structure Definitions
+ Macros
  ************************************************************************/
-
 
 
 /*************************************************************************
  Enums
+ ************************************************************************/
+
+typedef enum
+{
+    ACL_0,
+    GYRO_0,
+            
+}SENSOR_ID;
+
+/*************************************************************************
+ Structure Definitions
  ************************************************************************/
 
 /*************************************************************************
@@ -51,26 +45,24 @@ typedef uint8 boolean;
 /*************************************************************************
  Function Declarations
  ************************************************************************/
-
- /********************************************************
- *   Function Name: read_buttons()
+/********************************************************
+ *   Function Name: i2c_ACL_Read()
  *
- *   Description: Reads buttons from board
- *
- *
- *********************************************************/
-unsigned int read_buttons(void);
-
- /********************************************************
- *   Function Name: write_leds(unsigned int)
- *
- *   Description: writes to LED's on board
+ *   Description: Sets the I2C for reading from the PMOD accelerometer
  *
  *
  *********************************************************/
-void write_leds(uint8 value);
+ void i2c_ACL_Read(void);
 
- void delay(void);
+ /********************************************************
+ *   Function Name: i2c_ACL_Initialize()
+ *
+ *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
+ *
+ *
+ *********************************************************/
+ void i2c_ACL_Initialize(void);
 
-#endif	/* FUNCTIONS_H */
+
+#endif	/* SENSORS_H */
 

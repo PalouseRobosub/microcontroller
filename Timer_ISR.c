@@ -7,6 +7,7 @@
  *
  *********************************************************/
 #include "functions.h"
+#include "Sensors.h"
 #include "Timer_ISR.h"
 #include "peripheral/timer.h"
 #include "I2C_ISR.h"

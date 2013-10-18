@@ -9,11 +9,13 @@
 
 
 #include "functions.h"
+#include "Sensors.h"
 #include "I2C_ISR.h"
 #include "Testbench.h"
 #include "Queue.h"
 #include "Timer_ISR.h"
 #include "UART_ISR.h"
+
 
 /*************************************************************************
  Processor Configuration

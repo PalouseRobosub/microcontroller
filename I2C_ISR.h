@@ -11,10 +11,15 @@
 #ifndef I2C_ISR_H
 #define	I2C_ISR_H
 
+#include "functions.h"
+#include "Sensors.h"
+
 /*************************************************************************
  Constants
  ************************************************************************/
 #define I2CQueueSize 15
+#define I2C_MAX_DATA_SIZE 8
+#define I2C_MAX_ADDR_SIZE 2
 
 /*************************************************************************
  Macros
@@ -57,6 +62,7 @@ typedef enum    //reading or writing from the sensor
 
 typedef struct i2c_node
 {
+    SENSOR_ID sensor_id;
     uint8 device_address; //device to read from
     uint8 sub_address[I2C_MAX_ADDR_SIZE]; //sub address(s) to read from
     uint8 sub_address_size; //size (in bytes) of the sub address
@@ -90,24 +96,6 @@ typedef struct i2c_queue
  *
  *********************************************************/
  void i2c_1_setup(void);
-
- /********************************************************
- *   Function Name: i2c_ACL_Read()
- *
- *   Description: Sets the I2C for reading from the PMOD accelerometer
- *
- *
- *********************************************************/
- void i2c_ACL_Read(void);
-
- /********************************************************
- *   Function Name: i2c_ACL_Initialize()
- *
- *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
- *
- *
- *********************************************************/
- void i2c_ACL_Initialize(void);
  
  /********************************************************
  *   Function Name: i2c_1_begin()
@@ -117,6 +105,16 @@ typedef struct i2c_queue
  *
  *********************************************************/
  inline void i2c_1_begin(void);
+
+ /********************************************************
+ *   Function Name: I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
+ *
+ *   Description: Packages the received data and puts it
+ *                on the UART queue
+ *
+ *
+ *********************************************************/
+ void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[]);
 
 /********************************************************
  *   Function Name: I2C_InitializeQueue(I2C_Queue* queue)
