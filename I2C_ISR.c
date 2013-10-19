@@ -198,7 +198,7 @@ INTEnableInterrupts();
  return;
  }
 
- /********************************************************
+/********************************************************
  *   Function Name: I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
  *
  *   Description: Packages the received data and puts it
@@ -206,23 +206,26 @@ INTEnableInterrupts();
  *
  *
  *********************************************************/
- void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
- {
+void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
+{
 
-     switch (sensor)
-     {
-         case ACL_0:
-         uart_CreateNode( ACL_1_X, received_data[0], received_data[1] );
-         uart_CreateNode( ACL_1_Y, received_data[2], received_data[3] );
-         uart_CreateNode( ACL_1_Z, received_data[4], received_data[5] );
-             break;
+    switch (sensor)
+    {
+        case ACL_0:
+            uart_CreateNode(ACL_0_X, received_data[0], received_data[1]);
+            uart_CreateNode(ACL_0_Y, received_data[2], received_data[3]);
+            uart_CreateNode(ACL_0_Z, received_data[4], received_data[5]);
+            break;
 
-         case GYRO_0:
-             break;
-     }
+        case GYRO_0:
+            uart_CreateNode(GYRO_0_X, received_data[0], received_data[1]);
+            uart_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
+            uart_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
+            break;
+    }
 
-     return;
- }
+    return;
+}
 
 /********************************************************
  *   Function Name: I2C_InitializeQueue(I2C_Queue* queue)

@@ -14,9 +14,14 @@
  Constants
  ************************************************************************/
 
-#define ACL_1_X 0x01
-#define ACL_1_Y 0x02
-#define ACL_1_Z 0x03
+#define ACL_0_X 'X' //0x01
+#define ACL_0_Y 'Y' //0x02
+#define ACL_0_Z 'Z' //0x03
+
+#define GYRO_0_X 'I' //0x11
+#define GYRO_0_Y 'J' //0x12
+#define GYRO_0_Z 'K' //0x13
+
 
 /*************************************************************************
  Macros
@@ -45,23 +50,43 @@ typedef enum
 /*************************************************************************
  Function Declarations
  ************************************************************************/
+
+ /********************************************************
+ *   Function Name: i2c_ACL_Initialize()
+ *
+ *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometers
+ *
+ *
+ *********************************************************/
+ void i2c_ACL_Initialize(void);
+
 /********************************************************
  *   Function Name: i2c_ACL_Read()
  *
- *   Description: Sets the I2C for reading from the PMOD accelerometer
+ *   Description: Sets the I2C for reading from the PMOD accelerometers
  *
  *
  *********************************************************/
  void i2c_ACL_Read(void);
 
  /********************************************************
- *   Function Name: i2c_ACL_Initialize()
+ *   Function Name: i2c_GYRO_Initialize()
  *
- *   Description: Sets the I2C for writing (Initialize) to the PMOD accelerometer
+ *   Description: Sets the I2C for writing (Initialize) to the PMOD gyroscopes
  *
  *
  *********************************************************/
- void i2c_ACL_Initialize(void);
+ void i2c_GYRO_Initialize(void);
+
+ /********************************************************
+ *   Function Name: i2c_GYRO_Read()
+ *
+ *   Description: Sets the I2C for reading from the PMOD gyroscopes
+ *
+ *
+ *********************************************************/
+ void i2c_GYRO_Read(void);
+
 
 
 #endif	/* SENSORS_H */

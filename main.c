@@ -49,6 +49,7 @@ int main(void)
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();
+    i2c_GYRO_Initialize();
 
 
     //start each ISR

@@ -59,6 +59,7 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 
     PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
     
+        i2c_GYRO_Read();
         i2c_ACL_Read();
         if (I2C1_is_idle)
         {
