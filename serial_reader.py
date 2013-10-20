@@ -67,7 +67,7 @@ def get_lock() :
 
 				#say we are in sync so we can break out
 				in_sync = True
-				print "sync aquired"
+				print "sync locked"
 
 			#don't need an else case, we just start loop again
 
@@ -82,8 +82,9 @@ def get_packet() :
 			#print x
 		
 		if packet[0] != control_byte :
-			print "Error: lost sync. Press any key to continue"
-			os.system('pause')			
+			print "Error: lost sync. Press any key to attempt to re-sync"
+			os.system('pause')
+			s.flushInput()
 			get_lock()
 		else :
 			success = True
@@ -92,14 +93,30 @@ def get_packet() :
 	return packet
 
 
+print "Aquiring stream sync"
 get_lock()
 
 ACL_1_X_val = -1
 ACL_1_Y_val = -1
 ACL_1_Z_val = -1
 buffer_size_max = 0
+buffer_tick = 0
+buffer_total = 0
+sent_time = 0
+received_time = 0
+ping_time = 500
+wait_time = time.time() + 1
+x_update = 500
+x_period = 500
+x_total = 0
+x_tick = 0
 
 while 1 :
+	if (time.time() > wait_time) :
+		s.write('P')
+		sent_time = time.time()
+		wait_time = sent_time + 1
+		
 	received_packet = get_packet()
 	device = ord(received_packet[1])
 
@@ -110,6 +127,14 @@ while 1 :
 		( ord(received_packet[3]) << 8 ))
 		if ACL_1_X_val > 32767 :
 			ACL_1_X_val = (ACL_1_X_val-65536)
+		
+		if x_tick == 10 :
+			x_tick = 0
+			x_total = 0
+		x_period = time.time() - x_update
+		x_update = time.time()
+		x_total += x_period
+		x_tick += 1
 	
 	elif device == ACL_1_Y_addr :
 		ACL_1_Y_val = ( ord(received_packet[2]) ) | \
@@ -122,16 +147,30 @@ while 1 :
 		( ord(received_packet[3]) << 8 )
 		if ACL_1_Z_val > 32767 :
 			ACL_1_Z_val = (ACL_1_Z_val-65536)
+	elif device == ord('P') :
+		received_time = time.time()
+		if (received_time - sent_time) <  ping_time :
+			ping_time = received_time - sent_time
 
 	print "ACL X: %d" % (ACL_1_X_val)
 	print "ACL Y: %d" % (ACL_1_Y_val)
 	print "ACL Z: %d" % (ACL_1_Z_val)
+	print "Minimum Ping Time: %lf" % (ping_time)
+	print "Sensor refresh period %lf" % (x_period)
+	print "average refresh period %lf" % (x_total/x_tick)
 	
+	if (buffer_tick == 100) :
+		buffer_tick = 0
+		buffer_total = 0
+		
 	buffer_size = s.inWaiting()
+	buffer_total += buffer_size
+	buffer_tick += 1
 	if buffer_size > buffer_size_max :
 		buffer_size_max = buffer_size
 	
-	print "Buffer size: %d" % buffer_size_max
+	print "Maximum Buffer size: %d" % buffer_size_max
+	print "Average Buffer size: %d" % (buffer_total/buffer_tick)
 	
 	if abs(ACL_1_X_val) > 150  :
 		s.write('1')

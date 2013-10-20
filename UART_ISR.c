@@ -124,13 +124,19 @@ void __ISR(_UART1_VECTOR, IPL7AUTO) IntUart1Handler(void) {
     int i, k;
     UART_NODE current_node;
     INTDisableInterrupts();
+    uint8 received_byte;
 
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
 
     if (IFS0bits.U1RXIF == 1) {
-
-        write_leds(U1RXREG - '0'); //write to LEDs to test UART Rx
+        received_byte = U1RXREG;
+        write_leds(received_byte - '0'); //write to LEDs to test UART Rx
+        if (received_byte == 'P')
+        {
+            uart_CreateNode('P', 0, 0);
+           // write_leds(0xFF);
+        }
 
         //U1RXREG is the recieve register that data will come into
         IFS0bits.U1RXIF = 0; //clear the interrupt flag
