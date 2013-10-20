@@ -164,10 +164,11 @@ void __ISR(_UART1_VECTOR, IPL7AUTO) IntUart1Handler(void) {
 void uart_CreateNode(uint Byte1, uint Byte2, uint Byte3) {
     UART_NODE temp;
 
-    temp.uart_data[0] = Byte1;
-    temp.uart_data[1] = Byte2;
-    temp.uart_data[2] = Byte3;
-    temp.uart_data[3] = '\n';
+    temp.uart_data[0] = '\n';
+    temp.uart_data[1] = Byte1;
+    temp.uart_data[2] = Byte2;
+    temp.uart_data[3] = Byte3;
+    
 
     uart_addToQueue(&UART_1_Queue, temp);
 }
