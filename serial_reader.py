@@ -10,6 +10,9 @@ control_byte = '\n'
 ACL_1_X_addr = ord('X')
 ACL_1_Y_addr = ord('Y')
 ACL_1_Z_addr = ord('Z')
+GYRO_1_X_addr = ord('I')
+GYRO_1_Y_addr = ord('J')
+GYRO_1_Z_addr = ord('K')
 
 
 #clear the screen
@@ -20,6 +23,9 @@ s = serial.Serial()
 s.port = 2
 s.baudrate = 56818
 s.open()
+
+start_time = time.time()
+packet_count = 0
 
 
 
@@ -99,25 +105,44 @@ get_lock()
 ACL_1_X_val = -1
 ACL_1_Y_val = -1
 ACL_1_Z_val = -1
+GYRO_1_X_val = -1
+GYRO_1_Y_val = -1
+GYRO_1_Z_val = -1
 buffer_size_max = 0
-buffer_tick = 0
-buffer_total = 0
+buffer_tick = 1
+buffer_total = 1
 sent_time = 0
 received_time = 0
-ping_time = 500
+min_ping_time = 500
+ping_tick = 1
+ping_total = 1
 wait_time = time.time() + 1
-x_update = 500
+x_update = time.time()
 x_period = 500
-x_total = 0
-x_tick = 0
+x_total = 1
+x_tick = 1
+UART_queue_len = 500
+UART_queue_len_max = 0
 
 while 1 :
+
+	if (buffer_tick == 20) :
+		buffer_tick /= 2
+		buffer_total /= 2
+		
+	buffer_size = s.inWaiting()
+	buffer_total += buffer_size
+	buffer_tick += 1
+	if buffer_size > buffer_size_max :
+		buffer_size_max = buffer_size
+		
 	if (time.time() > wait_time) :
 		s.write('P')
 		sent_time = time.time()
 		wait_time = sent_time + 1
 		
 	received_packet = get_packet()
+	packet_count += 1
 	device = ord(received_packet[1])
 
 	os.system('cls')
@@ -128,9 +153,9 @@ while 1 :
 		if ACL_1_X_val > 32767 :
 			ACL_1_X_val = (ACL_1_X_val-65536)
 		
-		if x_tick == 10 :
-			x_tick = 0
-			x_total = 0
+		if x_tick == 20 :
+			x_tick /= 2
+			x_total /= 2
 		x_period = time.time() - x_update
 		x_update = time.time()
 		x_total += x_period
@@ -147,30 +172,63 @@ while 1 :
 		( ord(received_packet[3]) << 8 )
 		if ACL_1_Z_val > 32767 :
 			ACL_1_Z_val = (ACL_1_Z_val-65536)
+			
+	elif device == GYRO_1_X_addr :
+		GYRO_1_X_val = ( ord(received_packet[2]) ) | \
+		( ord(received_packet[3]) << 8 )
+		if GYRO_1_X_val > 32767 :
+			GYRO_1_X_val = (GYRO_1_X_val-65536)
+	
+	elif device == GYRO_1_Y_addr :
+		GYRO_1_Y_val = ( ord(received_packet[2]) ) | \
+		( ord(received_packet[3]) << 8 )
+		if GYRO_1_Y_val > 32767 :
+			GYRO_1_Y_val = (GYRO_1_Y_val-65536)
+			
+	elif device == GYRO_1_Z_addr :
+		GYRO_1_Z_val = ( ord(received_packet[2]) ) | \
+		( ord(received_packet[3]) << 8 )
+		if GYRO_1_Z_val > 32767 :
+			GYRO_1_Z_val = (GYRO_1_Z_val-65536)
+			
+	elif device == ord('Q') :
+		UART_queue_len = ord(received_packet[2])
+		if (UART_queue_len > UART_queue_len_max) :
+			UART_queue_len_max = UART_queue_len
+		
+			
 	elif device == ord('P') :
 		received_time = time.time()
-		if (received_time - sent_time) <  ping_time :
-			ping_time = received_time - sent_time
+		if ping_tick > 20 :
+			ping_total /= 2
+			ping_tick /= 2
+			
+		ping_total += received_time - sent_time
+		ping_tick += 1
+		
+		if (received_time - sent_time) <  min_ping_time :
+			min_ping_time = received_time - sent_time
 
 	print "ACL X: %d" % (ACL_1_X_val)
 	print "ACL Y: %d" % (ACL_1_Y_val)
 	print "ACL Z: %d" % (ACL_1_Z_val)
-	print "Minimum Ping Time: %lf" % (ping_time)
+	print "GYRO X: %d" % (GYRO_1_X_val)
+	print "GYRO Y: %d" % (GYRO_1_Y_val)
+	print "GYRO Z: %d" % (GYRO_1_Z_val)
+	print "Minimum Ping Time: %lf" % (min_ping_time)
+	print "Average Ping Time: %lf" % (ping_total/ping_tick)
 	print "Sensor refresh period %lf" % (x_period)
 	print "average refresh period %lf" % (x_total/x_tick)
 	
-	if (buffer_tick == 100) :
-		buffer_tick = 0
-		buffer_total = 0
-		
-	buffer_size = s.inWaiting()
-	buffer_total += buffer_size
-	buffer_tick += 1
-	if buffer_size > buffer_size_max :
-		buffer_size_max = buffer_size
+	
 	
 	print "Maximum Buffer size: %d" % buffer_size_max
 	print "Average Buffer size: %d" % (buffer_total/buffer_tick)
+	print "UART queue length: %d" % UART_queue_len
+	print "Max UART queue length: %d" % UART_queue_len_max
+	print "Packet Count %d" % packet_count
+	
+	print "Run Time (minutes): %lf" % ((time.time() - start_time)/60)
 	
 	if abs(ACL_1_X_val) > 150  :
 		s.write('1')

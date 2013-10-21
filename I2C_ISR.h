@@ -17,7 +17,7 @@
 /*************************************************************************
  Constants
  ************************************************************************/
-#define I2CQueueSize 15
+#define I2CQueueSize 32
 #define I2C_MAX_DATA_SIZE 8
 #define I2C_MAX_ADDR_SIZE 2
 

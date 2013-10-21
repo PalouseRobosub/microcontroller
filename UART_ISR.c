@@ -14,6 +14,7 @@
  ************************************************************************/
 UART_QUEUE UART_1_Queue;
 boolean UART1_is_idle;
+uint8 led_val;
 
 /********************************************************
  *   Function Name:
@@ -27,6 +28,7 @@ void uart_setup(void) {
     U1BRG = 10; //divider of 10 for 56818.2 baud
     U1MODEbits.PDSEL = 0;
     uart_InitializeQueue(&UART_1_Queue);
+    led_val = 0;
 
 
     //Setup UART1 TX interrupts
@@ -126,6 +128,9 @@ void __ISR(_UART1_VECTOR, IPL7AUTO) IntUart1Handler(void) {
     INTDisableInterrupts();
     uint8 received_byte;
 
+
+    //write_leds(led_val);
+    //led_val = ~led_val;
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
 
@@ -135,6 +140,7 @@ void __ISR(_UART1_VECTOR, IPL7AUTO) IntUart1Handler(void) {
         if (received_byte == 'P')
         {
             uart_CreateNode('P', 0, 0);
+            uart_CreateNode('Q', UART_1_Queue.QueueLength, 0);
            // write_leds(0xFF);
         }
 
