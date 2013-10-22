@@ -49,8 +49,6 @@ typedef struct uart2_queue
 /*************************************************************************
  Variables
  ************************************************************************/
-UINT8* brecvData;
-UINT16 brevSize;
 
 /*************************************************************************
  Function Declarations
@@ -94,13 +92,49 @@ int uart2_addToQueue(UART2_QUEUE* queue, UART2_NODE new_node);
 int uart2_popNode(UART2_QUEUE* queue, UART2_NODE* return_node);
 
  /********************************************************
- *   Function Name: uart2_SetNode( uint Byte1, uint Byte2, uint Byte3 )
+ *   Function Name: uart2_SetNode( uint Byte1, uint Byte2, uint Byte3, uint Byte4 )
  *
  *   Description: Creates a node using three bytes
  *
  *
  *********************************************************/
-void uart2_CreateNode( uint Byte1, uint Byte2, uint Byte3 );
+void uart2_CreateNode( uint Byte1, uint Byte2, uint Byte3, uint Byte4 );
+
+ /********************************************************
+ *   Function Name: Motor1_Forward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 1 forward
+ *
+ *
+ *********************************************************/
+void Motor1_Forward( uint address, uint speed );
+
+ /********************************************************
+ *   Function Name: Motor1_Backward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 1 backward
+ *
+ *
+ *********************************************************/
+void Motor1_Backward( uint address, uint speed );
+
+ /********************************************************
+ *   Function Name: Motor1_Forward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 2 forward
+ *
+ *
+ *********************************************************/
+void Motor2_Forward( uint address, uint speed );
+
+ /********************************************************
+ *   Function Name: Motor1_Backward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 2 backward
+ *
+ *
+ *********************************************************/
+void Motor2_Backward( uint address, uint speed );
 
 #endif	/* UART_H */
 

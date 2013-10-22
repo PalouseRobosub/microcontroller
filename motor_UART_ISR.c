@@ -134,7 +134,11 @@ void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
 
-    if (IFS1bits.U2RXIF == 1) {
+    /*
+     * UART2 should not be recieving data...
+     * But left just in case
+     *
+     if (IFS1bits.U2RXIF == 1) {
         received_byte = U2RXREG;
         write_leds(received_byte - '0'); //write to LEDs to test UART Rx
         if (received_byte == 'P')
@@ -146,13 +150,14 @@ void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
 
         //U1RXREG is the recieve register that data will come into
         IFS1bits.U2RXIF = 0; //clear the interrupt flag
-    }
+    }*/
     if (IFS1bits.U2TXIF == 1) {
         if (uart2_popNode(&UART_2_Queue, &current_node)) {
             UART2_is_idle = TRUE;
         } else {
             for (i = 0; i < 4; i++) {
                 //            U1STAbits.UTXBRK = 1;
+                //Transmit one byte at a time until the full packet is sent
                 U2TXREG = current_node.uart_data[i];
                 //            U1STAbits.UTXBRK = 0;
             }
@@ -173,14 +178,103 @@ void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
  *
  *
  *********************************************************/
-void uart2_CreateNode(uint Byte1, uint Byte2, uint Byte3) {
+void uart2_CreateNode(uint Byte1, uint Byte2, uint Byte3, uint Byte4) {
     UART2_NODE temp;
 
-    temp.uart_data[0] = '\n';
-    temp.uart_data[1] = Byte1;
-    temp.uart_data[2] = Byte2;
-    temp.uart_data[3] = Byte3;
+    temp.uart_data[0] = Byte1; //address - set on the H-bridge switches
+    temp.uart_data[1] = Byte2; //direction
+    temp.uart_data[2] = Byte3; //speed - integer from 0-127
+    temp.uart_data[3] = Byte4; //7-bit checksum
+
     
+
+    uart2_addToQueue(&UART_2_Queue, temp);
+}
+
+ /********************************************************
+ *   Function Name: Motor1_Forward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 1 forward
+ *
+ *
+ *********************************************************/
+void Motor1_Forward( uint address, uint speed )
+{
+    UART2_NODE temp;
+    int checksum = 0;
+
+    checksum = ((address + 0 + speed) & 127);
+
+    temp.uart_data[0] = address; //address - set on the H-bridge switches
+    temp.uart_data[1] = 0; //direction
+    temp.uart_data[2] = speed; //speed - integer from 0-127
+    temp.uart_data[3] = checksum; //7-bit checksum
+
+    uart2_addToQueue(&UART_2_Queue, temp);
+}
+
+ /********************************************************
+ *   Function Name: Motor1_Backward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 1 backward
+ *
+ *
+ *********************************************************/
+void Motor1_Backward( uint address, uint speed )
+{
+    UART2_NODE temp;
+    int checksum = 0;
+
+    checksum = ((address + 1 + speed) & 127);
+
+    temp.uart_data[0] = address; //address - set on the H-bridge switches
+    temp.uart_data[1] = 1; //direction
+    temp.uart_data[2] = speed; //speed - integer from 0-127
+    temp.uart_data[3] = checksum; //7-bit checksum
+
+    uart2_addToQueue(&UART_2_Queue, temp);
+}
+
+ /********************************************************
+ *   Function Name: Motor1_Forward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 2 forward
+ *
+ *
+ *********************************************************/
+void Motor2_Forward( uint address, uint speed )
+{
+    UART2_NODE temp;
+    int checksum = 0;
+
+    checksum = ((address + 4 + speed) & 127);
+
+    temp.uart_data[0] = address; //address - set on the H-bridge switches
+    temp.uart_data[1] = 4; //direction
+    temp.uart_data[2] = speed; //speed - integer from 0-127
+    temp.uart_data[3] = checksum; //7-bit checksum
+
+    uart2_addToQueue(&UART_2_Queue, temp);
+}
+
+ /********************************************************
+ *   Function Name: Motor1_Backward( uint address, uint speed )
+ *
+ *   Description: Create a node to move motor 2 backward
+ *
+ *
+ *********************************************************/
+void Motor2_Backward( uint address, uint speed )
+{
+    UART2_NODE temp;
+    int checksum = 0;
+
+    checksum = ((address + 5 + speed) & 127);
+
+    temp.uart_data[0] = address; //address - set on the H-bridge switches
+    temp.uart_data[1] = 5; //direction
+    temp.uart_data[2] = speed; //speed - integer from 0-127
+    temp.uart_data[3] = checksum; //7-bit checksum
 
     uart2_addToQueue(&UART_2_Queue, temp);
 }
