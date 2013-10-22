@@ -11,7 +11,8 @@
 #include "Timer_ISR.h"
 #include "peripheral/timer.h"
 #include "I2C_ISR.h"
-#include "UART_ISR.h"
+#include "comm_UART_ISR.h"
+#include "motor_UART_ISR.h"
 
 
 /*************************************************************************

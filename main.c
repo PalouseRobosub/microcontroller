@@ -14,7 +14,8 @@
 #include "Testbench.h"
 #include "Queue.h"
 #include "Timer_ISR.h"
-#include "UART_ISR.h"
+#include "comm_UART_ISR.h"
+#include "motor_UART_ISR.h"
 
 
 /*************************************************************************
@@ -54,9 +55,9 @@ int main(void)
 
     //start each ISR
     i2c_1_begin();
-    uart_setup();
-    uart_CreateNode( Byte1, Byte2, Byte3 );
-    uart_begin();
+    uart1_setup();
+    uart1_CreateNode( Byte1, Byte2, Byte3 );
+    uart1_begin();
     
     
     //Global interrupt enable. Do this last!

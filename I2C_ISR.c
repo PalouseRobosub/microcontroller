@@ -172,7 +172,7 @@ boolean I2C1_is_idle;
          
          if (UART1_is_idle)
          {
-            uart_begin();
+            uart1_begin();
          }
 
          state = STOPPED; //move onto next state
@@ -212,15 +212,15 @@ void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
     switch (sensor)
     {
         case ACL_0:
-            uart_CreateNode(ACL_0_X, received_data[0], received_data[1]);
-            uart_CreateNode(ACL_0_Y, received_data[2], received_data[3]);
-            uart_CreateNode(ACL_0_Z, received_data[4], received_data[5]);
+            uart1_CreateNode(ACL_0_X, received_data[0], received_data[1]);
+            uart1_CreateNode(ACL_0_Y, received_data[2], received_data[3]);
+            uart1_CreateNode(ACL_0_Z, received_data[4], received_data[5]);
             break;
 
         case GYRO_0:
-            uart_CreateNode(GYRO_0_X, received_data[0], received_data[1]);
-            uart_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
-            uart_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
+            uart1_CreateNode(GYRO_0_X, received_data[0], received_data[1]);
+            uart1_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
+            uart1_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
             break;
     }
 
