@@ -28,7 +28,7 @@
  *********************************************************/
 void timer_1_setup(void)
 {
-    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0x1ff0);
+    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0xF40);
 
     IPC1bits.T1IP = 7;
     IEC0bits.T1IE = 1;
