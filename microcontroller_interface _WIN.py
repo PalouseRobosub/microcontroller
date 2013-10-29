@@ -234,14 +234,14 @@ def cmd_stop_all() :
 
 #initialize the serial port
 s = serial.Serial()	#get instance of serial class
-s.port = "/dev/ttyUSB0" #this may change, depending on what port the OS gives the microcontroller
+s.port = 2 #this may change, depending on what port the OS gives the microcontroller
 s.baudrate = 56818      #the baudrate may change in the future
 s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
 f = open("slog", "w")
 
 #clear the screen
-os.system('clear')
+os.system('cls')
 
 get_lock() #get in sync with the stream
 
@@ -285,7 +285,7 @@ while 1 :
 	#pull the device information out of the packet
 	device = ord(received_packet[1]) #second byte of packet is device information (first byte is always control byte)
 
-	os.system('clear')
+	os.system('cls')
 	
 	#if-elif statement looks for what device the packet is concerning, and handles the data appropriately
 	if device == ACL_1_X_addr :
