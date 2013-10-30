@@ -74,7 +74,7 @@ boolean I2C1_is_idle;
     static uint8 received_data[I2C_MAX_DATA_SIZE];
     static uint8 sub_address_index;
     static uint8 data_index;
-    extern boolean UART1_is_idle;
+    extern boolean COMM_UART_is_idle;
 
     INTDisableInterrupts();
     IFS0bits.I2C1MIF = 0; //clear the interrupt flag
@@ -170,9 +170,9 @@ boolean I2C1_is_idle;
          //create uart node
          I2C_Load_UART(current_node.sensor_id, received_data);
          
-         if (UART1_is_idle)
+         if (COMM_UART_is_idle)
          {
-            uart1_begin();
+            comm_uart_begin();
          }
 
          state = STOPPED; //move onto next state
@@ -212,15 +212,15 @@ void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
     switch (sensor)
     {
         case ACL_0:
-            uart1_CreateNode(ACL_0_X, received_data[0], received_data[1]);
-            uart1_CreateNode(ACL_0_Y, received_data[2], received_data[3]);
-            uart1_CreateNode(ACL_0_Z, received_data[4], received_data[5]);
+            comm_uart_CreateNode(ACL_0_X, received_data[0], received_data[1]);
+            comm_uart_CreateNode(ACL_0_Y, received_data[2], received_data[3]);
+            comm_uart_CreateNode(ACL_0_Z, received_data[4], received_data[5]);
             break;
 
         case GYRO_0:
-            uart1_CreateNode(GYRO_0_X, received_data[0], received_data[1]);
-            uart1_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
-            uart1_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
+            comm_uart_CreateNode(GYRO_0_X, received_data[0], received_data[1]);
+            comm_uart_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
+            comm_uart_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
             break;
     }
 

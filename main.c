@@ -55,9 +55,9 @@ int main(void)
 
     //start each ISR
     i2c_1_begin();
-    uart1_setup();
-    uart1_CreateNode( Byte1, Byte2, Byte3 );
-    uart1_begin();
+    comm_uart_setup();
+    comm_uart_CreateNode( Byte1, Byte2, Byte3 );
+    comm_uart_begin();
     
     
     //Global interrupt enable. Do this last!

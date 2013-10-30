@@ -5,8 +5,8 @@
  * Created on September 27, 2013, 10:34 AM
  */
 
-#ifndef UART2_H
-#define	UART2_H
+#ifndef MOTOR_UART_ISR_H
+#define	MOTOR_UART_ISR_H
 
 /*************************************************************************
  System Includes
@@ -136,5 +136,5 @@ void Motor2_Forward( uint address, uint speed );
  *********************************************************/
 void Motor2_Backward( uint address, uint speed );
 
-#endif	/* UART_H */
+#endif	/* MOTOR_UART_ISR_H */
 
