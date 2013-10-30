@@ -89,22 +89,22 @@ typedef struct i2c_queue
  Function Declarations
  ************************************************************************/
 /********************************************************
- *   Function Name: i2c_1_setup()
+ *   Function Name: i2c_bank_0_setup()
  *
  *   Description: Initializes I2C ISR
  *
  *
  *********************************************************/
- void i2c_1_setup(void);
+ void i2c_bank_0_setup(void);
  
  /********************************************************
- *   Function Name: i2c_1_begin()
+ *   Function Name: i2c_bank_0_begin()
  *
  *   Description: Starts the I2C state machine
  *
  *
  *********************************************************/
- inline void i2c_1_begin(void);
+ inline void i2c_bank_0_begin(void);
 
  /********************************************************
  *   Function Name: I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])

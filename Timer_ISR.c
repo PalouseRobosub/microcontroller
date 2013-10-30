@@ -55,7 +55,7 @@ inline void timer_1_begin(void)
  *********************************************************/
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
-    extern boolean I2C1_is_idle;
+    extern boolean I2C_BANK_0_is_idle;
     INTDisableInterrupts();
 
     PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
@@ -63,9 +63,9 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
         i2c_GYRO_Read();
         i2c_ACL_Read();
         
-        if (I2C1_is_idle)
+        if (I2C_BANK_0_is_idle)
         {
-            i2c_1_begin();
+            i2c_bank_0_begin();
         }
 
     IFS0bits.T1IF = 0; //clear the interrupt flag

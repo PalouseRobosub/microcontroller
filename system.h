@@ -54,6 +54,22 @@
 #define MOTOR_UART_RXREG U2RXREG //Rx register
 #define MOTOR_UART_TXREG U2TXREG //Tx register
 
+//I2C Bank 0 defines
+#define _I2C_BANK_0_VECTOR _I2C_1_VECTOR
+#define I2C_BANK_0_BRG I2C1BRG //baud rate register
+#define I2C_BANK_0_INT_PRIORITY_set(x) IPC6SET = (x << 10)
+#define I2C_BANK_0_INT_set(x) IEC0SET = (x << 31)
+#define I2C_BANK_0_ON I2C1CONbits.ON
+#define I2C_BANK_0_MIF IFS0bits.I2C1MIF
+#define I2C_BANK_0_TRN I2C1TRN
+#define I2C_BANK_0_RSEN I2C1CONbits.RSEN
+#define I2C_BANK_0_PEN I2C1CONbits.PEN
+#define I2C_BANK_0_RCEN I2C1CONbits.RCEN
+#define I2C_BANK_0_RCV I2C1RCV
+#define I2C_BANK_0_ACKDT I2C1CONbits.ACKDT
+#define I2C_BANK_0_ACKEN I2C1CONbits.ACKEN
+#define I2C_BANK_0_SEN I2C1CONbits.SEN
+
 
 
 
