@@ -6,14 +6,15 @@
  *
  *
  *********************************************************/
+#include "system.h"
 #include "functions.h"
 #include "motor_UART_ISR.h"
 
 /*************************************************************************
  Variables
  ************************************************************************/
-UART2_QUEUE UART_2_Queue;
-boolean UART2_is_idle;
+MOTOR_UART_QUEUE MOTOR_UART_Queue;
+boolean MOTOR_UART_is_idle;
 uint8 led_val;
 
 /********************************************************
@@ -23,29 +24,28 @@ uint8 led_val;
  *
  *
  *********************************************************/
-void uart2_setup(void) {
-    //U1BRG = 64;  //divider of 10 for 56818.2 baud
-    U2BRG = 64; //divider of 64 for 9600 baud (default for motors)
-    U2MODEbits.PDSEL = 0;
-    uart2_InitializeQueue(&UART_2_Queue);
+void motor_uart_setup(void) {
+    MOTOR_UART_BRG = 64; //divider of 64 for 9600 baud (default for motors)
+    MOTOR_UART_PDSEL = 0;
+    motor_uart_InitializeQueue(&MOTOR_UART_Queue);
     led_val = 0;
 
 
     //Setup UART2 TX interrupts
-    IEC1SET = (1 << 10); //enable interrupt Tx
-    IPC8SET = (7 << 2); //set priority
-    U2STAbits.UTXISEL = 2; //Set interrupt to fire when transmit buffer is empty
-    U2STAbits.UTXEN = 1; //enable Tx
+    MOTOR_UART_TX_INT_set(1); //enable interrupt Tx
+    MOTOR_UART_INT_PRIORITY_set(7); //set priority
+    MOTOR_UART_UTXISEL = 2; //Set interrupt to fire when transmit buffer is empty
+    MOTOR_UART_UTXEN = 1; //enable Tx
 
     //Setup UART1 RX interrupts
-    IEC1SET = (1 << 9); //enable interrupt Rx
+    MOTOR_UART_RX_INT_set(1); //enable interrupt Rx
     //set by default - U1STAbits.URXISEL = 0; //Set interrupt to fire when a character is recieved
-    U2STAbits.URXEN = 1; //enable Rx
+    MOTOR_UART_URXEN = 1; //enable Rx
 
-    U2MODEbits.ON = 1;
-    //    uart2_InitializeQueue(&UART_2_Queue);//initialize the queue
+    MOTOR_UART_ON = 1;
+    //    motor_uart_InitializeQueue(&MOTOR_UART_Queue);//initialize the queue
 
-    UART2_is_idle = TRUE; //set that bus is currently idle
+    MOTOR_UART_is_idle = TRUE; //set that bus is currently idle
 }
 
 /********************************************************
@@ -55,38 +55,38 @@ void uart2_setup(void) {
  *
  *
  *********************************************************/
-inline void uart2_begin(void) {
+inline void motor_uart_begin(void) {
     /* this sets the UART1TX interrupt flag. Setting the flag will
      cause the ISR to be entered as soon as the global interrupt
      flag is enabled */
-    IFS1bits.U2TXIF = 1;
+    MOTOR_UART_TXIF = 1;
 }
 
 /********************************************************
- *   Function Name: uart2_InitializeQueue(UART2_QUEUE* queue)
+ *   Function Name: motor_uart_InitializeQueue(MOTOR_UART_QUEUE* queue)
  *
  *   Description: Clears the queue and resets parameters
  *
  *
  *********************************************************/
-void uart2_InitializeQueue(UART2_QUEUE* queue) {
-    memset(queue, 0, sizeof (UART2_QUEUE));
+void motor_uart_InitializeQueue(MOTOR_UART_QUEUE* queue) {
+    memset(queue, 0, sizeof (MOTOR_UART_QUEUE));
 }
 
 /********************************************************
- *   Function Name: uart2_addToQueue(UART2_QUEUE* queue, UART2_NODE new_node)
+ *   Function Name: motor_uart_addToQueue(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE new_node)
  *
  *   Description: Adds a node to the queue - Pass a node by reference
  *
  *
  *********************************************************/
-int uart2_addToQueue(UART2_QUEUE* queue, UART2_NODE new_node) {
+int motor_uart_addToQueue(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE new_node) {
     if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0) {
         return 1; //Error, would overwrite start of list
     }
     queue->DataBank[queue->QueueEnd] = new_node;
     queue->QueueLength++;
-    if (queue->QueueEnd == UART2QueueSize - 1) {
+    if (queue->QueueEnd == MOTOR_UARTQueueSize - 1) {
         queue->QueueEnd = 0;
     } else {
         queue->QueueEnd++;
@@ -95,18 +95,18 @@ int uart2_addToQueue(UART2_QUEUE* queue, UART2_NODE new_node) {
 }
 
 /********************************************************
- *   Function Name: uart2_popNode(UART2_QUEUE* queue, UART2_NODE* return_node)
+ *   Function Name: motor_uart_popNode(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE* return_node)
  *
  *   Description: Pulls the next node off the queue
  *
  *
  *********************************************************/
-int uart2_popNode(UART2_QUEUE* queue, UART2_NODE* return_node) {
+int motor_uart_popNode(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE* return_node) {
     if (queue->QueueLength == 0) {
         return 1; //Can't read from queue if empty
     }
     *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
-    if (queue->QueueStart == UART2QueueSize - 1) {
+    if (queue->QueueStart == MOTOR_UARTQueueSize - 1) {
         queue->QueueStart = 0;
     } else {
         queue->QueueStart++;
@@ -122,9 +122,9 @@ int uart2_popNode(UART2_QUEUE* queue, UART2_NODE* return_node) {
  *             ISR for the UART1 module
  *
  *********************************************************/
-void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
+void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
     int i, k;
-    UART2_NODE current_node;
+    MOTOR_UART_NODE current_node;
     INTDisableInterrupts();
     uint8 received_byte;
 
@@ -138,33 +138,33 @@ void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
      * UART2 should not be recieving data...
      * But left just in case
      *
-     if (IFS1bits.U2RXIF == 1) {
-        received_byte = U2RXREG;
+     if (MOTOR_UART_RXIF == 1) {
+        received_byte = MOTOR_UART_RXREG;
         write_leds(received_byte - '0'); //write to LEDs to test UART Rx
         if (received_byte == 'P')
         {
-            uart2_CreateNode('P', 0, 0);
-            uart2_CreateNode('Q', UART_2_Queue.QueueLength, 0);
+            motor_uart_CreateNode('P', 0, 0);
+            motor_uart_CreateNode('Q', MOTOR_UART_Queue.QueueLength, 0);
            // write_leds(0xFF);
         }
 
-        //U1RXREG is the recieve register that data will come into
-        IFS1bits.U2RXIF = 0; //clear the interrupt flag
+        //v is the recieve register that data will come into
+        MOTOR_UART_RXIF = 0; //clear the interrupt flag
     }*/
-    if (IFS1bits.U2TXIF == 1) {
-        if (uart2_popNode(&UART_2_Queue, &current_node)) {
-            UART2_is_idle = TRUE;
+    if (MOTOR_UART_TXIF == 1) {
+        if (motor_uart_popNode(&MOTOR_UART_Queue, &current_node)) {
+            MOTOR_UART_is_idle = TRUE;
         } else {
             for (i = 0; i < 4; i++) {
                 //            U1STAbits.UTXBRK = 1;
                 //Transmit one byte at a time until the full packet is sent
-                U2TXREG = current_node.uart_data[i];
+                MOTOR_UART_TXREG = current_node.uart_data[i];
                 //            U1STAbits.UTXBRK = 0;
             }
-            UART2_is_idle = FALSE;
+            MOTOR_UART_is_idle = FALSE;
         }
 
-        IFS1bits.U2TXIF = 0; //clear the interrupt flag
+        MOTOR_UART_TXIF = 0; //clear the interrupt flag
     }
 
     INTEnableInterrupts();
@@ -172,14 +172,14 @@ void __ISR(_UART2_VECTOR, IPL7AUTO) IntUart2Handler(void) {
 }
 
 /********************************************************
- *   Function Name: uart2_SetNode( uint Byte1, uint Byte2, uint Byte3 )
+ *   Function Name: motor_uart_SetNode( uint Byte1, uint Byte2, uint Byte3 )
  *
  *   Description: Creates a node using three bytes
  *
  *
  *********************************************************/
-void uart2_CreateNode(uint Byte1, uint Byte2, uint Byte3, uint Byte4) {
-    UART2_NODE temp;
+void motor_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3, uint Byte4) {
+    MOTOR_UART_NODE temp;
 
     temp.uart_data[0] = Byte1; //address - set on the H-bridge switches
     temp.uart_data[1] = Byte2; //direction
@@ -188,7 +188,7 @@ void uart2_CreateNode(uint Byte1, uint Byte2, uint Byte3, uint Byte4) {
 
     
 
-    uart2_addToQueue(&UART_2_Queue, temp);
+    motor_uart_addToQueue(&MOTOR_UART_Queue, temp);
 }
 
  /********************************************************
@@ -200,7 +200,7 @@ void uart2_CreateNode(uint Byte1, uint Byte2, uint Byte3, uint Byte4) {
  *********************************************************/
 void Motor1_Forward( uint address, uint speed )
 {
-    UART2_NODE temp;
+    MOTOR_UART_NODE temp;
     int checksum = 0;
 
     checksum = ((address + 0 + speed) & 127);
@@ -210,7 +210,7 @@ void Motor1_Forward( uint address, uint speed )
     temp.uart_data[2] = speed; //speed - integer from 0-127
     temp.uart_data[3] = checksum; //7-bit checksum
 
-    uart2_addToQueue(&UART_2_Queue, temp);
+    motor_uart_addToQueue(&MOTOR_UART_Queue, temp);
 }
 
  /********************************************************
@@ -222,7 +222,7 @@ void Motor1_Forward( uint address, uint speed )
  *********************************************************/
 void Motor1_Backward( uint address, uint speed )
 {
-    UART2_NODE temp;
+    MOTOR_UART_NODE temp;
     int checksum = 0;
 
     checksum = ((address + 1 + speed) & 127);
@@ -232,7 +232,7 @@ void Motor1_Backward( uint address, uint speed )
     temp.uart_data[2] = speed; //speed - integer from 0-127
     temp.uart_data[3] = checksum; //7-bit checksum
 
-    uart2_addToQueue(&UART_2_Queue, temp);
+    motor_uart_addToQueue(&MOTOR_UART_Queue, temp);
 }
 
  /********************************************************
@@ -244,7 +244,7 @@ void Motor1_Backward( uint address, uint speed )
  *********************************************************/
 void Motor2_Forward( uint address, uint speed )
 {
-    UART2_NODE temp;
+    MOTOR_UART_NODE temp;
     int checksum = 0;
 
     checksum = ((address + 4 + speed) & 127);
@@ -254,7 +254,7 @@ void Motor2_Forward( uint address, uint speed )
     temp.uart_data[2] = speed; //speed - integer from 0-127
     temp.uart_data[3] = checksum; //7-bit checksum
 
-    uart2_addToQueue(&UART_2_Queue, temp);
+    motor_uart_addToQueue(&MOTOR_UART_Queue, temp);
 }
 
  /********************************************************
@@ -266,7 +266,7 @@ void Motor2_Forward( uint address, uint speed )
  *********************************************************/
 void Motor2_Backward( uint address, uint speed )
 {
-    UART2_NODE temp;
+    MOTOR_UART_NODE temp;
     int checksum = 0;
 
     checksum = ((address + 5 + speed) & 127);
@@ -276,5 +276,5 @@ void Motor2_Backward( uint address, uint speed )
     temp.uart_data[2] = speed; //speed - integer from 0-127
     temp.uart_data[3] = checksum; //7-bit checksum
 
-    uart2_addToQueue(&UART_2_Queue, temp);
+    motor_uart_addToQueue(&MOTOR_UART_Queue, temp);
 }
