@@ -55,6 +55,10 @@ void comm_uart_setup(void) {
     COMM_UART_ON = 1;
     //    uart_InitializeQueue(&COMM_UART_Queue);//initialize the queue
 
+    SYNC_LOCK = FALSE;
+    begin_sync = TRUE;
+
+
     COMM_UART_is_idle = TRUE; //set that bus is currently idle
 }
 
@@ -148,13 +152,6 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void)
 
     {
         received_byte = COMM_UART_RXREG;
-        write_leds(received_byte - '0'); //write to LEDs to test UART Rx
-        if (received_byte == 'P')
-        {
-            comm_uart_CreateNode('P', 0, 0);
-            comm_uart_CreateNode('Q', COMM_UART_Queue.QueueLength, 0);
-           // write_leds(0xFF);
-        }
         
         if (SYNC_LOCK) //if in sync
         {
@@ -178,12 +175,12 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void)
                 received_index = 0; //Reset the index, we now have the full package
             }
         }
-        else
+        else //we need to aquire sync
         {
             if (begin_sync == TRUE )
             {
                 received_index = 0;
-                begin_sync = TRUE;
+                begin_sync = FALSE;
             }
 
             received_bytes[received_index] = received_byte;
@@ -198,12 +195,10 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void)
                    )
                 {
                     SYNC_LOCK = TRUE;
-                    received_index = 0;
                 }
-                else
-                {
-                    begin_sync = TRUE;
-                }
+
+                begin_sync = TRUE;
+                received_index = 0;
             }
         }
 
