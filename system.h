@@ -16,6 +16,28 @@
 #include <peripheral/uart.h>
 
 /*************************************************************************
+ Sensor_motor Defines
+ ************************************************************************/
+#ifndef SENSORS_MOTORS
+#define	SENSORS_MOTORS
+
+//CONTROLL BYTE
+#define CONTROL_BYTE             '\n'
+
+//motors
+#define THRUSTER_BOW_SB 	 0x10
+#define THRUSTER_BOW_PORT 	 0x11
+#define THRUSTER_DEPTH_SB 	 0x12
+#define THRUSTER_DEPTH_PORT 	 0x13
+#define THRUSTER_STERN_SB 	 0x14
+#define THRUSTER_STERN_PORT 	 0x15
+
+//sensors
+#define ACCELEROMETER            0x21
+#define GYROSCOPE                0x22
+
+#endif	/* SENSORS_MOTORS */
+/*************************************************************************
  Chip-Specific Defines
  ************************************************************************/
 #if defined(__32MX460F512L__)

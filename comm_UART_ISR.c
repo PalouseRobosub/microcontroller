@@ -16,6 +16,10 @@
 COMM_UART_QUEUE COMM_UART_Queue;
 boolean COMM_UART_is_idle;
 uint8 led_val;
+boolean SYNC_LOCK;
+uint8 received_bytes[6];
+uint8 received_index;
+boolean begin_sync;
 
 /********************************************************
  *   Function Name:
@@ -29,6 +33,10 @@ void comm_uart_setup(void) {
     COMM_UART_PDSEL = 0;
     comm_uart_InitializeQueue(&COMM_UART_Queue);
     led_val = 0;
+
+    //initialize variables
+    memset(received_bytes, 0, sizeof (received_bytes));
+    received_index = 0;
 
 
     //Setup UART1 TX interrupts
@@ -147,6 +155,60 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void)
             comm_uart_CreateNode('Q', COMM_UART_Queue.QueueLength, 0);
            // write_leds(0xFF);
         }
+        
+        if (SYNC_LOCK) //if in sync
+        {
+            if (received_index == 0)//only check the first byte for the control byte
+            {
+                if (received_byte != CONTROL_BYTE)
+                {
+                    SYNC_LOCK = FALSE;
+                    //CALL SYNC FUNCTION
+                }
+                received_index++;
+            }
+            else if(received_index == 1) //NOTE only indexes 1 and 2 are used
+            {
+                received_bytes[received_index] = received_byte;
+                received_index++;
+            }
+            else if(received_index == 2)
+            {
+                received_bytes[received_index] = received_byte;
+                received_index = 0; //Reset the index, we now have the full package
+            }
+        }
+        else
+        {
+            if (begin_sync == TRUE )
+            {
+                received_index = 0;
+                begin_sync = TRUE;
+            }
+
+            received_bytes[received_index] = received_byte;
+            ++received_index;
+
+            //X00X00
+            //012345
+            if (received_index == 6)
+            {
+                if (    received_bytes[0] == CONTROL_BYTE &&
+                        received_bytes[3] == CONTROL_BYTE
+                   )
+                {
+                    SYNC_LOCK = TRUE;
+                    received_index = 0;
+                }
+                else
+                {
+                    begin_sync = TRUE;
+                }
+            }
+        }
+
+        //MOVE THIS TO THE MAIN PROCESSING FUNCTION
+
 
         //COMM_UART_RXIF is the recieve register that data will come into
         COMM_UART_RXIF = 0; //clear the interrupt flag
