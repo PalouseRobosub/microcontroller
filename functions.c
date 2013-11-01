@@ -28,7 +28,8 @@ unsigned int read_buttons(void)
 void setup_leds(void)
 {
     TRISBCLR = (0x0F << 10);
-    write_leds(0);
+    PORTBCLR = (0x0F << 10);
+
 }
 
  /********************************************************
@@ -51,7 +52,18 @@ void delay(void)
     for (i=0; i<10000; ++i);
     return;
 }
- 
+
+void con_led(uint8 led, boolean on)
+{
+    if (on == TRUE)
+    {
+        PORTBSET = ((1 << 10) << led);
+    }
+    else
+    {
+        PORTBCLR = ((1 << 10) << led);
+    }
+}
 
 
 

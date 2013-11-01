@@ -70,6 +70,8 @@ unsigned int read_buttons(void);
  *********************************************************/
 void write_leds(uint8 value);
 
+void con_led(uint8 led, boolean on);
+
  void delay(void);
 
 #endif	/* FUNCTIONS_H */
