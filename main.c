@@ -47,6 +47,8 @@ int main(void)
     //setup/configure hardware modules
     timer_1_setup();
     i2c_bank_0_setup();
+    comm_uart_setup();
+    motor_uart_setup();
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();
@@ -55,7 +57,6 @@ int main(void)
 
     //start each ISR
     i2c_bank_0_begin();
-    comm_uart_setup();
     comm_uart_CreateNode( Byte1, Byte2, Byte3 );
     comm_uart_begin();
     
