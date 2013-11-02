@@ -148,12 +148,12 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     //TRMT is 1 if transmit buffer is empty
     if (COMM_UART_RXIF == 1) {
         received_byte = COMM_UART_RXREG;
-        write_leds(received_byte - '0'); //write to LEDs to test UART Rx
-        if (received_byte == 'P') {
-            comm_uart_CreateNode('P', 0, 0);
-            comm_uart_CreateNode('Q', COMM_UART_Queue.QueueLength, 0);
+        //write_leds(received_byte - '0'); //write to LEDs to test UART Rx
+      //  if (received_byte == 'P') {
+            //comm_uart_CreateNode('P', 0, 0);
+            //comm_uart_CreateNode('Q', COMM_UART_Queue.QueueLength, 0);
             // write_leds(0xFF);
-        }
+        //}
 
         if (SYNC_LOCK) //if in sync
         {
