@@ -58,7 +58,7 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     extern boolean I2C_BANK_0_is_idle;
     INTDisableInterrupts();
 
-    PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
+    //PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
     
         i2c_GYRO_Read();
         i2c_ACL_Read();

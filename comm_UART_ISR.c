@@ -198,113 +198,113 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
         //MOVE THIS TO THE MAIN PROCESSING FUNCTION
         if (packet_recieved) {
-            con_led(0, FALSE);
-            con_led(1, FALSE);
-            con_led(2, FALSE);
-            con_led(3, FALSE);
-            con_led(4, FALSE);
-            con_led(5, FALSE);
-            con_led(6, FALSE);
-            con_led(7, FALSE);
-            con_led(8, FALSE);
-            con_led(9, FALSE);
-            con_led(10, FALSE);
-            con_led(11, FALSE);
+//            con_led(0, FALSE);
+//            con_led(1, FALSE);
+//            con_led(2, FALSE);
+//            con_led(3, FALSE);
+//            con_led(4, FALSE);
+//            con_led(5, FALSE);
+//            con_led(6, FALSE);
+//            con_led(7, FALSE);
+//            con_led(8, FALSE);
+//            con_led(9, FALSE);
+//            con_led(10, FALSE);
+//            con_led(11, FALSE);
             switch (received_bytes[1]) {
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor1_Forward(129, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, FALSE);
-                        con_led(2, TRUE);
-                        con_led(3, FALSE);
+//                        con_led(0, FALSE);
+//                        con_led(1, FALSE);
+//                        con_led(2, TRUE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(129, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, FALSE);
-                        con_led(2, TRUE);
-                        con_led(3, TRUE);
+//                        con_led(0, FALSE);
+//                        con_led(1, FALSE);
+//                        con_led(2, TRUE);
+//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_BOW_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor1_Forward(128, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, TRUE);
-                        con_led(2, FALSE);
-                        con_led(3, FALSE);
+//                        con_led(0, FALSE);
+//                        con_led(1, TRUE);
+//                        con_led(2, FALSE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(128, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, TRUE);
-                        con_led(2, FALSE);
-                        con_led(3, TRUE);
+//                        con_led(0, FALSE);
+//                        con_led(1, TRUE);
+//                        con_led(2, FALSE);
+//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_STERN_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(129, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, TRUE);
-                        con_led(2, TRUE);
-                        con_led(3, FALSE);
+//                        con_led(0, FALSE);
+//                        con_led(1, TRUE);
+//                        con_led(2, TRUE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(129, (received_bytes[2] & 0x7F));
-                        con_led(0, FALSE);
-                        con_led(1, TRUE);
-                        con_led(2, TRUE);
-                        con_led(3, TRUE);
+//                        con_led(0, FALSE);
+//                        con_led(1, TRUE);
+//                        con_led(2, TRUE);
+//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_STERN_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(128, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, FALSE);
-                        con_led(2, FALSE);
-                        con_led(3, FALSE);
+//                        con_led(0, TRUE);
+//                        con_led(1, FALSE);
+//                        con_led(2, FALSE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(128, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, FALSE);
-                        con_led(2, FALSE);
-                        con_led(3, TRUE);
+//                        con_led(0, TRUE);
+//                        con_led(1, FALSE);
+//                        con_led(2, FALSE);
+//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_DEPTH_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(130, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, FALSE);
-                        con_led(2, TRUE);
-                        con_led(3, FALSE);
+//                        con_led(0, TRUE);
+//                        con_led(1, FALSE);
+//                        con_led(2, TRUE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(130, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, FALSE);
-                        con_led(2, TRUE);
-                        con_led(3, TRUE);
+//                        con_led(0, TRUE);
+//                        con_led(1, FALSE);
+//                        con_led(2, TRUE);
+//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_DEPTH_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor1_Forward(130, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, TRUE);
-                        con_led(2, FALSE);
-                        con_led(3, FALSE);
+//                        con_led(0, TRUE);
+//                        con_led(1, TRUE);
+//                        con_led(2, FALSE);
+//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(130, (received_bytes[2] & 0x7F));
-                        con_led(0, TRUE);
-                        con_led(1, TRUE);
-                        con_led(2, FALSE);
-                        con_led(3, TRUE);
+//                        con_led(0, TRUE);
+//                        con_led(1, TRUE);
+//                        con_led(2, FALSE);
+//                        con_led(3, TRUE);
                     }
                     break;
 

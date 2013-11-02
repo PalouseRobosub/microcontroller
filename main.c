@@ -34,10 +34,10 @@ int main(void)
     int dummy;
     uint Byte1 = 0x41, Byte2 = 0x42, Byte3 = 0x43;
 
-    TRISGbits.TRISG0 = 0;
-    TRISGbits.TRISG1 = 0;
-    PORTGbits.RG0 = 0;
-    PORTGbits.RG1 = 0;
+//    TRISGbits.TRISG0 = 0;
+//    TRISGbits.TRISG1 = 0;
+//    PORTGbits.RG0 = 0;
+//    PORTGbits.RG1 = 0;
     dummy = 0;
 
     //setup led pins for write
