@@ -138,9 +138,11 @@ int comm_uart_popNode(COMM_UART_QUEUE* queue, COMM_UART_NODE* return_node) {
 void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     int i, k;
     COMM_UART_NODE current_node;
-    INTDisableInterrupts();
     uint8 received_byte;
+    extern boolean MOTOR_UART_is_idle;
 
+
+    INTDisableInterrupts();
 
     //write_leds(led_val);
     //led_val = ~led_val;
@@ -148,6 +150,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     //TRMT is 1 if transmit buffer is empty
     if (COMM_UART_RXIF == 1) {
         received_byte = COMM_UART_RXREG;
+        PORTDbits.RD7 = !PORTDbits.RD7;
         //write_leds(received_byte - '0'); //write to LEDs to test UART Rx
       //  if (received_byte == 'P') {
             //comm_uart_CreateNode('P', 0, 0);
@@ -157,10 +160,15 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
         if (SYNC_LOCK) //if in sync
         {
+            
+            PORTAbits.RA9 = 1;
             if (received_index == 0)//only check the first byte for the control byte
             {
+                
                 if (received_byte != CONTROL_BYTE) {
                     SYNC_LOCK = FALSE;
+                    PORTAbits.RA9 = 0;
+                    
                     //CALL SYNC FUNCTION
                 }
                 received_index++;
@@ -172,6 +180,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                 received_bytes[received_index] = received_byte;
                 received_index = 0; //Reset the index, we now have the full package
                 packet_recieved = TRUE;
+                
             }
         } else {
             if (begin_sync == TRUE) {
@@ -190,8 +199,10 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                         ) {
                     SYNC_LOCK = TRUE;
                     received_index = 0;
+                    
                 } else {
                     begin_sync = TRUE;
+                    
                 }
             }
         }
@@ -210,10 +221,12 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 //            con_led(9, FALSE);
 //            con_led(10, FALSE);
 //            con_led(11, FALSE);
+            
             switch (received_bytes[1]) {
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
+                        
                         Motor1_Forward(129, (received_bytes[2] & 0x7F));
 //                        con_led(0, FALSE);
 //                        con_led(1, FALSE);
@@ -308,6 +321,12 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                     }
                     break;
 
+            }
+
+            if(MOTOR_UART_is_idle)
+            {
+                motor_uart_begin();
+                
             }
             /*
              * Motor1_Forward( uint address, uint speed )

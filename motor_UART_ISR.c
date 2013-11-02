@@ -38,9 +38,9 @@ void motor_uart_setup(void) {
     MOTOR_UART_UTXEN = 1; //enable Tx
 
     //Setup UART1 RX interrupts
-    MOTOR_UART_RX_INT_set(1); //enable interrupt Rx
+    //MOTOR_UART_RX_INT_set(1); //enable interrupt Rx
     //set by default - U1STAbits.URXISEL = 0; //Set interrupt to fire when a character is recieved
-    MOTOR_UART_URXEN = 1; //enable Rx
+    //MOTOR_UART_URXEN = 1; //enable Rx
 
     MOTOR_UART_ON = 1;
     //    motor_uart_InitializeQueue(&MOTOR_UART_Queue);//initialize the queue
@@ -81,6 +81,7 @@ void motor_uart_InitializeQueue(MOTOR_UART_QUEUE* queue) {
  *
  *********************************************************/
 int motor_uart_addToQueue(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE new_node) {
+    
     if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0) {
         return 1; //Error, would overwrite start of list
     }
@@ -91,6 +92,7 @@ int motor_uart_addToQueue(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE new_node) {
     } else {
         queue->QueueEnd++;
     }
+    PORTGbits.RG12 = 1;
     return 0;
 }
 
@@ -102,6 +104,7 @@ int motor_uart_addToQueue(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE new_node) {
  *
  *********************************************************/
 int motor_uart_popNode(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE* return_node) {
+    
     if (queue->QueueLength == 0) {
         return 1; //Can't read from queue if empty
     }
@@ -125,9 +128,10 @@ int motor_uart_popNode(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE* return_node) {
 void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
     int i, k;
     MOTOR_UART_NODE current_node;
-    INTDisableInterrupts();
-    uint8 received_byte;
 
+    INTDisableInterrupts();
+    //PORTGbits.RG1 = !PORTGbits.RG1;
+    
 
     //write_leds(led_val);
     //led_val = ~led_val;
@@ -151,6 +155,8 @@ void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
         //v is the recieve register that data will come into
         MOTOR_UART_RXIF = 0; //clear the interrupt flag
     }*/
+    
+    
     if (MOTOR_UART_TXIF == 1) {
         if (motor_uart_popNode(&MOTOR_UART_Queue, &current_node)) {
             MOTOR_UART_is_idle = TRUE;

@@ -79,6 +79,7 @@ boolean I2C_BANK_0_is_idle;
 
     INTDisableInterrupts();
     I2C_BANK_0_MIF = 0; //clear the interrupt flag
+    PORTDbits.RD13 = !PORTDbits.RD13;
     
     //PORTGbits.RG0 = !PORTGbits.RG0; //for testing, remove in final code
 

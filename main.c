@@ -33,7 +33,7 @@ int main(void)
 {
     int dummy;
     uint Byte1 = 0x41, Byte2 = 0x42, Byte3 = 0x43;
-
+    AD1PCFG = 0xFFFF;
 //    TRISGbits.TRISG0 = 0;
 //    TRISGbits.TRISG1 = 0;
 //    PORTGbits.RG0 = 0;
@@ -57,7 +57,7 @@ int main(void)
 
     //start each ISR
     i2c_bank_0_begin();
-    comm_uart_CreateNode( Byte1, Byte2, Byte3 );
+    //comm_uart_CreateNode( Byte1, Byte2, Byte3 );
     comm_uart_begin();
     
     

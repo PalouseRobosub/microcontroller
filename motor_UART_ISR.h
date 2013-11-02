@@ -62,7 +62,7 @@ typedef struct motor_uart_queue
  *
  *********************************************************/
 void motor_uart_setup(void);
-inline void motor_uart_begin(void);
+void motor_uart_begin(void);
 
 /********************************************************
  *   Function Name: motor_uart_InitializeQueue(MOTOR_UART_QUEUE* queue)
