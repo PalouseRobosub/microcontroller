@@ -119,20 +119,21 @@
 
 //motor_uart defines
 //#define MOTOR_UART UART2
-#define MOTOR_UART_BRG U3BRG //baud rate register
-#define MOTOR_UART_PDSEL U3MODEbits.PDSEL //parity and data selection bits
-#define MOTOR_UART_UTXISEL U3STAbits.UTXISEL //tx interrupt selection bits
-#define MOTOR_UART_UTXEN U3STAbits.UTXEN//tx enable
-#define MOTOR_UART_URXEN  U3STAbits.URXEN //rx enable
-#define MOTOR_UART_ON  U3MODEbits.ON //uart enable
-#define MOTOR_UART_TX_INT_set(x) IEC1SET = (x << 7) //enables or disables the tx interrupt
-#define MOTOR_UART_RX_INT_set(x) IEC1SET = (x << 6) //enables or disables the rx interrupt
-#define MOTOR_UART_INT_PRIORITY_set(x) IPC7SET = (x << 26) //sets the priority of the uart interrupts
-#define _MOTOR_UART_VECTOR _UART_3_VECTOR //interrupt vector
-#define MOTOR_UART_RXIF IFS1bits.U3RXIF //Rx interrupt flag
-#define MOTOR_UART_TXIF IFS1bits.U3TXIF //Tx interrupt flag
-#define MOTOR_UART_RXREG U3RXREG //Rx register
-#define MOTOR_UART_TXREG U3TXREG //Tx register
+#define MOTOR_UART_BRG U5BRG //baud rate register
+#define MOTOR_UART_PDSEL U5MODEbits.PDSEL //parity and data selection bits
+#define MOTOR_UART_UTXISEL U5STAbits.UTXISEL //tx interrupt selection bits
+#define MOTOR_UART_UTXEN U5STAbits.UTXEN//tx enable
+#define MOTOR_UART_URXEN  U5STAbits.URXEN //rx enable
+#define MOTOR_UART_ON  U5MODEbits.ON //uart enable
+#define MOTOR_UART_TX_INT_set(x) IEC2SET = (x << 11) //enables or disables the tx interrupt
+#define MOTOR_UART_RX_INT_set(x) IEC2SET = (x << 10) //enables or disables the rx interrupt
+#define MOTOR_UART_INT_PRIORITY_set(x) IPC12SET = (x << 26) //sets the priority of the uart interrupts
+#define _MOTOR_UART_VECTOR _UART_5_VECTOR //interrupt vector
+#define MOTOR_UART_RXIF IFS2bits.U5RXIF //Rx interrupt flag
+#define MOTOR_UART_TXIF IFS2bits.U5TXIF //Tx interrupt flag
+#define MOTOR_UART_RXREG U5RXREG //Rx register
+#define MOTOR_UART_TXREG U5TXREG //Tx register
+
 
 //I2C Bank 0 defines
 #define _I2C_BANK_0_VECTOR _I2C_1_VECTOR

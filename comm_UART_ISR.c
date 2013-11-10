@@ -144,6 +144,17 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
     INTDisableInterrupts();
 
+    if (COMM_UART_RXIF == 1 || COMM_UART_TXIF == 1)
+    {
+        PORTCbits.RC1 = 1; //Turn off LED5
+    }
+    /*
+    if (MOTOR_UART_RXIF == 1 || MOTOR_UART_TXIF == 1)
+    {
+        PORTAbits.RA3 = 1; //Turn on LED4
+    }
+    */
+
     //write_leds(led_val);
     //led_val = ~led_val;
     //URXDA is 1 if recieve buffer has data

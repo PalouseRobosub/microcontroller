@@ -132,7 +132,7 @@ void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
     INTDisableInterrupts();
     //PORTGbits.RG1 = !PORTGbits.RG1;
     
-
+    PORTAbits.RA3 = 1; //Turn on LED4
     //write_leds(led_val);
     //led_val = ~led_val;
     //URXDA is 1 if recieve buffer has data

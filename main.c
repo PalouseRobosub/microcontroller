@@ -42,6 +42,12 @@ int main(void)
 
     //setup led pins for write
     setup_leds();
+
+    TRISAbits.TRISA3 = 0; //Set LED4 as output
+    PORTAbits.RA3 = 0; //Turn off LED4
+
+    TRISCbits.TRISC1 = 0; //Set LED5 as output
+    PORTCbits.RC1 = 0; //Turn off LED5
     
 
     //setup/configure hardware modules
@@ -57,13 +63,19 @@ int main(void)
 
     //start each ISR
     i2c_bank_0_begin();
-    //comm_uart_CreateNode( Byte1, Byte2, Byte3 );
-    comm_uart_begin();
     
+    comm_uart_CreateNode( Byte1, Byte2, Byte3 );
+    //Motor1_Backward( 128, 50 );
+    
+    motor_uart_begin();
+    comm_uart_begin();
     
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     INTEnableInterrupts();
+
+    
+    
     while (1)
     {
         //nothing should be in here

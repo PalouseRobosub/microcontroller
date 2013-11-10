@@ -13,6 +13,7 @@
 #include "I2C_ISR.h"
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
+#include "system.h"
 
 
 /*************************************************************************
@@ -56,6 +57,7 @@ inline void timer_1_begin(void)
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
     extern boolean I2C_BANK_0_is_idle;
+    extern boolean COMM_UART_is_idle;
     INTDisableInterrupts();
 
     //PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
@@ -68,6 +70,12 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
             i2c_bank_0_begin();
         }
 
+        comm_uart_CreateNode( 'A', 'B', 'C' );
+        if (COMM_UART_is_idle)
+        {
+            comm_uart_begin();
+        }
+        
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
 }
