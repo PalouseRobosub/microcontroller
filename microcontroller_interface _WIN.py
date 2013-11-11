@@ -140,8 +140,8 @@ def cmd_thruster(thruster_id, magnitude, direction) :
 	direction_mag = magnitude | (direction << 7)
 	
 	#convert direction and magnitude variable into a raw byte
-	raw_direction_mag = chr(raw_direction_mag)
-
+	raw_direction_mag = chr(direction_mag)
+	CONTROL_BYTE = '\n'
 	#combine the raw bytes
 	raw_cmd = CONTROL_BYTE + raw_thruster_id + raw_direction_mag
 
@@ -234,7 +234,7 @@ def cmd_stop_all() :
 
 #initialize the serial port
 s = serial.Serial()	#get instance of serial class
-s.port = 2 #this may change, depending on what port the OS gives the microcontroller
+s.port = 9 #this may change, depending on what port the OS gives the microcontroller
 s.baudrate = 56818      #the baudrate may change in the future
 s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
@@ -275,6 +275,7 @@ start_time = time.time()
 while 1 :
 
 	if (time.time() > wait_time) :
+		cmd_thruster(THRUSTER_BOW_SB, 25, 0)
 		s.write('P')
 		sent_time = time.time()
 		wait_time = sent_time + 1
