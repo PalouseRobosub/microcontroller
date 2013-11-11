@@ -7,6 +7,7 @@
  *
  *********************************************************/
 #include "system.h"
+#include "functions.h"
 #include "ADC_ISR.h"
 
 
@@ -76,5 +77,30 @@ b) Select ADC interrupt priority AD1IP<2:0> (IPC<28:26>) and subpriority AD1IS<1
 (IPC<24:24>) if interrupts are to be used (see 17.7).
 15.Start the conversion sequence by initiating sampling (see 17.4.15).
      */
+
+    ADC_IF = 0; //clear the interrupt flag
+    ADC_INT_PRIORITY_set(7); //set the priority of the interrupt to 7
+    ADC_INT_set(1); //enable the interrupt
+
+}
+
+
+
+/********************************************************
+ *   Function Name: ADC_Handler()
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
+{
+    int received;
+
+    received = 0;
+
+    received =  ADC1BUF0;
+
+    ADC_IF = 0; //clear the interrupt flag
 
 }

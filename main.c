@@ -16,6 +16,7 @@
 #include "Timer_ISR.h"
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
+#include "ADC_ISR.h"
 
 
 /*************************************************************************
@@ -55,6 +56,7 @@ int main(void)
     i2c_bank_0_setup();
     comm_uart_setup();
     motor_uart_setup();
+    adc_setup();
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();

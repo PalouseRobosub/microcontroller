@@ -75,6 +75,8 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
         {
             comm_uart_begin();
         }
+
+        AD1CON1bits.SAMP = 1; //begin sampling
         
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
