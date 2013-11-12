@@ -9,12 +9,12 @@ import time
 #These values are temporary, for testing. They WILL change in the final product
 #It was recommended that these values should be placed in a dictionary
 control_byte = '\n'
-ACL_1_X_addr = ord('X')
-ACL_1_Y_addr = ord('Y')
-ACL_1_Z_addr = ord('Z')
-GYRO_1_X_addr = ord('I')
-GYRO_1_Y_addr = ord('J')
-GYRO_1_Z_addr = ord('K')
+ACL_1_X_addr = 0x10
+ACL_1_Y_addr = 0x11
+ACL_1_Z_addr = 0x12
+GYRO_1_X_addr = 0x20
+GYRO_1_Y_addr = 0x21
+GYRO_1_Z_addr = 0x22
 
 ADC_DEPTH = 0x30
 ADC_BATT  = 0x31
@@ -280,8 +280,10 @@ start_time = time.time()
 while 1 :
 
 	if (time.time() > wait_time) :
-		cmd_thruster(THRUSTER_BOW_SB, 25, 0)
-		s.write('P')
+		cmd_move_forward()
+		cmd_rotate_cw()
+		cmd_dive()
+		cmd_stop_all() 
 		sent_time = time.time()
 		wait_time = sent_time + 1
 		
@@ -363,17 +365,17 @@ while 1 :
 		ping_tick += 1
 		
 
-	#print "ACL X: %d" % (ACL_1_X_val)
-	#print "ACL Y: %d" % (ACL_1_Y_val)
-	#print "ACL Z: %d" % (ACL_1_Z_val)
-	#print "GYRO X: %d" % (GYRO_1_X_val)
-	#print "GYRO Y: %d" % (GYRO_1_Y_val)
-	#print "GYRO Z: %d" % (GYRO_1_Z_val)
+	print "ACL X: %d" % (ACL_1_X_val)
+	print "ACL Y: %d" % (ACL_1_Y_val)
+	print "ACL Z: %d" % (ACL_1_Z_val)
+	print "GYRO X: %d" % (GYRO_1_X_val)
+	print "GYRO Y: %d" % (GYRO_1_Y_val)
+	print "GYRO Z: %d" % (GYRO_1_Z_val)
 	print "ADC Depth: %lf" % ((ADC_DEPTH_val) * 3.3/1024)
 	print "ADC Battery: %lf" % ((ADC_BATT_val) * 3.3/1024)
-	#print "Average Ping Time: %lf" % (ping_total/ping_tick)
+	print "Average Ping Time: %lf" % (ping_total/ping_tick)
 	
-	#print "buffer size: %d" % (s.inWaiting())
+	print "buffer size: %d" % (s.inWaiting())
 	print "Run Time (minutes): %lf" % ((time.time() - start_time)/60)
 
 #end of reading while loop 

@@ -63,12 +63,14 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     INTDisableInterrupts();
 
     //PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
-    PORTDbits.RD9 = !PORTDbits.RD9;
+    //PORTDbits.RD9 = !PORTDbits.RD9;
+    PORTCbits.RC1 = !PORTCbits.RC1; //Turn off LED5
         i2c_GYRO_Read();
         i2c_ACL_Read();
         
         if (I2C_BANK_0_is_idle)
         {
+            PORTAbits.RA3 = !PORTAbits.RA3; //Turn on LED4
             i2c_bank_0_begin();
         }
 
