@@ -14,6 +14,7 @@
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
 #include "system.h"
+#include "ADC_ISR.h"
 
 
 /*************************************************************************
@@ -58,6 +59,7 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 {
     extern boolean I2C_BANK_0_is_idle;
     extern boolean COMM_UART_is_idle;
+    extern boolean ADC_is_idle;
     INTDisableInterrupts();
 
     //PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
@@ -76,7 +78,12 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
             comm_uart_begin();
         }
 
-        AD1CON1bits.SAMP = 1; //begin sampling
+        ADC_Depth_Read();
+        ADC_Battery_Read();
+        if (ADC_is_idle)
+        {
+            adc_begin();
+        }
         
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();

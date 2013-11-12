@@ -1,5 +1,7 @@
+#include "system.h"
 #include "Sensors.h"
 #include "I2C_ISR.h"
+#include "ADC_ISR.h"
 
 /*************************************************************************
  Variables
@@ -101,6 +103,44 @@
     temp.mode = READ;
     temp.data_size = 6;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+
+ }
+
+ /********************************************************
+ *   Function Name: ADC_Depth_Read()
+ *
+ *   Description: 
+ *
+ *
+ *********************************************************/
+ void ADC_Depth_Read(void)
+{
+    ADC_Node temp;
+    extern ADC_Queue ADC_queue;
+
+    temp.sensor_id = ADC_DEPTH;
+    temp.adc_channel = ADC_CH_0;
+
+    ADC_addToQueue(&ADC_queue, temp);
+
+ }
+
+ /********************************************************
+ *   Function Name: ADC_Battery_Read()
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+ void ADC_Battery_Read(void)
+{
+    ADC_Node temp;
+    extern ADC_Queue ADC_queue;
+
+    temp.sensor_id = ADC_BATT;
+    temp.adc_channel = ADC_CH_1;
+
+    ADC_addToQueue(&ADC_queue, temp);
 
  }
 

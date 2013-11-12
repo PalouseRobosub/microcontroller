@@ -16,6 +16,9 @@ GYRO_1_X_addr = ord('I')
 GYRO_1_Y_addr = ord('J')
 GYRO_1_Z_addr = ord('K')
 
+ADC_DEPTH = 0x30
+ADC_BATT  = 0x31
+
 THRUSTER_BOW_SB 	= 0x10
 THRUSTER_BOW_PORT 	= 0x11
 THRUSTER_DEPTH_SB 	= 0x12
@@ -253,6 +256,8 @@ ACL_1_Z_val = -1
 GYRO_1_X_val = -1
 GYRO_1_Y_val = -1
 GYRO_1_Z_val = -1
+ADC_DEPTH_val = -1
+ADC_BATT_val = -1
 buffer_size_max = 0
 buffer_tick = 1
 buffer_total = 1
@@ -338,6 +343,14 @@ while 1 :
 		( ord(received_packet[3]) << 8 )
 		if GYRO_1_Z_val > 32767 :
 			GYRO_1_Z_val = (GYRO_1_Z_val-65536)
+			
+	elif device == ADC_DEPTH :
+		ADC_DEPTH_val = ( ord(received_packet[2]) ) | \
+		( ord(received_packet[3]) << 8 )
+		
+	elif device == ADC_BATT :
+		ADC_BATT_val = ( ord(received_packet[2]) ) | \
+		( ord(received_packet[3]) << 8 )
 		
 			
 	elif device == ord('P') :
@@ -350,15 +363,17 @@ while 1 :
 		ping_tick += 1
 		
 
-	print "ACL X: %d" % (ACL_1_X_val)
-	print "ACL Y: %d" % (ACL_1_Y_val)
-	print "ACL Z: %d" % (ACL_1_Z_val)
-	print "GYRO X: %d" % (GYRO_1_X_val)
-	print "GYRO Y: %d" % (GYRO_1_Y_val)
-	print "GYRO Z: %d" % (GYRO_1_Z_val)
-	print "Average Ping Time: %lf" % (ping_total/ping_tick)
+	#print "ACL X: %d" % (ACL_1_X_val)
+	#print "ACL Y: %d" % (ACL_1_Y_val)
+	#print "ACL Z: %d" % (ACL_1_Z_val)
+	#print "GYRO X: %d" % (GYRO_1_X_val)
+	#print "GYRO Y: %d" % (GYRO_1_Y_val)
+	#print "GYRO Z: %d" % (GYRO_1_Z_val)
+	print "ADC Depth: %lf" % ((ADC_DEPTH_val) * 3.3/1024)
+	print "ADC Battery: %lf" % ((ADC_BATT_val) * 3.3/1024)
+	#print "Average Ping Time: %lf" % (ping_total/ping_tick)
 	
-	print "buffer size: %d" % (s.inWaiting())
+	#print "buffer size: %d" % (s.inWaiting())
 	print "Run Time (minutes): %lf" % ((time.time() - start_time)/60)
 
 #end of reading while loop 

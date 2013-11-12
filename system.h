@@ -33,10 +33,21 @@
 #define THRUSTER_STERN_PORT 	 0x15
 
 //sensors
-#define ACCELEROMETER            0x21
-#define GYROSCOPE                0x22
+#define ACL_0_X     0x10
+#define ACL_0_Y     0x11
+#define ACL_0_Z     0x12
+
+#define GYRO_0_X    0x20
+#define GYRO_0_Y    0x21
+#define GYRO_0_Z    0x22
+
+#define ADC_DEPTH   0x30
+#define ADC_BATT    0x31
 
 #endif	/* SENSORS_MOTORS */
+
+
+
 /*************************************************************************
  Chip-Specific Defines
  ************************************************************************/
@@ -152,8 +163,8 @@
 #define I2C_BANK_0_SEN I2C1CONbits.SEN
 
 //ADC defines
-#define ADC_INT_PRIORITY_set(x) IPC6 = (x << 26) //sets the priority of the ADC interrupt
-#define ADC_INT_set(x) IEC1 = (x << 1) //enables or disables the ADC interrupt
+#define ADC_INT_PRIORITY_set(x) IPC6SET = (x << 26) //sets the priority of the ADC interrupt
+#define ADC_INT_set(x) IEC1SET = (x << 1) //enables or disables the ADC interrupt
 #define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
 
 

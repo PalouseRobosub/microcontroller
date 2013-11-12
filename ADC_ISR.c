@@ -9,12 +9,16 @@
 #include "system.h"
 #include "functions.h"
 #include "ADC_ISR.h"
+#include "Sensors.h"
+#include "comm_UART_ISR.h"
 
 
 /*************************************************************************
  Variables
  ************************************************************************/
-
+ADC_Queue ADC_queue;
+boolean ADC_is_idle;
+boolean ADC_initial;
 
 /********************************************************
  *   Function Name: adc_setup()
@@ -30,9 +34,10 @@ void adc_setup(void)
 
     //Select the analog inputs to the ADC multiplexers in AD1CHS
     AD1CHSbits.CH0NA = 0; //set the negative input for channel A to internal ground
-    AD1CHSbits.CH0SA = 0; //set the positive input to be channel AN0
+
 
     TRISAbits.TRISA0 = 1; //make sure the pin is an input (not an output)
+    TRISAbits.TRISA1 = 1;
 
     //Select the data format with FORM<2:0> (AD1CON1)
     AD1CON1bits.FORM = 0; //set the format to be simple 16 bit unsigned integer
@@ -81,10 +86,22 @@ b) Select ADC interrupt priority AD1IP<2:0> (IPC<28:26>) and subpriority AD1IS<1
     ADC_IF = 0; //clear the interrupt flag
     ADC_INT_PRIORITY_set(7); //set the priority of the interrupt to 7
     ADC_INT_set(1); //enable the interrupt
+    ADC_is_idle = TRUE;
 
 }
 
-
+ /********************************************************
+ *   Function Name: adc_begin()
+ *
+ *   Description: Starts an ADC read
+ *
+ *
+ *********************************************************/
+ inline void adc_begin(void)
+ {
+     ADC_initial = TRUE; //say we are starting up the ADC
+     ADC_IF = 1; //set the interrupt flag
+ }
 
 /********************************************************
  *   Function Name: ADC_Handler()
@@ -95,12 +112,124 @@ b) Select ADC interrupt priority AD1IP<2:0> (IPC<28:26>) and subpriority AD1IS<1
  *********************************************************/
 void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
 {
-    int received;
+    uint16 adc_value;
+    static ADC_Node current_node;
 
-    received = 0;
+    INTDisableInterrupts();
+    
 
-    received =  ADC1BUF0;
+    if (ADC_initial == FALSE)
+    {
+        adc_value =  ADC1BUF0;
+
+        comm_uart_CreateNode(current_node.sensor_id, (adc_value & 0xFF), ((adc_value & 0xFF00) >> 8) );
+        //ADC_Load_UART( current_node.sensor_id, adc_value);
+    }
+
+    if (ADC_popNode(&ADC_queue, &current_node)) //load next node from the queue
+         {
+             ADC_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
+             ADC_initial = TRUE;
+         }
+         else
+         {
+            ADC_is_idle = FALSE; //flag that the bus is working now
+            AD1CHSbits.CH0SA = current_node.adc_channel; //set the positive input to be channel AN0
+            AD1CON1bits.SAMP = 1;
+            ADC_initial = FALSE;
+         }
 
     ADC_IF = 0; //clear the interrupt flag
+
+    INTEnableInterrupts();
+
+}
+
+/********************************************************
+ *   Function Name: ADC_Load_UART(SENSOR_ID sensor, uint16 adc_value)
+ *
+ *   Description: Packages the received data and puts it
+ *                on the UART queue
+ *
+ *
+ *********************************************************/
+void ADC_Load_UART(SENSOR_ID sensor, uint16 adc_value)
+{
+
+    switch (sensor)
+    {
+        case ADC_DEPTH_0:
+            comm_uart_CreateNode(ADC_DEPTH, (adc_value & 0xFF), (adc_value >> 4));
+            break;
+
+        case ADC_BATT_0:
+            comm_uart_CreateNode(ADC_BATT, (adc_value & 0xFF), (adc_value >> 4));
+            break;
+    }
+
+    return;
+}
+
+/********************************************************
+ *   Function Name: ADC_InitializeQueue( ADC_Queue* queue )
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void ADC_InitializeQueue( ADC_Queue* queue )
+{
+    memset(queue, 0, sizeof(ADC_Queue));
+}
+/********************************************************
+ *   Function Name: ADC_addToQueue( ADC_Queue* queue, ADC_Node new_node )
+ *
+ *   Description: Adds a node to the queue - Pass a node by reference
+ *
+ *
+ *********************************************************/
+int ADC_addToQueue( ADC_Queue* queue, ADC_Node new_node )
+{
+    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0)
+    {
+        return 1; //Error, would overwrite start of list
+    }
+    queue->DataBank[queue->QueueEnd] = new_node;
+    queue->QueueLength++;
+    if (queue->QueueEnd == ADCQueueSize-1)
+    {
+        queue->QueueEnd = 0;
+    }
+    else
+    {
+        queue->QueueEnd++;
+    }
+    return 0;
+}
+/********************************************************
+ *   Function Name: ADC_popNode( ADC_Queue* queue, ADC_Node* return_node )
+ *
+ *   Description: Pulls the next node off the queue
+ *
+ *
+ *********************************************************/
+int ADC_popNode( ADC_Queue* queue, ADC_Node* return_node )
+{
+    if (queue->QueueLength == 0)
+    {
+        return 1; //Can't read from queue if empty
+    }
+    *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
+    if (queue->QueueStart == ADCQueueSize-1)
+    {
+        queue->QueueStart = 0;
+    }
+    else
+    {
+        queue->QueueStart++;
+    }
+    queue->QueueLength--;
+    return 0;
+
 
 }
