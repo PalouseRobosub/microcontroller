@@ -66,13 +66,13 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     i2c_GYRO_Read();
     i2c_ACL_Read();
 
-    /*
+    
         comm_uart_CreateNode( 'A', 'B', 'C' );
         if (COMM_UART_is_idle)
         {
             comm_uart_begin();
         }
-     */
+    
     if (I2C_BANK_0_is_idle)
     {
         //PORTAbits.RA3 = !PORTAbits.RA3; //toggle LED4 (max32)

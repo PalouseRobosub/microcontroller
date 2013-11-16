@@ -36,8 +36,10 @@ void adc_setup(void)
     AD1CHSbits.CH0NA = 0; //set the negative input for channel A to internal ground
 
 
-    TRISAbits.TRISA0 = 1; //make sure the pin is an input (not an output)
-    TRISAbits.TRISA1 = 1;
+//    TRISAbits.TRISA0 = 1; //make sure the pin is an input (not an output)
+//    TRISAbits.TRISA1 = 1;
+    TRISAbits.TRISA6 = 1;
+    TRISAbits.TRISA7 = 1;
 
     //Select the data format with FORM<2:0> (AD1CON1)
     AD1CON1bits.FORM = 0; //set the format to be simple 16 bit unsigned integer

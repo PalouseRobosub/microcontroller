@@ -119,7 +119,7 @@
     extern ADC_Queue ADC_queue;
 
     temp.sensor_id = ADC_DEPTH;
-    temp.adc_channel = ADC_CH_0;
+    temp.adc_channel = ADC_CH_7;
 
     ADC_addToQueue(&ADC_queue, temp);
 
@@ -138,7 +138,7 @@
     extern ADC_Queue ADC_queue;
 
     temp.sensor_id = ADC_BATT;
-    temp.adc_channel = ADC_CH_1;
+    temp.adc_channel = ADC_CH_6;
 
     ADC_addToQueue(&ADC_queue, temp);
 
