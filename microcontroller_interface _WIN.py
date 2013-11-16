@@ -237,7 +237,7 @@ def cmd_stop_all() :
 
 #initialize the serial port
 s = serial.Serial()	#get instance of serial class
-s.port = 9 #this may change, depending on what port the OS gives the microcontroller
+s.port = 10 #this may change, depending on what port the OS gives the microcontroller
 s.baudrate = 56818      #the baudrate may change in the future
 s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
@@ -278,12 +278,9 @@ start_time = time.time()
 
 #Main reading loop
 while 1 :
-
+	
 	if (time.time() > wait_time) :
 		cmd_move_forward()
-		cmd_rotate_cw()
-		cmd_dive()
-		cmd_stop_all() 
 		sent_time = time.time()
 		wait_time = sent_time + 1
 		

@@ -103,6 +103,11 @@
 #define I2C_BANK_0_ACKEN I2C1CONbits.ACKEN
 #define I2C_BANK_0_SEN I2C1CONbits.SEN
 
+//ADC defines
+#define ADC_INT_PRIORITY_set(x) IPC6SET = (x << 26) //sets the priority of the ADC interrupt
+#define ADC_INT_set(x) IEC1SET = (x << 1) //enables or disables the ADC interrupt
+#define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
+
 
 
 

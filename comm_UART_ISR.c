@@ -15,7 +15,6 @@
  ************************************************************************/
 COMM_UART_QUEUE COMM_UART_Queue;
 boolean COMM_UART_is_idle;
-uint8 led_val;
 boolean SYNC_LOCK;
 uint8 received_bytes[6];
 uint8 received_index;
@@ -33,7 +32,7 @@ void comm_uart_setup(void) {
     COMM_UART_BRG = 10; //divider of 10 for 56818.2 baud
     COMM_UART_PDSEL = 0;
     comm_uart_InitializeQueue(&COMM_UART_Queue);
-    led_val = 0;
+
 
     //initialize variables
     memset(received_bytes, 0, sizeof (received_bytes));
@@ -144,30 +143,11 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
     INTDisableInterrupts();
 
-    if (COMM_UART_RXIF == 1 || COMM_UART_TXIF == 1)
-    {
-       // PORTCbits.RC1 = 1; //Turn off LED5
-    }
-    /*
-    if (MOTOR_UART_RXIF == 1 || MOTOR_UART_TXIF == 1)
-    {
-        PORTAbits.RA3 = 1; //Turn on LED4
-    }
-    */
-
-    //write_leds(led_val);
-    //led_val = ~led_val;
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
     if (COMM_UART_RXIF == 1) {
+        
         received_byte = COMM_UART_RXREG;
-        //PORTDbits.RD7 = !PORTDbits.RD7;
-        //write_leds(received_byte - '0'); //write to LEDs to test UART Rx
-      //  if (received_byte == 'P') {
-            //comm_uart_CreateNode('P', 0, 0);
-            //comm_uart_CreateNode('Q', COMM_UART_Queue.QueueLength, 0);
-            // write_leds(0xFF);
-        //}
 
         if (SYNC_LOCK) //if in sync
         {
@@ -220,115 +200,55 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
         //MOVE THIS TO THE MAIN PROCESSING FUNCTION
         if (packet_recieved) {
-//            con_led(0, FALSE);
-//            con_led(1, FALSE);
-//            con_led(2, FALSE);
-//            con_led(3, FALSE);
-//            con_led(4, FALSE);
-//            con_led(5, FALSE);
-//            con_led(6, FALSE);
-//            con_led(7, FALSE);
-//            con_led(8, FALSE);
-//            con_led(9, FALSE);
-//            con_led(10, FALSE);
-//            con_led(11, FALSE);
-            
+
             switch (received_bytes[1]) {
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         
                         Motor1_Forward(129, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, FALSE);
-//                        con_led(2, TRUE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(129, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, FALSE);
-//                        con_led(2, TRUE);
-//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_BOW_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor1_Forward(128, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, TRUE);
-//                        con_led(2, FALSE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(128, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, TRUE);
-//                        con_led(2, FALSE);
-//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_STERN_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(129, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, TRUE);
-//                        con_led(2, TRUE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(129, (received_bytes[2] & 0x7F));
-//                        con_led(0, FALSE);
-//                        con_led(1, TRUE);
-//                        con_led(2, TRUE);
-//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_STERN_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(128, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, FALSE);
-//                        con_led(2, FALSE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(128, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, FALSE);
-//                        con_led(2, FALSE);
-//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_DEPTH_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor2_Forward(130, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, FALSE);
-//                        con_led(2, TRUE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor2_Backward(130, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, FALSE);
-//                        con_led(2, TRUE);
-//                        con_led(3, TRUE);
                     }
                     break;
                 case THRUSTER_DEPTH_PORT:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
                         Motor1_Forward(130, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, TRUE);
-//                        con_led(2, FALSE);
-//                        con_led(3, FALSE);
                     } else {
                         Motor1_Backward(130, (received_bytes[2] & 0x7F));
-//                        con_led(0, TRUE);
-//                        con_led(1, TRUE);
-//                        con_led(2, FALSE);
-//                        con_led(3, TRUE);
                     }
                     break;
 
@@ -339,17 +259,6 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                 motor_uart_begin();
                 
             }
-            /*
-             * Motor1_Forward( uint address, uint speed )
-             *
-            #define THRUSTER_BOW_SB 	 0x10
-            #define THRUSTER_BOW_PORT 	 0x11
-            #define THRUSTER_DEPTH_SB 	 0x12
-            #define THRUSTER_DEPTH_PORT  0x13
-            #define THRUSTER_STERN_SB 	 0x14
-            #define THRUSTER_STERN_PORT  0x15
-             */
-
         }
 
         //COMM_UART_RXIF is the recieve register that data will come into
@@ -369,6 +278,19 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     }
 
     INTEnableInterrupts();
+
+}
+
+/********************************************************
+ *   Function Name: comm_uart_background()
+ *
+ *   Description: background processing for the comm_uart
+ *
+ *
+ *********************************************************/
+void comm_uart_background(void)
+{
+
 
 }
 

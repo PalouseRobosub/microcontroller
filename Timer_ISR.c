@@ -62,30 +62,27 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     extern boolean ADC_is_idle;
     INTDisableInterrupts();
 
-    //PORTGbits.RG1 = !PORTGbits.RG1; //for testing, remove in final code
-    //PORTDbits.RD9 = !PORTDbits.RD9;
-    PORTCbits.RC1 = !PORTCbits.RC1; //Turn off LED5
-        i2c_GYRO_Read();
-        i2c_ACL_Read();
-        
-        if (I2C_BANK_0_is_idle)
-        {
-            PORTAbits.RA3 = !PORTAbits.RA3; //Turn on LED4
-            i2c_bank_0_begin();
-        }
+    //PORTCbits.RC1 = !PORTCbits.RC1; //toggle LED5 (max32)
+    i2c_GYRO_Read();
+    i2c_ACL_Read();
 
         comm_uart_CreateNode( 'A', 'B', 'C' );
         if (COMM_UART_is_idle)
         {
             comm_uart_begin();
         }
+    if (I2C_BANK_0_is_idle)
+    {
+        //PORTAbits.RA3 = !PORTAbits.RA3; //toggle LED4 (max32)
+        i2c_bank_0_begin();
+    }
 
-        ADC_Depth_Read();
-        ADC_Battery_Read();
-        if (ADC_is_idle)
-        {
-            adc_begin();
-        }
+    ADC_Depth_Read();
+    ADC_Battery_Read();
+    if (ADC_is_idle)
+    {
+        adc_begin();
+    }
         
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
