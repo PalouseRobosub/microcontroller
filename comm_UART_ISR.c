@@ -203,9 +203,9 @@ void bg_process_comm_uart(void) {
 
 
 
-    if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node))
+    if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
     {
-        //do nothing
+        //do nothing - the queue is empty
     }
     else {
 
@@ -267,7 +267,6 @@ void bg_process_comm_uart(void) {
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
-
                         Motor1_Forward(129, (received_bytes[2] & 0x7F));
                     } else {
                         Motor1_Backward(129, (received_bytes[2] & 0x7F));

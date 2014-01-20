@@ -130,42 +130,15 @@ void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
     MOTOR_UART_NODE current_node;
 
     INTDisableInterrupts();
-    //PORTGbits.RG1 = !PORTGbits.RG1;
-    
-    //PORTAbits.RA3 = 1; //Turn on LED4
-    //write_leds(led_val);
-    //led_val = ~led_val;
-    //URXDA is 1 if recieve buffer has data
-    //TRMT is 1 if transmit buffer is empty
-
-    /*
-     * UART2 should not be recieving data...
-     * But left just in case
-     *
-     if (MOTOR_UART_RXIF == 1) {
-        received_byte = MOTOR_UART_RXREG;
-        write_leds(received_byte - '0'); //write to LEDs to test UART Rx
-        if (received_byte == 'P')
-        {
-            motor_uart_CreateNode('P', 0, 0);
-            motor_uart_CreateNode('Q', MOTOR_UART_Queue.QueueLength, 0);
-           // write_leds(0xFF);
-        }
-
-        //v is the recieve register that data will come into
-        MOTOR_UART_RXIF = 0; //clear the interrupt flag
-    }*/
-    
+   
     
     if (MOTOR_UART_TXIF == 1) {
         if (motor_uart_popNode(&MOTOR_UART_Queue, &current_node)) {
             MOTOR_UART_is_idle = TRUE;
         } else {
             for (i = 0; i < 4; i++) {
-                //            U1STAbits.UTXBRK = 1;
                 //Transmit one byte at a time until the full packet is sent
                 MOTOR_UART_TXREG = current_node.uart_data[i];
-                //            U1STAbits.UTXBRK = 0;
             }
             MOTOR_UART_is_idle = FALSE;
         }
