@@ -160,8 +160,6 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     int i, k;
     COMM_UART_NODE current_node;
     uint8 received_byte;
-    extern boolean MOTOR_UART_is_idle;
-
 
     INTDisableInterrupts();
 
@@ -170,18 +168,60 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     if (COMM_UART_RXIF == 1) {
         
         received_byte = COMM_UART_RXREG;
+        bg_comm_uart_CreateNode(received_byte);
+
+        //COMM_UART_RXIF is the recieve register that data will come into
+        COMM_UART_RXIF = 0; //clear the interrupt flag
+    }
+    if (COMM_UART_TXIF == 1) {
+        if (comm_uart_popNode(&COMM_UART_Queue, &current_node)) {
+            COMM_UART_is_idle = TRUE;
+        } else {
+            for (i = 0; i < 4; i++) {
+                COMM_UART_TXREG = current_node.uart_data[i];
+            }
+            COMM_UART_is_idle = FALSE;
+        }
+
+        COMM_UART_TXIF = 0; //clear the interrupt flag
+    }
+
+    INTEnableInterrupts();
+
+}
+/********************************************************
+ *   Function Name: bg_proc_comm_uart()
+ *
+ *   Description: background processing for the comm_uart
+ *
+ *
+ *********************************************************/
+void bg_process_comm_uart(void) {
+    extern boolean MOTOR_UART_is_idle;
+    uint8 received_byte;
+    BG_COMM_UART_NODE temp_node;
+
+
+
+    if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node))
+    {
+        //do nothing
+    }
+    else {
+
+        received_byte = temp_node.uart_data;
 
         if (SYNC_LOCK) //if in sync
         {
-            
+
             //PORTAbits.RA9 = 1;
             if (received_index == 0)//only check the first byte for the control byte
             {
-                
+
                 if (received_byte != CONTROL_BYTE) {
                     SYNC_LOCK = FALSE;
                     //PORTAbits.RA9 = 0;
-                    
+
                     //CALL SYNC FUNCTION
                 }
                 received_index++;
@@ -193,7 +233,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                 received_bytes[received_index] = received_byte;
                 received_index = 0; //Reset the index, we now have the full package
                 packet_recieved = TRUE;
-                
+
             }
         } else {
             if (begin_sync == TRUE) {
@@ -212,10 +252,10 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                         ) {
                     SYNC_LOCK = TRUE;
                     received_index = 0;
-                    
+
                 } else {
                     begin_sync = TRUE;
-                    
+
                 }
             }
         }
@@ -227,7 +267,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
-                        
+
                         Motor1_Forward(129, (received_bytes[2] & 0x7F));
                     } else {
                         Motor1_Backward(129, (received_bytes[2] & 0x7F));
@@ -276,43 +316,13 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
             }
 
-            if(MOTOR_UART_is_idle)
-            {
+            if (MOTOR_UART_is_idle) {
                 motor_uart_begin();
-                
+
             }
         }
-
-        //COMM_UART_RXIF is the recieve register that data will come into
-        COMM_UART_RXIF = 0; //clear the interrupt flag
-    }
-    if (COMM_UART_TXIF == 1) {
-        if (comm_uart_popNode(&COMM_UART_Queue, &current_node)) {
-            COMM_UART_is_idle = TRUE;
-        } else {
-            for (i = 0; i < 4; i++) {
-                COMM_UART_TXREG = current_node.uart_data[i];
-            }
-            COMM_UART_is_idle = FALSE;
-        }
-
-        COMM_UART_TXIF = 0; //clear the interrupt flag
     }
 
-    INTEnableInterrupts();
-
-}
-
-/********************************************************
- *   Function Name: bg_proc_comm_uart()
- *
- *   Description: background processing for the comm_uart
- *
- *
- *********************************************************/
-void bg_process_comm_uart(void)
-{
-    
     return;
 }
 

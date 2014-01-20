@@ -80,9 +80,8 @@ int main(void)
     
     while (1)
     {
-        //nothing should be in here
-        //timer_1_begin();
-        //++dummy;
+        //insert background tasks
+        bg_process_comm_uart();
     }
 
     return 0;
