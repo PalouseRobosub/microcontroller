@@ -22,6 +22,7 @@
  Constants
  ************************************************************************/
 #define COMM_UARTQueueSize 32
+#define BG_COMM_UARTQueueSize 64
 /*************************************************************************
  Structure Definitions
  ************************************************************************/
@@ -41,6 +42,20 @@ typedef struct comm_uart_queue
     uint8 QueueEnd; //Location of next free slot
     uint8 QueueLength; //Length of queue
 }COMM_UART_QUEUE;
+
+
+typedef struct bg_comm_uart_node
+{
+    uint8 uart_data;
+}BG_COMM_UART_NODE;
+
+typedef struct bg_comm_uart_queue
+{
+    BG_COMM_UART_NODE DataBank[BG_COMM_UARTQueueSize]; //Array of Nodes of the #defined size QueueSize
+    uint8 QueueStart; //Location of oldest node
+    uint8 QueueEnd; //Location of next free slot
+    uint8 QueueLength; //Length of queue
+}BG_COMM_UART_QUEUE;
 
 /*************************************************************************
  Enums
@@ -99,6 +114,65 @@ int comm_uart_popNode(COMM_UART_QUEUE* queue, COMM_UART_NODE* return_node);
  *
  *********************************************************/
 void comm_uart_CreateNode( uint Byte1, uint Byte2, uint Byte3 );
+
+
+
+//background queue functions
+
+
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void bg_comm_uart_setup(void);
+
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void bg_proc_comm_uart(void);
+
+/********************************************************
+ *   Function Name: bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue)
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void  bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue);
+
+/********************************************************
+ *   Function Name: bg_comm_uart_addToQueue(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE new_node)
+ *
+ *   Description: Adds a node to the queue - Pass a node by reference
+ *
+ *
+ *********************************************************/
+int  bg_comm_uart_addToQueue(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE new_node);
+
+/********************************************************
+ *   Function Name: bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_node)
+ *
+ *   Description: Pulls the next node off the queue
+ *
+ *
+ *********************************************************/
+int  bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_node);
+
+ /********************************************************
+ *   Function Name: bg_comm_uart_CreateNode( uint8 received_byte );
+ *
+ *   Description: Creates a node using a byte
+ *
+ *
+ *********************************************************/
+void  bg_comm_uart_CreateNode( uint8 received_byte );
 
 #endif	/* COMM_UART_ISR_H */
 

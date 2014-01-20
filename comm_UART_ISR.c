@@ -21,6 +21,8 @@ uint8 received_index;
 boolean begin_sync;
 boolean packet_recieved;
 
+BG_COMM_UART_QUEUE BG_COMM_UART_Queue;
+
 /********************************************************
  *   Function Name:
  *
@@ -125,6 +127,26 @@ int comm_uart_popNode(COMM_UART_QUEUE* queue, COMM_UART_NODE* return_node) {
     }
     queue->QueueLength--;
     return 0;
+}
+
+
+/********************************************************
+ *   Function Name: comm_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3)
+ *
+ *   Description: Creates a node using three bytes
+ *
+ *
+ *********************************************************/
+void comm_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3) {
+    COMM_UART_NODE temp;
+
+    temp.uart_data[0] = '\n';
+    temp.uart_data[1] = Byte1;
+    temp.uart_data[2] = Byte2;
+    temp.uart_data[3] = Byte3;
+
+
+    comm_uart_addToQueue(&COMM_UART_Queue, temp);
 }
 
 /********************************************************
@@ -282,17 +304,85 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 }
 
 /********************************************************
- *   Function Name: comm_uart_background()
+ *   Function Name: bg_proc_comm_uart()
  *
  *   Description: background processing for the comm_uart
  *
  *
  *********************************************************/
-void comm_uart_background(void)
+void bg_process_comm_uart(void)
 {
-
-
+    
+    return;
 }
+
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void bg_comm_uart_setup(void) {
+
+    bg_comm_uart_InitializeQueue(&BG_COMM_UART_Queue);
+    //initialize any background process variables if necessary
+}
+
+
+/********************************************************
+ *   Function Name: bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue)
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue) {
+    memset(queue, 0, sizeof (BG_COMM_UART_QUEUE));
+}
+
+/********************************************************
+ *   Function Name: bg_comm_uart_addToQueue(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE new_node)
+ *
+ *   Description: Adds a node to the queue - Pass a node by reference
+ *
+ *
+ *********************************************************/
+int bg_comm_uart_addToQueue(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE new_node) {
+    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0) {
+        return 1; //Error, would overwrite start of list
+    }
+    queue->DataBank[queue->QueueEnd] = new_node;
+    queue->QueueLength++;
+    if (queue->QueueEnd == BG_COMM_UARTQueueSize - 1) {
+        queue->QueueEnd = 0;
+    } else {
+        queue->QueueEnd++;
+    }
+    return 0;
+}
+
+/********************************************************
+ *   Function Name: bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_node)
+ *
+ *   Description: Pulls the next node off the queue
+ *
+ *
+ *********************************************************/
+int bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_node) {
+    if (queue->QueueLength == 0) {
+        return 1; //Can't read from queue if empty
+    }
+    *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
+    if (queue->QueueStart == BG_COMM_UARTQueueSize - 1) {
+        queue->QueueStart = 0;
+    } else {
+        queue->QueueStart++;
+    }
+    queue->QueueLength--;
+    return 0;
+}
+
 
 /********************************************************
  *   Function Name: comm_uart_SetNode( uint Byte1, uint Byte2, uint Byte3 )
@@ -301,14 +391,10 @@ void comm_uart_background(void)
  *
  *
  *********************************************************/
-void comm_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3) {
-    COMM_UART_NODE temp;
+void  bg_comm_uart_CreateNode( uint8 received_byte ) {
+    BG_COMM_UART_NODE temp;
 
-    temp.uart_data[0] = '\n';
-    temp.uart_data[1] = Byte1;
-    temp.uart_data[2] = Byte2;
-    temp.uart_data[3] = Byte3;
+    temp.uart_data = received_byte;
 
-
-    comm_uart_addToQueue(&COMM_UART_Queue, temp);
+    bg_comm_uart_addToQueue(&BG_COMM_UART_Queue, temp);
 }
