@@ -37,13 +37,6 @@ void comm_uart_setup(void) {
     bg_comm_uart_setup();
 
 
-    //initialize variables
-    memset(received_bytes, 0, sizeof (received_bytes));
-    received_index = 0;
-    packet_recieved = FALSE;
-    SYNC_LOCK = FALSE;
-
-
     //Setup UART1 TX interrupts
     COMM_UART_TX_INT_set(1); //enable interrupt Tx
     COMM_UART_INT_PRIORITY_set(7); //set priority
@@ -74,6 +67,7 @@ inline void comm_uart_begin(void) {
     /* this sets the comm uart TX interrupt flag. Setting the flag will
      cause the ISR to be entered as soon as the global interrupt
      flag is enabled */
+    COMM_UART_TX_INT_set(1); //enable interrupt Tx
     COMM_UART_TXIF = 1;
 }
 
@@ -177,6 +171,8 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     if (COMM_UART_TXIF == 1) {
         if (comm_uart_popNode(&COMM_UART_Queue, &current_node)) {
             COMM_UART_is_idle = TRUE;
+            //disable the interrupt
+            COMM_UART_TX_INT_clr(1); //disable interrupt Tx (this is because it constantly fires)
         } else {
             for (i = 0; i < 4; i++) {
                 COMM_UART_TXREG = current_node.uart_data[i];
@@ -218,14 +214,15 @@ void bg_process_comm_uart(void) {
             //PORTAbits.RA9 = 1;
             if (received_index == 0)//only check the first byte for the control byte
             {
-
+                packet_recieved = FALSE; //start of a new packet
                 if (received_byte != CONTROL_BYTE) {
                     SYNC_LOCK = FALSE;
+                    begin_sync = TRUE;
                     //PORTAbits.RA9 = 0;
 
                     //CALL SYNC FUNCTION
                 }
-                received_index++;
+                received_index++; //assuming we are synced, so dont add a new character to the packet
             } else if (received_index == 1) //NOTE only indexes 1 and 2 are used
             {
                 received_bytes[received_index] = received_byte;
@@ -239,24 +236,29 @@ void bg_process_comm_uart(void) {
         } else {
             if (begin_sync == TRUE) {
                 received_index = 0;
-                begin_sync = TRUE;
-            }
+                if (received_byte == CONTROL_BYTE) {
+                    begin_sync = FALSE;
+                }
+            } 
+            
+            if (begin_sync == FALSE){
 
-            received_bytes[received_index] = received_byte;
-            ++received_index;
+                received_bytes[received_index] = received_byte;
+                ++received_index;
 
-            //X00X00
-            //012345
-            if (received_index == 6) {
-                if (received_bytes[0] == CONTROL_BYTE &&
-                        received_bytes[3] == CONTROL_BYTE
-                        ) {
-                    SYNC_LOCK = TRUE;
-                    received_index = 0;
+                //X00X00
+                //012345
+                if (received_index == 6) {
+                    if (received_bytes[0] == CONTROL_BYTE &&
+                            received_bytes[3] == CONTROL_BYTE
+                            ) {
+                        SYNC_LOCK = TRUE;
+                        received_index = 0;
 
-                } else {
-                    begin_sync = TRUE;
+                    } else {
+                        begin_sync = TRUE;
 
+                    }
                 }
             }
         }
@@ -337,6 +339,12 @@ void bg_comm_uart_setup(void) {
 
     bg_comm_uart_InitializeQueue(&BG_COMM_UART_Queue);
     //initialize any background process variables if necessary
+    //initialize variables
+    memset(received_bytes, 0, sizeof (received_bytes));
+    received_index = 0;
+    packet_recieved = FALSE;
+    SYNC_LOCK = FALSE;
+    begin_sync = TRUE;
 }
 
 

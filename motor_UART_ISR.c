@@ -59,6 +59,7 @@ inline void motor_uart_begin(void) {
     /* this sets the UART1TX interrupt flag. Setting the flag will
      cause the ISR to be entered as soon as the global interrupt
      flag is enabled */
+    MOTOR_UART_TX_INT_set(1); //enable interrupt Tx
     MOTOR_UART_TXIF = 1;
 }
 
@@ -135,6 +136,7 @@ void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
     if (MOTOR_UART_TXIF == 1) {
         if (motor_uart_popNode(&MOTOR_UART_Queue, &current_node)) {
             MOTOR_UART_is_idle = TRUE;
+            MOTOR_UART_TX_INT_clr(1); //disable the interrupt Tx
         } else {
             for (i = 0; i < 4; i++) {
                 //Transmit one byte at a time until the full packet is sent

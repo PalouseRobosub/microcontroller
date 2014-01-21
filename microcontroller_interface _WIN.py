@@ -150,7 +150,7 @@ def cmd_thruster(thruster_id, magnitude, direction) :
 
 	#send the commmand to the microcontroller
 	s.write(raw_cmd)
-
+	
 
 #end cmd_thruster()
 
@@ -237,7 +237,7 @@ def cmd_stop_all() :
 
 #initialize the serial port
 s = serial.Serial()	#get instance of serial class
-s.port = 10 #this may change, depending on what port the OS gives the microcontroller
+s.port = 9 #this may change, depending on what port the OS gives the microcontroller
 s.baudrate = 56818      #the baudrate may change in the future
 s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
@@ -282,10 +282,11 @@ while 1 :
 	if (time.time() > wait_time) :
 		cmd_move_forward()
 		sent_time = time.time()
-		wait_time = sent_time + 1
+		wait_time = sent_time + 0.01
 		
 	#receive a packet
 	received_packet = get_packet()
+	
 	
 	#pull the device information out of the packet
 	device = ord(received_packet[1]) #second byte of packet is device information (first byte is always control byte)
@@ -374,6 +375,7 @@ while 1 :
 	
 	print "buffer size: %d" % (s.inWaiting())
 	print "Run Time (minutes): %lf" % ((time.time() - start_time)/60)
+	
 
 #end of reading while loop 
 	

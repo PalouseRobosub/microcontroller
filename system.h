@@ -124,6 +124,7 @@
 #define COMM_UART_URXEN U1STAbits.URXEN //rx enable
 #define COMM_UART_ON U1MODEbits.ON //uart enable
 #define COMM_UART_TX_INT_set(x) IEC0SET = (x << 28) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC0CLR = (x << 28) //enables or disables the tx interrupt
 #define COMM_UART_RX_INT_set(x) IEC0SET = (x << 27) //enablse or disables the rx interrupt
 #define COMM_UART_INT_PRIORITY_set(x) IPC6SET = (x << 2) //sets the priority of the uart interrupts
 #define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
@@ -145,6 +146,7 @@
 #define MOTOR_UART_URXEN  U4STAbits.URXEN //rx enable
 #define MOTOR_UART_ON  U4MODEbits.ON //uart enable
 #define MOTOR_UART_TX_INT_set(x) IEC2SET = (x << 5) //enables or disables the tx interrupt
+#define MOTOR_UART_TX_INT_clr(x) IEC2CLR = (x << 5) //enables or disables the tx interrupt
 #define MOTOR_UART_RX_INT_set(x) IEC2SET = (x << 4) //enables or disables the rx interrupt
 #define MOTOR_UART_INT_PRIORITY_set(x) IPC12SET = (x << 10) //sets the priority of the uart interrupts
 #define _MOTOR_UART_VECTOR _UART_4_VECTOR //interrupt vector
