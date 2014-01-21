@@ -34,6 +34,7 @@ void comm_uart_setup(void) {
     COMM_UART_BRG = 10; //divider of 10 for 56818.2 baud
     COMM_UART_PDSEL = 0;
     comm_uart_InitializeQueue(&COMM_UART_Queue);
+    bg_comm_uart_setup();
 
 
     //initialize variables
