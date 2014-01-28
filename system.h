@@ -197,6 +197,10 @@
 #define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
 
 
+//LED_SPI defines
+#define _LED_SPI_VECTOR 1
+
+
 #else
 
 #error selected chip not supported
