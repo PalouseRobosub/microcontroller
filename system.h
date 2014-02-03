@@ -16,15 +16,15 @@
 #include <peripheral/uart.h>
 
 /*************************************************************************
- Sensor_motor Defines
+ Transmission Protocol Defines
  ************************************************************************/
-#ifndef SENSORS_MOTORS
-#define	SENSORS_MOTORS
+#ifndef TRANSMISSION_PROTOCOL
+#define	TRANSMISSION_PROTOCOL
 
-//CONTROLL BYTE
+//CONTROL BYTE
 #define CONTROL_BYTE             '\n'
 
-//motors
+//Incoming (from computer)
 #define THRUSTER_BOW_SB 	 0x10
 #define THRUSTER_BOW_PORT 	 0x11
 #define THRUSTER_DEPTH_SB 	 0x12
@@ -32,7 +32,8 @@
 #define THRUSTER_STERN_SB 	 0x14
 #define THRUSTER_STERN_PORT 	 0x15
 
-//sensors
+
+//Outgoing (to computer)
 #define ACL_0_X     0x10
 #define ACL_0_Y     0x11
 #define ACL_0_Z     0x12
@@ -44,7 +45,7 @@
 #define ADC_DEPTH   0x30
 #define ADC_BATT    0x31
 
-#endif	/* SENSORS_MOTORS */
+#endif	/* TRANSMISSION_PROTOCOL */
 
 
 
