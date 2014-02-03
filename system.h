@@ -199,6 +199,13 @@
 
 //LED_SPI defines
 #define _LED_SPI_VECTOR 1
+#define LED_SPI_TXIF IFS1bits.SPI2ATXIF
+#define LED_SPI_TXIE IEC1bits.SPI2ATXIE
+#define LED_SPI_STAT SPI2STAT
+#define LED_SPI_CON1
+#define LED_SPI_CON2
+#define LED_SPI_BUF
+#define LED_SPI_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
 
 
 #else
