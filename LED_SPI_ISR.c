@@ -23,7 +23,33 @@ boolean LED_SPI_is_idle;
  *
  *********************************************************/
  void led_spi_setup(void) {
+     /*
+1. If using interrupts:
+    a) Clear the SPIxIF bit in the respective IFSx register.
+    b) Select an interrupt mode using the SISEL<2:0> bits (SPIxSTAT<4:2>).
+    c) Set the SPIxIE bit in the respective IECx register.
+    d) Write the SPIxIP bits in the respective IPCx register.
+2. When MSTEN (SPIxCON1<5>) = 1, write the desired settings to the SPIxCON1 and SPIxCON2 registers.
+3. Clear the SPIROV bit (SPIxSTAT<6>).
+4. Select Enhanced Buffer mode by setting the SPIBEN bit (SPIxCON2<0>).
+5. Enable the SPIx operation by setting the SPIEN bit (SPIxSTAT<15>).
+6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
+*/
 
+
+     LED_SPI_TXIF = 0; // clear the Tx interrupt flag
+     LED_SPI_STXISEL = 0x01; //interrupt when the Tx buffer is empty
+     LED_SPI_TXIE = 1; //enable the Tx interrupt
+     LED_SPI_TX_INT_PRIORITY_set(7); //set the interrupt priority
+
+     LED_SPI_MSTEN = 1; //enable master mode
+     LED_SPI_ENHBUF = 1; //enable enhanced buffer mode
+     LED_SPI_SPIROV = 0; //clear the receive overflow flag
+
+     LED_SPI_ON = 1; //enable the SPI module
+
+
+     LED_SPI_is_idle = TRUE;
 
 }
 
@@ -35,6 +61,9 @@ boolean LED_SPI_is_idle;
  *
  *********************************************************/
  inline void led_spi_begin(void) {
+
+     LED_SPI_TXIE = 1;
+     LED_SPI_TXIF = 1;
 
 }
 
@@ -108,12 +137,15 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
     INTDisableInterrupts();
 
 
-        if (led_spi_popNode(&LED_SPI_Queue, &current_node)) {
-            LED_SPI_is_idle = TRUE;
-        } else {
-            //transmit the data
-        }
-
+//        if (led_spi_popNode(&LED_SPI_Queue, &current_node)) {
+//            LED_SPI_is_idle = TRUE;
+//            LED_SPI_TXIE = 0; //clear the interrupt, so it doesn't keep firing
+//        } else {
+//            //transmit the data
+//
+//        }
+        LED_SPI_BUF = 0xAA;
+        LED_SPI_BUF = 0x10;
        //clear the interrupt flag
 
     INTEnableInterrupts();

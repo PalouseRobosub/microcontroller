@@ -57,6 +57,7 @@ int main(void)
     comm_uart_setup();
     motor_uart_setup();
     adc_setup();
+    led_spi_setup();
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();
@@ -71,6 +72,7 @@ int main(void)
     
     motor_uart_begin();
     comm_uart_begin();
+    led_spi_begin();
     
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
