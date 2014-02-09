@@ -28,13 +28,13 @@ boolean LED_SPI_is_idle;
 }
 
  /********************************************************
- *   Function Name: led_spi_setup_begin()
+ *   Function Name: led_spi_begin()
  *
  *   Description: Starts the LED_SPI ISR
  *
  *
  *********************************************************/
- inline void led_spi_setup_begin(void) {
+ inline void led_spi_begin(void) {
 
 }
 
