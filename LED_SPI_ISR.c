@@ -36,6 +36,7 @@ boolean LED_SPI_is_idle;
 6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
 */
 
+     LED_SPI_BRG = 0x04; //spi_clk = bus_clk/(2*(BRG+1)) so this sets clock to 1 Mhz
 
      LED_SPI_TXIF = 0; // clear the Tx interrupt flag
      LED_SPI_STXISEL = 0x01; //interrupt when the Tx buffer is empty
