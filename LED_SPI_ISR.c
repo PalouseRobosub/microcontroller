@@ -152,6 +152,7 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
 
         }
        //clear the interrupt flag
+       LED_SPI_TXIF = 0;
 
     INTEnableInterrupts();
 
