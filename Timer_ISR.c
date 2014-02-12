@@ -63,7 +63,8 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     extern boolean ADC_is_idle;
     extern LED_SPI_QUEUE LED_SPI_Queue;
     extern boolean LED_SPI_is_idle;
-    LED_SPI_NODE temp;
+    LED_SPI_NODE temp, temp0, temp1;
+    int i;
     static boolean flop;
     INTDisableInterrupts();
 
@@ -91,33 +92,63 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
         adc_begin();
     }
 
-    //temp.data_A = 0b10001010;
-    //temp.data_B = 0b10001010;
-//    if (flop >= 3)
-//    {
-//    temp.data_G = 0x8F;
-//    temp.data_R = 0x80;
-//    temp.data_B = 0x80;
-//    }
-//    else if(flop = 1)
+    temp0.data_G = 0x00;
+    temp0.data_R = 0x00;
+    temp0.data_B = 0x00;
+    led_spi_addToQueue(&LED_SPI_Queue, temp0);
+
+
+
+    switch (flop)
+    {
+        case 1:
+            temp.data_G = 0x80;
+            temp.data_R = 0x80;
+            temp.data_B = 0x81;
+            flop = 2;
+            break;
+        case 2:
+            temp.data_G = 0x81;
+            temp.data_R = 0x80;
+            temp.data_B = 0x80;
+            flop = 3;
+            break;
+        default:
+            temp.data_G = 0x80;
+            temp.data_R = 0x81;
+            temp.data_B = 0x80;
+            flop = 1;
+    }
+
+//    if (flop)
 //    {
 //    temp.data_G = 0x80;
-//    temp.data_R = 0x80;
-//    temp.data_B = 0x8F;
+//    temp.data_R = 0x81;
+//    temp.data_B = 0x80;
+//
+//    temp1.data_G = 0x80;
+//    temp1.data_R = 0x80;
+//    temp1.data_B = 0x81;
 //    }
 //    else
 //    {
-//    temp.data_G = 0x00;
-//    temp.data_R = 0x00;
-//    temp.data_B = 0x00;
+//        temp1.data_G = 0x80;
+//    temp1.data_R = 0x81;
+//    temp1.data_B = 0x80;
+//
+//    temp.data_G = 0x80;
+//    temp.data_R = 0x80;
+//    temp.data_B = 0x81;
 //
 //    }
+//    flop = !flop;
 
-    temp.data_G = 0x81;
-    temp.data_R = 0x81;
-    temp.data_B = 0x81;
-    flop = flop+1;
-    led_spi_addToQueue(&LED_SPI_Queue, temp);
+    for (i=1; i<35; i = i+1)
+    {
+        led_spi_addToQueue(&LED_SPI_Queue, temp);
+
+    }
+
     if (LED_SPI_is_idle)
     {
         led_spi_begin();
