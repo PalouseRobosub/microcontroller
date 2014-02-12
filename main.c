@@ -17,6 +17,7 @@
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
 #include "ADC_ISR.h"
+#include "LED_SPI_ISR.h"
 
 
 /*************************************************************************
@@ -34,6 +35,9 @@ int main(void)
 {
     int dummy;
     uint Byte1 = 0x41, Byte2 = 0x42, Byte3 = 0x43;
+    extern LED_SPI_QUEUE LED_SPI_Queue;
+    extern boolean LED_SPI_is_idle;
+    LED_SPI_NODE temp;
     AD1PCFG = 0xFFFF;
 //    TRISGbits.TRISG0 = 0;
 //    TRISGbits.TRISG1 = 0;
@@ -73,6 +77,11 @@ int main(void)
     motor_uart_begin();
     comm_uart_begin();
     led_spi_begin();
+    temp.data_G = 0x00;
+    temp.data_R = 0x00;
+    temp.data_B = 0x00;
+    led_spi_addToQueue(&LED_SPI_Queue, temp);
+   // led_spi_addToQueue(&LED_SPI_Queue, temp);
     
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();

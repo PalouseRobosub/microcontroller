@@ -46,6 +46,8 @@ boolean LED_SPI_is_idle;
      LED_SPI_MSTEN = 1; //enable master mode
      LED_SPI_ENHBUF = 1; //enable enhanced buffer mode
      LED_SPI_SPIROV = 0; //clear the receive overflow flag
+     LED_SPI_CKP = 1;
+     LED_SPI_CKE = 1;
 
      LED_SPI_ON = 1; //enable the SPI module
 
@@ -138,15 +140,17 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
     INTDisableInterrupts();
 
 
-//        if (led_spi_popNode(&LED_SPI_Queue, &current_node)) {
-//            LED_SPI_is_idle = TRUE;
-//            LED_SPI_TXIE = 0; //clear the interrupt, so it doesn't keep firing
-//        } else {
-//            //transmit the data
-//
-//        }
-        LED_SPI_BUF = 0xAA;
-        LED_SPI_BUF = 0x10;
+        if (led_spi_popNode(&LED_SPI_Queue, &current_node)) {
+            LED_SPI_is_idle = TRUE;
+            LED_SPI_TXIE = 0; //clear the interrupt, so it doesn't keep firing
+        } else {
+            //transmit the data
+            LED_SPI_BUF = current_node.data_G;
+            LED_SPI_BUF = current_node.data_R;
+            LED_SPI_BUF = current_node.data_B;
+            
+
+        }
        //clear the interrupt flag
 
     INTEnableInterrupts();

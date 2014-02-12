@@ -34,6 +34,9 @@
 
 typedef struct led_spi_node
 {
+    uint8 data_G;
+    uint8 data_R;
+    uint8 data_B;
 
 }LED_SPI_NODE;
 

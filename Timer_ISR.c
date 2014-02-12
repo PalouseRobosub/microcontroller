@@ -15,6 +15,7 @@
 #include "motor_UART_ISR.h"
 #include "system.h"
 #include "ADC_ISR.h"
+#include "LED_SPI_ISR.h"
 
 
 /*************************************************************************
@@ -60,6 +61,10 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     extern boolean I2C_BANK_0_is_idle;
     extern boolean COMM_UART_is_idle;
     extern boolean ADC_is_idle;
+    extern LED_SPI_QUEUE LED_SPI_Queue;
+    extern boolean LED_SPI_is_idle;
+    LED_SPI_NODE temp;
+    static boolean flop;
     INTDisableInterrupts();
 
     //PORTCbits.RC1 = !PORTCbits.RC1; //toggle LED5 (max32)
@@ -84,6 +89,38 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     if (ADC_is_idle)
     {
         adc_begin();
+    }
+
+    //temp.data_A = 0b10001010;
+    //temp.data_B = 0b10001010;
+//    if (flop >= 3)
+//    {
+//    temp.data_G = 0x8F;
+//    temp.data_R = 0x80;
+//    temp.data_B = 0x80;
+//    }
+//    else if(flop = 1)
+//    {
+//    temp.data_G = 0x80;
+//    temp.data_R = 0x80;
+//    temp.data_B = 0x8F;
+//    }
+//    else
+//    {
+//    temp.data_G = 0x00;
+//    temp.data_R = 0x00;
+//    temp.data_B = 0x00;
+//
+//    }
+
+    temp.data_G = 0x81;
+    temp.data_R = 0x81;
+    temp.data_B = 0x81;
+    flop = flop+1;
+    led_spi_addToQueue(&LED_SPI_Queue, temp);
+    if (LED_SPI_is_idle)
+    {
+        led_spi_begin();
     }
         
     IFS0bits.T1IF = 0; //clear the interrupt flag
