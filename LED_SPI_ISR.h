@@ -25,7 +25,13 @@
 /*************************************************************************
  Enums
  ************************************************************************/
+typedef enum //LED Patterns
+{
+    LED_PATTERN_ALL_BLUE,
+    LED_PATTERN_ALL_GREEN,
+    LED_PATTERN_ALL_RED
 
+} LED_PATTERN;
 
 /*************************************************************************
  Structure Definitions
@@ -101,6 +107,15 @@ int led_spi_addToQueue( LED_SPI_QUEUE* queue, LED_SPI_NODE new_node );
  *
  *********************************************************/
 int led_spi_popNode( LED_SPI_QUEUE* queue, LED_SPI_NODE* return_node );
+
+/********************************************************
+ *   Function Name: led_spi_write_pattern( uint8 pattern )
+ *
+ *   Description: writes a pattern to the LEDs
+ *
+ *
+ *********************************************************/
+void led_spi_write_pattern( uint8 pattern );
 
 
 #endif	/* LED_SPI_ISR_H */

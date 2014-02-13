@@ -32,6 +32,8 @@
 #define THRUSTER_STERN_SB 	 0x14
 #define THRUSTER_STERN_PORT 	 0x15
 
+#define LED_CONTROL_0     0x30
+
 
 //Outgoing (to computer)
 #define ACL_0_X     0x10

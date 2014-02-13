@@ -157,3 +157,111 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
     INTEnableInterrupts();
 
 }
+
+
+/********************************************************
+ *   Function Name: led_spi_write_pattern( uint8 pattern )
+ *
+ *   Description: writes a pattern to the LEDs
+ *
+ *
+ *********************************************************/
+void led_spi_write_pattern( uint8 pattern )
+{
+    int i;
+    LED_SPI_NODE temp, temp0, temp1;
+    static uint8 flop;
+
+    //send initial zero packet to prep the strip
+    temp0.data_G = 0x00;
+    temp0.data_R = 0x00;
+    temp0.data_B = 0x00;
+    led_spi_addToQueue(&LED_SPI_Queue, temp0);
+
+
+
+    switch (pattern)
+    {
+        case LED_PATTERN_ALL_BLUE:
+            temp.data_G = 0x80;
+            temp.data_R = 0x80;
+            temp.data_B = 0x81;
+            for (i = 1; i < 35; i = i + 1)
+                led_spi_addToQueue(&LED_SPI_Queue, temp);
+
+            break;
+
+        case LED_PATTERN_ALL_GREEN:
+            temp.data_G = 0x81;
+            temp.data_R = 0x80;
+            temp.data_B = 0x80;
+            for (i = 1; i < 35; i = i + 1)
+                led_spi_addToQueue(&LED_SPI_Queue, temp);
+
+            break;
+
+        case LED_PATTERN_ALL_RED:
+            temp.data_G = 0x80;
+            temp.data_R = 0x81;
+            temp.data_B = 0x80;
+            for (i = 1; i < 35; i = i + 1)
+                led_spi_addToQueue(&LED_SPI_Queue, temp);
+
+            break;
+    }
+
+//    switch (flop) {
+//            case 1:
+//                temp.data_G = 0x80;
+//                temp.data_R = 0x80;
+//                temp.data_B = 0x81;
+//                flop = 2;
+//                break;
+//            case 2:
+//                temp.data_G = 0x81;
+//                temp.data_R = 0x80;
+//                temp.data_B = 0x80;
+//                flop = 3;
+//                break;
+//            default:
+//                temp.data_G = 0x80;
+//                temp.data_R = 0x81;
+//                temp.data_B = 0x80;
+//                flop = 1;
+//        }
+
+        //    if (flop)
+        //    {
+        //    temp.data_G = 0x80;
+        //    temp.data_R = 0x81;
+        //    temp.data_B = 0x80;
+        //
+        //    temp1.data_G = 0x80;
+        //    temp1.data_R = 0x80;
+        //    temp1.data_B = 0x81;
+        //    }
+        //    else
+        //    {
+        //        temp1.data_G = 0x80;
+        //    temp1.data_R = 0x81;
+        //    temp1.data_B = 0x80;
+        //
+        //    temp.data_G = 0x80;
+        //    temp.data_R = 0x80;
+        //    temp.data_B = 0x81;
+        //
+        //    }
+        //    flop = !flop;
+
+//        for (i = 1; i < 35; i = i + 1) {
+//            led_spi_addToQueue(&LED_SPI_Queue, temp);
+//
+//        }
+
+
+    //start the SPI ISR if it is idling
+    if (LED_SPI_is_idle)
+    {
+        led_spi_begin();
+    }
+}

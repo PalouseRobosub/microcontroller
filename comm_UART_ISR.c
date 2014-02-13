@@ -316,6 +316,12 @@ void bg_process_comm_uart(void) {
                     }
                     break;
 
+
+                //LEDs
+                case LED_CONTROL_0:
+                    led_spi_write_pattern (received_bytes[2]);
+                    break;
+
             }
 
             if (MOTOR_UART_is_idle) {

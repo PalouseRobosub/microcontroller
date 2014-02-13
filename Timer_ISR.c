@@ -61,11 +61,7 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     extern boolean I2C_BANK_0_is_idle;
     extern boolean COMM_UART_is_idle;
     extern boolean ADC_is_idle;
-    extern LED_SPI_QUEUE LED_SPI_Queue;
-    extern boolean LED_SPI_is_idle;
-    LED_SPI_NODE temp, temp0, temp1;
-    int i;
-    static boolean flop;
+
     INTDisableInterrupts();
 
     //PORTCbits.RC1 = !PORTCbits.RC1; //toggle LED5 (max32)
@@ -73,11 +69,11 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     i2c_ACL_Read();
 
     
-        comm_uart_CreateNode( 'A', 'B', 'C' );
-        if (COMM_UART_is_idle)
-        {
-            comm_uart_begin();
-        }
+    comm_uart_CreateNode( 'A', 'B', 'C' );
+    if (COMM_UART_is_idle)
+    {
+        comm_uart_begin();
+    }
     
     if (I2C_BANK_0_is_idle)
     {
@@ -91,69 +87,10 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     {
         adc_begin();
     }
-
-    temp0.data_G = 0x00;
-    temp0.data_R = 0x00;
-    temp0.data_B = 0x00;
-    led_spi_addToQueue(&LED_SPI_Queue, temp0);
-
-
-
-    switch (flop)
-    {
-        case 1:
-            temp.data_G = 0x80;
-            temp.data_R = 0x80;
-            temp.data_B = 0x81;
-            flop = 2;
-            break;
-        case 2:
-            temp.data_G = 0x81;
-            temp.data_R = 0x80;
-            temp.data_B = 0x80;
-            flop = 3;
-            break;
-        default:
-            temp.data_G = 0x80;
-            temp.data_R = 0x81;
-            temp.data_B = 0x80;
-            flop = 1;
-    }
-
-//    if (flop)
-//    {
-//    temp.data_G = 0x80;
-//    temp.data_R = 0x81;
-//    temp.data_B = 0x80;
-//
-//    temp1.data_G = 0x80;
-//    temp1.data_R = 0x80;
-//    temp1.data_B = 0x81;
-//    }
-//    else
-//    {
-//        temp1.data_G = 0x80;
-//    temp1.data_R = 0x81;
-//    temp1.data_B = 0x80;
-//
-//    temp.data_G = 0x80;
-//    temp.data_R = 0x80;
-//    temp.data_B = 0x81;
-//
-//    }
-//    flop = !flop;
-
-    for (i=1; i<35; i = i+1)
-    {
-        led_spi_addToQueue(&LED_SPI_Queue, temp);
-
-    }
-
-    if (LED_SPI_is_idle)
-    {
-        led_spi_begin();
-    }
+    
         
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
 }
+
+
