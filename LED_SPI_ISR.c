@@ -7,6 +7,10 @@
  *
  *********************************************************/
 
+/*************************************************************************
+ System Includes
+ ************************************************************************/
+#include "system.h"
 #include "LED_SPI_ISR.h"
 
 /*************************************************************************
@@ -169,8 +173,7 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
 void led_spi_write_pattern( uint8 pattern )
 {
     int i;
-    LED_SPI_NODE temp, temp0, temp1;
-    static uint8 flop;
+    LED_SPI_NODE temp, temp0;
 
     //send initial zero packet to prep the strip
     temp0.data_G = 0x00;
@@ -268,54 +271,6 @@ void led_spi_write_pattern( uint8 pattern )
             break;
 
     }
-
-//    switch (flop) {
-//            case 1:
-//                temp.data_G = 0x80;
-//                temp.data_R = 0x80;
-//                temp.data_B = 0x81;
-//                flop = 2;
-//                break;
-//            case 2:
-//                temp.data_G = 0x81;
-//                temp.data_R = 0x80;
-//                temp.data_B = 0x80;
-//                flop = 3;
-//                break;
-//            default:
-//                temp.data_G = 0x80;
-//                temp.data_R = 0x81;
-//                temp.data_B = 0x80;
-//                flop = 1;
-//        }
-
-        //    if (flop)
-        //    {
-        //    temp.data_G = 0x80;
-        //    temp.data_R = 0x81;
-        //    temp.data_B = 0x80;
-        //
-        //    temp1.data_G = 0x80;
-        //    temp1.data_R = 0x80;
-        //    temp1.data_B = 0x81;
-        //    }
-        //    else
-        //    {
-        //        temp1.data_G = 0x80;
-        //    temp1.data_R = 0x81;
-        //    temp1.data_B = 0x80;
-        //
-        //    temp.data_G = 0x80;
-        //    temp.data_R = 0x80;
-        //    temp.data_B = 0x81;
-        //
-        //    }
-        //    flop = !flop;
-
-//        for (i = 1; i < 35; i = i + 1) {
-//            led_spi_addToQueue(&LED_SPI_Queue, temp);
-//
-//        }
 
 
     //start the SPI ISR if it is idling

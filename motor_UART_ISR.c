@@ -6,8 +6,11 @@
  *
  *
  *********************************************************/
+
+/*************************************************************************
+ System Includes
+ ************************************************************************/
 #include "system.h"
-#include "functions.h"
 #include "motor_UART_ISR.h"
 
 /*************************************************************************
@@ -15,7 +18,6 @@
  ************************************************************************/
 MOTOR_UART_QUEUE MOTOR_UART_Queue;
 boolean MOTOR_UART_is_idle;
-uint8 led_val;
 
 /********************************************************
  *   Function Name:
@@ -25,25 +27,20 @@ uint8 led_val;
  *
  *********************************************************/
 void motor_uart_setup(void) {
+    
     MOTOR_UART_BRG = 64; //divider of 64 for 9600 baud (default for motors)
     MOTOR_UART_PDSEL = 0;
     motor_uart_InitializeQueue(&MOTOR_UART_Queue);
-    led_val = 0;
 
 
-    //Setup UART2 TX interrupts
+    //Setup TX interrupts
     MOTOR_UART_TX_INT_set(1); //enable interrupt Tx
     MOTOR_UART_INT_PRIORITY_set(7); //set priority
     MOTOR_UART_UTXISEL = 2; //Set interrupt to fire when transmit buffer is empty
     MOTOR_UART_UTXEN = 1; //enable Tx
 
-    //Setup UART1 RX interrupts
-    //MOTOR_UART_RX_INT_set(1); //enable interrupt Rx
-    //set by default - U1STAbits.URXISEL = 0; //Set interrupt to fire when a character is recieved
-    //MOTOR_UART_URXEN = 1; //enable Rx
 
     MOTOR_UART_ON = 1;
-    //    motor_uart_InitializeQueue(&MOTOR_UART_Queue);//initialize the queue
 
     MOTOR_UART_is_idle = TRUE; //set that bus is currently idle
 }
@@ -56,7 +53,7 @@ void motor_uart_setup(void) {
  *
  *********************************************************/
 inline void motor_uart_begin(void) {
-    /* this sets the UART1TX interrupt flag. Setting the flag will
+    /* this sets the UART TX interrupt flag. Setting the flag will
      cause the ISR to be entered as soon as the global interrupt
      flag is enabled */
     MOTOR_UART_TX_INT_set(1); //enable interrupt Tx
@@ -127,7 +124,7 @@ int motor_uart_popNode(MOTOR_UART_QUEUE* queue, MOTOR_UART_NODE* return_node) {
  *
  *********************************************************/
 void __ISR(_MOTOR_UART_VECTOR, IPL7AUTO) motor_uart_Handler(void) {
-    int i, k;
+    int i;
     MOTOR_UART_NODE current_node;
 
     INTDisableInterrupts();

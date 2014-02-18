@@ -1,9 +1,11 @@
-/*
- * File:   comm_UART_ISR.h
- * Author: Ian
+/********************************************************
+ *   File Name: comm_UART_ISR.h
  *
- * Created on September 27, 2013, 10:34 AM
- */
+ *   Description:
+ *              header file for the communications UART ISR
+ *
+ *
+ *********************************************************/
 
 #ifndef COMM_UART_ISR_H
 #define	COMM_UART_ISR_H
@@ -11,8 +13,6 @@
 /*************************************************************************
  System Includes
  ************************************************************************/
-#include <peripheral/ports.h>
-#include <peripheral/uart.h>
 
 /*************************************************************************
  Typedefs

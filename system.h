@@ -1,19 +1,48 @@
-/* 
- * File:   system.h
- * Author: James
+/********************************************************
+ *   File Name: system.h
  *
- * Created on October 29, 2013, 5:48 PM
- */
+ *   Description:
+ *              main header file, used for universal constants,
+ * configurations for different devices, and transmission protocal defines
+ *
+ *
+ *********************************************************/
 
 #ifndef SYSTEM_H
 #define	SYSTEM_H
-
 
 /*************************************************************************
  System Includes
  ************************************************************************/
 #include <peripheral/ports.h>
-#include <peripheral/uart.h>
+
+/*************************************************************************
+ Typedefs
+ ************************************************************************/
+typedef unsigned int uint;
+typedef unsigned short int uint16;
+typedef unsigned char uint8;
+typedef uint8 boolean;
+
+/*************************************************************************
+ Constants
+ ************************************************************************/
+
+/*************************************************************************
+ Structure Definitions
+ ************************************************************************/
+
+/*************************************************************************
+ Enums
+ ************************************************************************/
+enum
+{
+    FALSE,
+    TRUE
+};
+/*************************************************************************
+ Variables
+ ************************************************************************/
 
 /*************************************************************************
  Transmission Protocol Defines
@@ -21,10 +50,14 @@
 #ifndef TRANSMISSION_PROTOCOL
 #define	TRANSMISSION_PROTOCOL
 
-//CONTROL BYTE
+//CONTROL BYTE (used for packet synchronization)
 #define CONTROL_BYTE             '\n'
 
+//////////////////////////
 //Incoming (from computer)
+//////////////////////////
+
+//Thrusters
 #define THRUSTER_BOW_SB 	 0x10
 #define THRUSTER_BOW_PORT 	 0x11
 #define THRUSTER_DEPTH_SB 	 0x12
@@ -32,10 +65,12 @@
 #define THRUSTER_STERN_SB 	 0x14
 #define THRUSTER_STERN_PORT 	 0x15
 
+//LED control
 #define LED_CONTROL_0     0x30
 
-
+//////////////////////////
 //Outgoing (to computer)
+//////////////////////////
 #define ACL_0_X     0x10
 #define ACL_0_Y     0x11
 #define ACL_0_Z     0x12
@@ -112,10 +147,6 @@
 #define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
 
 
-
-
-
-
 #elif defined (__32MX795F512L__)
 
 //comm_uart defines
@@ -137,11 +168,7 @@
 #define COMM_UART_TXREG U1TXREG //Tx register
 
 
-//motor_uart defines
-//#define MOTOR_UART UART2
-
-
-//MAX32 TX1/RX1
+//motor_uart defines (MAX32 TX1/RX1 is UART4)
 #define MOTOR_UART_BRG U4BRG //baud rate register
 #define MOTOR_UART_PDSEL U4MODEbits.PDSEL //parity and data selection bits
 #define MOTOR_UART_UTXISEL U4STAbits.UTXISEL //tx interrupt selection bits
@@ -157,25 +184,6 @@
 #define MOTOR_UART_TXIF IFS2bits.U4TXIF //Tx interrupt flag
 #define MOTOR_UART_RXREG U4RXREG //Rx register
 #define MOTOR_UART_TXREG U4TXREG //Tx register
-
-/*
-//MAX32 TX3/RX3
- #define MOTOR_UART_BRG U5BRG //baud rate register
-#define MOTOR_UART_PDSEL U5MODEbits.PDSEL //parity and data selection bits
-#define MOTOR_UART_UTXISEL U5STAbits.UTXISEL //tx interrupt selection bits
-#define MOTOR_UART_UTXEN U5STAbits.UTXEN//tx enable
-#define MOTOR_UART_URXEN  U5STAbits.URXEN //rx enable
-#define MOTOR_UART_ON  U5MODEbits.ON //uart enable
-#define MOTOR_UART_TX_INT_set(x) IEC2SET = (x << 11) //enables or disables the tx interrupt
-#define MOTOR_UART_RX_INT_set(x) IEC2SET = (x << 10) //enables or disables the rx interrupt
-#define MOTOR_UART_INT_PRIORITY_set(x) IPC12SET = (x << 26) //sets the priority of the uart interrupts
-#define _MOTOR_UART_VECTOR _UART_5_VECTOR //interrupt vector
-#define MOTOR_UART_RXIF IFS2bits.U5RXIF //Rx interrupt flag
-#define MOTOR_UART_TXIF IFS2bits.U5TXIF //Tx interrupt flag
-#define MOTOR_UART_RXREG U5RXREG //Rx register
-#define MOTOR_UART_TXREG U5TXREG //Tx register
- */
-
 
 //I2C Bank 0 defines
 #define _I2C_BANK_0_VECTOR _I2C_1_VECTOR
@@ -221,27 +229,6 @@
 
 #endif
 
-
-/*************************************************************************
- Typedefs
- ************************************************************************/
-
-/*************************************************************************
- Constants
- ************************************************************************/
-
-/*************************************************************************
- Structure Definitions
- ************************************************************************/
-
-
-/*************************************************************************
- Enums
- ************************************************************************/
-
-/*************************************************************************
- Variables
- ************************************************************************/
 
 /*************************************************************************
  Function Declarations

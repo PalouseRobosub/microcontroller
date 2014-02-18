@@ -6,8 +6,12 @@
  *
  *
  *********************************************************/
+
+
+/*************************************************************************
+ System Includes
+ ************************************************************************/
 #include "system.h"
-#include "functions.h"
 #include "ADC_ISR.h"
 #include "Sensors.h"
 #include "comm_UART_ISR.h"
@@ -36,8 +40,7 @@ void adc_setup(void)
     AD1CHSbits.CH0NA = 0; //set the negative input for channel A to internal ground
 
 
-//    TRISAbits.TRISA0 = 1; //make sure the pin is an input (not an output)
-//    TRISAbits.TRISA1 = 1;
+    //make sure the pin is an input (not an output)
     TRISAbits.TRISA6 = 1;
     TRISAbits.TRISA7 = 1;
 
@@ -125,7 +128,6 @@ void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
         adc_value =  ADC1BUF0;
 
         comm_uart_CreateNode(current_node.sensor_id, (adc_value & 0xFF), ((adc_value & 0xFF00) >> 8) );
-        //ADC_Load_UART( current_node.sensor_id, adc_value);
     }
 
     if (ADC_popNode(&ADC_queue, &current_node)) //load next node from the queue
@@ -145,31 +147,6 @@ void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
 
     INTEnableInterrupts();
 
-}
-
-/********************************************************
- *   Function Name: ADC_Load_UART(SENSOR_ID sensor, uint16 adc_value)
- *
- *   Description: Packages the received data and puts it
- *                on the UART queue
- *
- *
- *********************************************************/
-void ADC_Load_UART(SENSOR_ID sensor, uint16 adc_value)
-{
-
-    switch (sensor)
-    {
-        case ADC_DEPTH_0:
-            comm_uart_CreateNode(ADC_DEPTH, (adc_value & 0xFF), (adc_value >> 4));
-            break;
-
-        case ADC_BATT_0:
-            comm_uart_CreateNode(ADC_BATT, (adc_value & 0xFF), (adc_value >> 4));
-            break;
-    }
-
-    return;
 }
 
 /********************************************************

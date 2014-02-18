@@ -6,14 +6,17 @@
  *
  *
  *********************************************************/
-#include "functions.h"
+
+/*************************************************************************
+ System Includes
+ ************************************************************************/
+#include "system.h"
 #include "Sensors.h"
 #include "Timer_ISR.h"
 #include "peripheral/timer.h"
 #include "I2C_ISR.h"
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
-#include "system.h"
 #include "ADC_ISR.h"
 #include "LED_SPI_ISR.h"
 
@@ -64,11 +67,15 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
 
     INTDisableInterrupts();
 
-    //PORTCbits.RC1 = !PORTCbits.RC1; //toggle LED5 (max32)
     i2c_GYRO_Read();
     i2c_ACL_Read();
 
-    
+
+    /*
+    this creating and sending a uart node below should
+    not be necessary, but I remember removing it
+    broke the uart. This needs to be debugged.
+     */
     comm_uart_CreateNode( 'A', 'B', 'C' );
     if (COMM_UART_is_idle)
     {
@@ -77,7 +84,6 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
     
     if (I2C_BANK_0_is_idle)
     {
-        //PORTAbits.RA3 = !PORTAbits.RA3; //toggle LED4 (max32)
         i2c_bank_0_begin();
     }
 

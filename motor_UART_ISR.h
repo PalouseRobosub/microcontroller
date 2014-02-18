@@ -1,9 +1,11 @@
-/*
- * File:   motor_UART_ISR.h
- * Author: Korey
+/********************************************************
+ *   File Name: motor_UART_ISR.h
  *
- * Created on September 27, 2013, 10:34 AM
- */
+ *   Description:
+ *              header file for the motor UART ISR
+ *
+ *
+ *********************************************************/
 
 #ifndef MOTOR_UART_ISR_H
 #define	MOTOR_UART_ISR_H
@@ -11,8 +13,6 @@
 /*************************************************************************
  System Includes
  ************************************************************************/
-#include <peripheral/ports.h>
-#include <peripheral/uart.h>
 
 /*************************************************************************
  Typedefs
@@ -28,10 +28,6 @@
 typedef struct motor_uart_node
 {
     uint8 uart_data[4];
-//    uint8 sensor_id;
-//    uint8 sensor_sub_id;
-//    uint8 data_h;
-//    uint8 data_l;
 }MOTOR_UART_NODE;
 
 typedef struct motor_uart_queue
@@ -55,13 +51,21 @@ typedef struct motor_uart_queue
  ************************************************************************/
 
  /********************************************************
- *   Function Name:
+ *   Function Name: motor_uart_setup
  *
- *   Description:
+ *   Description: initializes the motor UART ISR and queues
  *
  *
  *********************************************************/
 void motor_uart_setup(void);
+
+ /********************************************************
+ *   Function Name: motor_uart_begin
+ *
+ *   Description: force-starts the motor uart ISR
+ *
+ *
+ *********************************************************/
 void motor_uart_begin(void);
 
 /********************************************************
@@ -135,6 +139,14 @@ void Motor2_Forward( uint address, uint speed );
  *
  *********************************************************/
 void Motor2_Backward( uint address, uint speed );
+
+ /********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
 
 #endif	/* MOTOR_UART_ISR_H */
 

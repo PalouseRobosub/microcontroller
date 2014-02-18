@@ -6,8 +6,11 @@
  *
  *
  *********************************************************/
+
+/*************************************************************************
+ System Includes
+ ************************************************************************/
 #include "system.h"
-#include "functions.h"
 #include "comm_UART_ISR.h"
 
 /*************************************************************************
@@ -51,7 +54,6 @@ void comm_uart_setup(void) {
     COMM_UART_URXEN = 1; //enable Rx
 
     COMM_UART_ON = 1;
-    //    uart_InitializeQueue(&COMM_UART_Queue);//initialize the queue
 
     COMM_UART_is_idle = TRUE; //set that bus is currently idle
 }
@@ -152,7 +154,7 @@ void comm_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3) {
  *
  *********************************************************/
 void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
-    int i, k;
+    int i;
     COMM_UART_NODE current_node;
     uint8 received_byte;
 
@@ -211,16 +213,12 @@ void bg_process_comm_uart(void) {
         if (SYNC_LOCK) //if in sync
         {
 
-            //PORTAbits.RA9 = 1;
             if (received_index == 0)//only check the first byte for the control byte
             {
                 packet_recieved = FALSE; //start of a new packet
                 if (received_byte != CONTROL_BYTE) {
                     SYNC_LOCK = FALSE;
                     begin_sync = TRUE;
-                    //PORTAbits.RA9 = 0;
-
-                    //CALL SYNC FUNCTION
                 }
                 received_index++; //assuming we are synced, so dont add a new character to the packet
             } else if (received_index == 1) //NOTE only indexes 1 and 2 are used
@@ -263,10 +261,13 @@ void bg_process_comm_uart(void) {
             }
         }
 
-        //MOVE THIS TO THE MAIN PROCESSING FUNCTION
+
+        //Packet Processing
         if (packet_recieved) {
 
             switch (received_bytes[1]) {
+
+                //Thrusters
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {

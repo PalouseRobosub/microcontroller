@@ -6,8 +6,11 @@
  *
  *
  *********************************************************/
+
+/*************************************************************************
+ System Includes
+ ************************************************************************/
 #include "system.h"
-#include "functions.h"
 #include "Sensors.h"
 #include "I2C_ISR.h"
 
@@ -79,10 +82,7 @@ boolean I2C_BANK_0_is_idle;
 
     INTDisableInterrupts();
     I2C_BANK_0_MIF = 0; //clear the interrupt flag
-    //PORTDbits.RD13 = !PORTDbits.RD13;
     
-    
-    //PORTGbits.RG0 = !PORTGbits.RG0; //for testing, remove in final code
 
  switch(state)
  {
@@ -182,7 +182,6 @@ boolean I2C_BANK_0_is_idle;
          break;
 
      case STOPPED:  //we have just sent the stop signal
-         //delay(); //this is for testing (spaces out the I2C transactions). Remove in final code!
          if (I2C_popNode(&I2C_BANK_0_Queue, &current_node)) //load next node from the queue
          {
              I2C_BANK_0_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
