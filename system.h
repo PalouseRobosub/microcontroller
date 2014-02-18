@@ -110,14 +110,14 @@ enum
     defined (COMPILE_LED_BOARD) || \
     defined (COMPILE_ACTUATION_BOARD)
 
-#error multiple compile options were selected
+#error "multiple compile options were selected"
 
 #endif
 
 //check if the right chip is selected
 #if !defined (__32MX795F512L__) 
 
-#error selected chip is not supported for COMPILE_OLD_SUB option
+#error "selected chip is not supported for COMPILE_OLD_SUB option"
 
 #endif
 
@@ -204,21 +204,77 @@ enum
     defined (COMPILE_LED_BOARD) || \
     defined (COMPILE_ACTUATION_BOARD)
 
-#error multiple compile options were selected
+#error "multiple compile options were selected"
 
 #endif
 
 //check if the right chip is selected
 #if !defined (__32MX250F128B__)
 
-#error selected chip is not supported for COMPILE_SENSOR_BOARD option
+#error "selected chip is not supported for COMPILE_SENSOR_BOARD option"
 
 #endif
 
+#elif defined(COMPILE_THRUSTER_BOARD)
+
+//check for other compiler flags
+#if defined(COMPILE_OLD_SUB) || \
+    defined (COMPILE_SENSOR_BOARD) || \
+    defined (COMPILE_LED_BOARD) || \
+    defined (COMPILE_ACTUATION_BOARD)
+
+#error "multiple compile options were selected"
+
+#endif
+
+//check if the right chip is selected
+#if !defined (__32MX250F128B__)
+
+#error "selected chip is not supported for COMPILE_THRUSTER_BOARD option"
+
+#endif
+
+#elif defined(COMPILE_LED_BOARD)
+
+//check for other compiler flags
+#if defined(COMPILE_OLD_SUB) || \
+    defined (COMPILE_SENSOR_BOARD) || \
+    defined (COMPILE_THRUSTER_BOARD) || \
+    defined (COMPILE_ACTUATION_BOARD)
+
+#error "multiple compile options were selected"
+
+#endif
+
+//check if the right chip is selected
+#if !defined (__32MX250F128B__)
+
+#error "selected chip is not supported for COMPILE_LED_BOARD option"
+
+#endif
+
+#elif defined(COMPILE_ACTUATION_BOARD)
+
+//check for other compiler flags
+#if defined(COMPILE_OLD_SUB) || \
+    defined (COMPILE_SENSOR_BOARD) || \
+    defined (COMPILE_LED_BOARD) || \
+    defined (COMPILE_THRUSTER_BOARD)
+
+#error "multiple compile options were selected"
+
+#endif
+
+//check if the right chip is selected
+#if !defined (__32MX250F128B__)
+
+#error "selected chip is not supported for COMPILE_ACTUATION_BOARD option"
+
+#endif
 
 #else //no compile option was selected
 
-#error no compile option was selected
+#error "no compile option was selected"
 
 
 #endif
