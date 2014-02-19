@@ -173,6 +173,15 @@ enum
 #define I2C_BANK_0_ACKEN I2C1CONbits.ACKEN
 #define I2C_BANK_0_SEN I2C1CONbits.SEN
 
+//Sensor Timer defines
+#define _SENSOR_TIMER_VECTOR _TIMER_1_VECTOR
+#define SENSOR_TIMER_INT_PRIORITY_set(x) IPC1bits.T1IP = x
+#define SENSOR_TIMER_INT_set(x) IEC0bits.T1IE = x
+#define SENSOR_TIMER_IF IFS0bits.T1IF
+#define SENSOR_TIMER_PR PR1
+#define SENSOR_TIMER_EN T1CONbits.ON
+#define SENSOR_TIMER_PS T1CONbits.TCKPS
+
 //ADC defines
 #define ADC_INT_PRIORITY_set(x) IPC6SET = (x << 26) //sets the priority of the ADC interrupt
 #define ADC_INT_set(x) IEC1SET = (x << 1) //enables or disables the ADC interrupt

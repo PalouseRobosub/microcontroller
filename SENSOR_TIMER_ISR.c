@@ -1,8 +1,8 @@
 /********************************************************
- *   File Name: Timer_ISR.c
+ *   File Name: SENSOR_TIMER_ISR.c
  *
  *   Description:
- *              source code file for the Timer ISR
+ *              source code file for the Sensor Timer ISR
  *
  *
  *********************************************************/
@@ -12,8 +12,7 @@
  ************************************************************************/
 #include "system.h"
 #include "Sensors.h"
-#include "Timer_ISR.h"
-#include "peripheral/timer.h"
+#include "SENSOR_TIMER_ISR.h"
 #include "I2C_ISR.h"
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
@@ -32,12 +31,15 @@
  *
  *
  *********************************************************/
-void timer_1_setup(void)
-{
-    OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_256, 0xF40);
+void sensor_timer_setup(void)
+{    
+    SENSOR_TIMER_PS = 0b11; //set the prescaler bits (1/256 in this case)
+    SENSOR_TIMER_PR = 0xF40; //set the period register
 
-    IPC1bits.T1IP = 7;
-    IEC0bits.T1IE = 1;
+    SENSOR_TIMER_INT_PRIORITY_set(7); //set the priority
+    SENSOR_TIMER_INT_set(1); //enable the interrupt
+
+    SENSOR_TIMER_EN = 1; //enable the timer
 }
 
 /********************************************************
@@ -47,9 +49,9 @@ void timer_1_setup(void)
  *
  *
  *********************************************************/
-inline void timer_1_begin(void)
+inline void sensor_timer_begin(void)
 {
-    IFS0bits.T1IF = 1; //set the interrupt flag
+    SENSOR_TIMER_IF = 1; //set the interrupt flag
 }
 
 /********************************************************
@@ -59,7 +61,7 @@ inline void timer_1_begin(void)
  *
  *
  *********************************************************/
-void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer1Handler(void)
+void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void)
 {
     extern boolean I2C_BANK_0_is_idle;
     extern boolean COMM_UART_is_idle;

@@ -13,7 +13,7 @@
 #include "system.h"
 #include "Sensors.h"
 #include "I2C_ISR.h"
-#include "Timer_ISR.h"
+#include "SENSOR_TIMER_ISR.h"
 #include "comm_UART_ISR.h"
 #include "motor_UART_ISR.h"
 #include "ADC_ISR.h"
@@ -46,7 +46,7 @@ int main(void)
 
 #if defined (COMPILE_OLD_SUB)
     //setup/configure hardware modules
-    timer_1_setup();
+    sensor_timer_setup();
     i2c_bank_0_setup();
     comm_uart_setup();
     motor_uart_setup();

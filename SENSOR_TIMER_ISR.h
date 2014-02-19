@@ -1,14 +1,14 @@
 /********************************************************
- *   File Name: Timer_ISR.h
+ *   File Name: SENSOR_TIMER_ISR.h
  *
  *   Description:
- *              header file for the Timer ISR
+ *              header file for the Sensor Timer ISR
  *
  *
  *********************************************************/
 
-#ifndef TIMER_ISR_H
-#define	TIMER_ISR_H
+#ifndef SENSOR_TIMER_ISR_H
+#define	SENSOR_TIMER_ISR_H
 
 /*************************************************************************
  System Includes
@@ -52,7 +52,7 @@
  *
  *
  *********************************************************/
-void timer_1_setup(void);
+void sensor_timer_setup(void);
 
 /********************************************************
  *   Function Name:
@@ -61,8 +61,8 @@ void timer_1_setup(void);
  *
  *
  *********************************************************/
-inline void timer_1_begin(void);
+inline void sensor_timer_begin(void);
 
 
-#endif	/* TIMER_ISR_H */
+#endif	/* SENSOR_TIMER_ISR_H */
 
