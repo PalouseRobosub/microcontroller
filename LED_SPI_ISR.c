@@ -148,6 +148,7 @@ void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
             LED_SPI_is_idle = TRUE;
             LED_SPI_TXIE = 0; //clear the interrupt, so it doesn't keep firing
         } else {
+            LED_SPI_is_idle = FALSE;
             //transmit the data
             LED_SPI_BUF = current_node.data_G;
             LED_SPI_BUF = current_node.data_R;
