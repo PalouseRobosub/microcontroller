@@ -270,6 +270,7 @@ void bg_process_comm_uart(void) {
 
             switch (received_bytes[1]) {
                 //Add LED turn on logic here
+            }
         }
     }
 
