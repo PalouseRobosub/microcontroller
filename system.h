@@ -28,6 +28,7 @@
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
+#define THRUSTER_LED_BOARD
 
 /*************************************************************************
  Typedefs
@@ -65,6 +66,9 @@ enum
 
 //CONTROL BYTE (used for packet synchronization)
 #define CONTROL_BYTE             '\n'
+#define HBRIDGE_ADDRESS1         128
+#define HBRIDGE_ADDRESS2         129
+#define HBRIDGE_ADDRESS3         130
 
 //////////////////////////
 //Incoming (from computer)

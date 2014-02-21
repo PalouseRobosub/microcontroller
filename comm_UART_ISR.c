@@ -56,6 +56,8 @@ void comm_uart_setup(void) {
     COMM_UART_ON = 1;
 
     COMM_UART_is_idle = TRUE; //set that bus is currently idle
+    SYNC_LOCK = FALSE; //Initialize flag for sync status
+    begin_sync = FALSE; //Initialize flag for sync sequence
 }
 
 /********************************************************
@@ -126,7 +128,6 @@ int comm_uart_popNode(COMM_UART_QUEUE* queue, COMM_UART_NODE* return_node) {
     return 0;
 }
 
-
 /********************************************************
  *   Function Name: comm_uart_CreateNode(uint Byte1, uint Byte2, uint Byte3)
  *
@@ -163,7 +164,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     //URXDA is 1 if recieve buffer has data
     //TRMT is 1 if transmit buffer is empty
     if (COMM_UART_RXIF == 1) {
-        
+
         received_byte = COMM_UART_RXREG;
         bg_comm_uart_CreateNode(received_byte);
 
@@ -188,6 +189,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
     INTEnableInterrupts();
 
 }
+
 /********************************************************
  *   Function Name: bg_proc_comm_uart()
  *
@@ -200,13 +202,83 @@ void bg_process_comm_uart(void) {
     uint8 received_byte;
     BG_COMM_UART_NODE temp_node;
 
-
-
+#if defined (THRUSTER_LED_BOARD)
     if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
     {
         //do nothing - the queue is empty
+    } else {
+
+        received_byte = temp_node.uart_data;
+
+        if (SYNC_LOCK) //if in sync
+        {
+
+            if (received_index == 0)//only check the first byte for the control byte
+            {
+                packet_recieved = FALSE; //start of a new packet
+                if (received_byte != HBRIDGE_ADDRESS1 ||
+                        received_byte != HBRIDGE_ADDRESS2 ||
+                        received_byte != HBRIDGE_ADDRESS3) {
+                    SYNC_LOCK = FALSE;
+                    begin_sync = TRUE;
+                }
+                received_index++; //assuming we are synced, so dont add a new character to the packet
+            } else if (received_index == 4) {
+                received_bytes[received_index] = received_byte;
+                received_index = 0; //Reset the index, we now have the full package
+                packet_recieved = TRUE;
+            } else {
+                received_bytes[received_index] = received_byte; //We don't have a full packet, so continue to fill
+                received_index++;
+            }
+        } else {
+            if (begin_sync == TRUE) {
+                received_index = 0;
+                if (received_byte == HBRIDGE_ADDRESS1 ||
+                        received_byte == HBRIDGE_ADDRESS2 ||
+                        received_byte == HBRIDGE_ADDRESS3) {
+                    begin_sync = FALSE;
+                }
+            }
+
+            if (begin_sync == FALSE) {
+
+                received_bytes[received_index] = received_byte;
+                ++received_index;
+
+                //000X000X
+                //01234567
+                //Possible addresses or H-bridges: 128,129,130
+                if (received_index == 4) {
+                    //(address + 0 + speed) & 127
+                    if (((received_bytes[0] + received_bytes[1] + received_bytes[2]) & 127) == received_bytes[3]) {
+                        SYNC_LOCK = TRUE;
+                        received_index = 0;
+                        packet_recieved = TRUE;
+
+                    } else {
+                        begin_sync = TRUE;
+
+                    }
+                }
+            }
+        }
+
+
+        //Packet Processing
+        if (packet_recieved) {
+
+            switch (received_bytes[1]) {
+                //Add LED turn on logic here
+        }
     }
-    else {
+
+    return;
+#elif defined (COMPILE_OLD_SUB)
+    if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
+    {
+        //do nothing - the queue is empty
+    } else {
 
         received_byte = temp_node.uart_data;
 
@@ -237,9 +309,9 @@ void bg_process_comm_uart(void) {
                 if (received_byte == CONTROL_BYTE) {
                     begin_sync = FALSE;
                 }
-            } 
-            
-            if (begin_sync == FALSE){
+            }
+
+            if (begin_sync == FALSE) {
 
                 received_bytes[received_index] = received_byte;
                 ++received_index;
@@ -267,7 +339,7 @@ void bg_process_comm_uart(void) {
 
             switch (received_bytes[1]) {
 
-                //Thrusters
+                    //Thrusters
                 case THRUSTER_BOW_SB:
                     if (received_bytes[2] & 0x80) //Pull off the direction bit
                     {
@@ -318,9 +390,9 @@ void bg_process_comm_uart(void) {
                     break;
 
 
-                //LEDs
+                    //LEDs
                 case LED_CONTROL_0:
-                    led_spi_write_pattern (received_bytes[2]);
+                    led_spi_write_pattern(received_bytes[2]);
                     break;
 
             }
@@ -333,6 +405,19 @@ void bg_process_comm_uart(void) {
     }
 
     return;
+
+#elif defined (COMPILE_SENSOR_BOARD)
+
+#elif defined (COMPILE_THRUSTER_BOARD)
+
+#elif defined (COMPILE_LED_BOARD)
+
+#elif defined (COMPILE_ACTUATION_BOARD)
+
+#endif
+
+
+
 }
 
 /********************************************************
@@ -353,7 +438,6 @@ void bg_comm_uart_setup(void) {
     SYNC_LOCK = FALSE;
     begin_sync = TRUE;
 }
-
 
 /********************************************************
  *   Function Name: bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue)
@@ -408,7 +492,6 @@ int bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_no
     return 0;
 }
 
-
 /********************************************************
  *   Function Name: comm_uart_SetNode( uint Byte1, uint Byte2, uint Byte3 )
  *
@@ -416,7 +499,7 @@ int bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_no
  *
  *
  *********************************************************/
-void  bg_comm_uart_CreateNode( uint8 received_byte ) {
+void bg_comm_uart_CreateNode(uint8 received_byte) {
     BG_COMM_UART_NODE temp;
 
     temp.uart_data = received_byte;
