@@ -16,6 +16,7 @@
 #include "Sensors.h"
 #include "comm_UART_ISR.h"
 
+#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
 
 /*************************************************************************
  Variables
@@ -212,3 +213,4 @@ int ADC_popNode( ADC_Queue* queue, ADC_Node* return_node )
 
 
 }
+#endif

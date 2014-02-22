@@ -14,6 +14,8 @@
 #include "Sensors.h"
 #include "I2C_ISR.h"
 
+#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+
 
 /*************************************************************************
  Variables
@@ -292,3 +294,4 @@ int I2C_popNode( I2C_Queue* queue, I2C_Node* return_node )
 
 
 }
+#endif

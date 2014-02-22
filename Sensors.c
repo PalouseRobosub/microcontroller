@@ -11,6 +11,8 @@
  System Includes
  ************************************************************************/
 #include "system.h"
+#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+
 #include "Sensors.h"
 #include "I2C_ISR.h"
 #include "ADC_ISR.h"
@@ -156,3 +158,4 @@
 
  }
 
+#endif

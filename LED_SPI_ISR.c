@@ -12,6 +12,7 @@
  ************************************************************************/
 #include "system.h"
 #include "LED_SPI_ISR.h"
+#if defined (COMPILE_OLD_SUB) || (COMPILE_LED_BOARD)
 
 /*************************************************************************
  Variables
@@ -280,3 +281,4 @@ void led_spi_write_pattern( uint8 pattern )
         led_spi_begin();
     }
 }
+#endif
