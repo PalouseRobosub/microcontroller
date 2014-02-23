@@ -132,6 +132,7 @@ int main(void) {
     //setup/configure hardware modules
     thruster_timer_setup();
     comm_uart_setup();
+    thruster_LED_setup();
 
     //load nodes onto queues to initialize sensors
 

@@ -63,6 +63,15 @@ void thruster_timer_setup(void);
  *********************************************************/
 inline void thruster_timer_begin(void);
 
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void thruster_LED_setup(void);
+
 
 #endif	/* THRUSTER__TIMER_ISR_H */
 

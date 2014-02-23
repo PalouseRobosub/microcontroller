@@ -25,6 +25,7 @@ boolean begin_sync;
 boolean packet_recieved;
 
 BG_COMM_UART_QUEUE BG_COMM_UART_Queue;
+THRUSTER_STATUS Thruster_Status;
 
 /********************************************************
  *   Function Name:
@@ -342,6 +343,7 @@ void bg_process_sensor_comm_uart(void) {
 #endif
 
 #if defined (COMPILE_THRUSTER_BOARD)
+
 /********************************************************
  *   Function Name: bg_process_thruster_comm_uart()
  *
@@ -418,9 +420,71 @@ void bg_process_thruster_comm_uart(void) {
 
         //Packet Processing
         if (packet_recieved) {
-
-            switch (received_bytes[1]) {
-                    //Add LED turn on logic here
+            //Packet Structure
+            //received_bytes[0] = address; //address - set on the H-bridge switches
+            //received_bytes[1] = 0; //direction
+            //received_bytes[2] = speed; //speed - integer from 0-127
+            switch (received_bytes[0]) {
+                case 128:
+                    switch (received_bytes[1]) {
+                        case 0:
+                            Thruster_Status.BOW_PORT_DIR = 1;
+                            Thruster_Status.BOW_PORT_MAG = received_bytes[2];
+                            break;
+                        case 1:
+                            Thruster_Status.BOW_PORT_DIR = 0;
+                            Thruster_Status.BOW_PORT_MAG = received_bytes[2];
+                            break;
+                        case 4:
+                            Thruster_Status.STERN_PORT_DIR = 1;
+                            Thruster_Status.STERN_PORT_MAG = received_bytes[2];
+                            break;
+                        case 5:
+                            Thruster_Status.STERN_PORT_DIR = 0;
+                            Thruster_Status.STERN_PORT_MAG = received_bytes[2];
+                            break;
+                    }
+                    break;
+                case 129:
+                    switch (received_bytes[1]) {
+                        case 0:
+                            Thruster_Status.BOW_SB_DIR = 1;
+                            Thruster_Status.BOW_SB_MAG = received_bytes[2];
+                            break;
+                        case 1:
+                            Thruster_Status.BOW_SB_DIR = 0;
+                            Thruster_Status.BOW_SB_MAG = received_bytes[2];
+                            break;
+                        case 4:
+                            Thruster_Status.STERN_SB_DIR = 1;
+                            Thruster_Status.STERN_SB_MAG = received_bytes[2];
+                            break;
+                        case 5:
+                            Thruster_Status.STERN_SB_DIR = 0;
+                            Thruster_Status.STERN_SB_MAG = received_bytes[2];
+                            break;
+                    }
+                    break;
+                case 130:
+                    switch (received_bytes[1]) {
+                        case 0:
+                            Thruster_Status.BOW_PORT_DIR = 1;
+                            Thruster_Status.BOW_PORT_MAG = received_bytes[2];
+                            break;
+                        case 1:
+                            Thruster_Status.BOW_PORT_DIR = 0;
+                            Thruster_Status.BOW_PORT_MAG = received_bytes[2];
+                            break;
+                        case 4:
+                            Thruster_Status.STERN_SB_DIR = 1;
+                            Thruster_Status.STERN_SB_MAG = received_bytes[2];
+                            break;
+                        case 5:
+                            Thruster_Status.STERN_SB_DIR = 0;
+                            Thruster_Status.STERN_SB_MAG = received_bytes[2];
+                            break;
+                    }
+                    break;
             }
         }
     }
@@ -449,6 +513,17 @@ void bg_comm_uart_setup(void) {
     packet_recieved = FALSE;
     SYNC_LOCK = FALSE;
     begin_sync = TRUE;
+}
+
+/********************************************************
+ *   Function Name: thruster_status_Initialize(THRUSTER_STATUS* thruster_status)
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void thruster_status_Initialize(THRUSTER_STATUS* thruster_status) {
+    memset(thruster_status, 0, sizeof (THRUSTER_STATUS));
 }
 
 /********************************************************

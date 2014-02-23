@@ -164,6 +164,14 @@ void bg_process_sensor_comm_uart(void);
 void bg_process_thruster_comm_uart(void);
 
 /********************************************************
+ *   Function Name: thruster_status_Initialize(THRUSTER_STATUS* thruster_status)
+ *
+ *   Description: Clears the queue and resets parameters
+ *
+ *
+ *********************************************************/
+void thruster_status_Initialize(THRUSTER_STATUS* thruster_status);
+/********************************************************
  *   Function Name: bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue)
  *
  *   Description: Clears the queue and resets parameters

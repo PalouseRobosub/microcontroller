@@ -12,15 +12,8 @@
  ************************************************************************/
 #include "system.h"
 #if defined (COMPILE_THRUSTER_BOARD)
-
-#include "Sensors.h"
-#include "SENSOR_TIMER_ISR.h"
-#include "I2C_ISR.h"
+#include "THRUSTER_TIMER_ISR.h"
 #include "comm_UART_ISR.h"
-#include "motor_UART_ISR.h"
-#include "ADC_ISR.h"
-#include "LED_SPI_ISR.h"
-
 
 
 /*************************************************************************
@@ -64,18 +57,171 @@ inline void thruster_timer_begin(void) {
  *********************************************************/
 void __ISR(_THRUSTER_TIMER_VECTOR, IPL7AUTO) thruster_timer_handler(void) {
 
-    extern boolean COMM_UART_is_idle;
+    //extern boolean COMM_UART_is_idle;
+    extern THRUSTER_STATUS Thruster_Status;
+    static uint8 count;
 
 
     INTDisableInterrupts();
 
+    count = count + 1;
+    if (count > 126) {
+        count = 0;
+    }
 
+    //Insert LED commands here - need pin mappings
+    //Create PWM
+    if (Thruster_Status.BOW_PORT_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        BOW_PORT_MAG_LED_PORT = 0;
+        BOW_PORT_DIR_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.BOW_PORT_MAG) {
+            //Turn on MAG LED
+            BOW_PORT_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            BOW_PORT_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.BOW_PORT_DIR == 0) {
+            //Turn off DIR LED
+            BOW_PORT_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            BOW_PORT_DIR_LED_PORT = 1;
+        }
+    }
 
+    if (Thruster_Status.BOW_SB_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        BOW_SB_MAG_LED_PORT = 0;
+        BOW_SB_DIR_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.BOW_SB_MAG) {
+            //Turn on MAG LED
+            BOW_SB_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            BOW_SB_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.BOW_SB_DIR == 0) {
+            //Turn off DIR LED
+            BOW_SB_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            BOW_SB_DIR_LED_PORT = 1;
+        }
+    }
 
+    if (Thruster_Status.STERN_PORT_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        STERN_PORT_DIR_LED_PORT = 0;
+        STERN_PORT_MAG_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.STERN_PORT_MAG) {
+            //Turn on MAG LED
+            STERN_PORT_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            STERN_PORT_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.STERN_PORT_DIR == 0) {
+            //Turn off DIR LED
+            STERN_PORT_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            STERN_PORT_DIR_LED_PORT = 1;
+        }
+    }
+
+    if (Thruster_Status.STERN_SB_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        STERN_SB_MAG_LED_PORT = 0;
+        STERN_SB_DIR_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.STERN_SB_MAG) {
+            //Turn on MAG LED
+            STERN_SB_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            STERN_SB_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.STERN_SB_DIR == 0) {
+            //Turn off DIR LED
+            STERN_SB_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            STERN_SB_DIR_LED_PORT = 1;
+        }
+    }
+
+    if (Thruster_Status.DEPTH_PORT_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        DEPTH_PORT_MAG_LED_PORT = 0;
+        DEPTH_PORT_DIR_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.DEPTH_PORT_MAG) {
+            //Turn on MAG LED
+            DEPTH_PORT_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            DEPTH_PORT_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.DEPTH_PORT_DIR == 0) {
+            //Turn off DIR LED
+            DEPTH_PORT_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            DEPTH_PORT_DIR_LED_PORT = 1;
+        }
+    }
+
+    if (Thruster_Status.DEPTH_SB_MAG == 0) {
+        //Turn off both DIR and MAG LEDs
+        DEPTH_SB_MAG_LED_PORT = 0;
+        DEPTH_SB_DIR_LED_PORT = 0;
+    } else {
+        if (count < Thruster_Status.DEPTH_SB_MAG) {
+            //Turn on MAG LED
+            DEPTH_SB_MAG_LED_PORT = 1;
+        } else {
+            //Turn off MAG LED
+            DEPTH_SB_MAG_LED_PORT = 0;
+        }
+        if (Thruster_Status.DEPTH_SB_DIR == 0) {
+            //Turn off DIR LED
+            DEPTH_SB_DIR_LED_PORT = 0;
+        } else {
+            //Turn on DIR LED
+            DEPTH_SB_DIR_LED_PORT = 1;
+        }
+    }
 
 
     IFS0bits.T1IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
+}
+
+/********************************************************
+ *   Function Name:
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void thruster_LED_setup(void) {
+    BOW_SB_DIR_LED_TRIS = 0;
+    BOW_SB_MAG_LED_TRIS = 0;
+    BOW_PORT_DIR_LED_TRIS = 0;
+    BOW_PORT_MAG_LED_TRIS = 0;
+    STERN_SB_DIR_LED_TRIS = 0;
+    STERN_SB_MAG_LED_TRIS = 0;
+    STERN_PORT_DIR_LED_TRIS = 0;
+    STERN_PORT_MAG_LED_TRIS = 0;
+    DEPTH_SB_DIR_LED_TRIS = 0;
+    DEPTH_SB_MAG_LED_TRIS = 0;
+    DEPTH_PORT_DIR_LED_TRIS = 0;
+    DEPTH_PORT_MAG_LED_TRIS = 0;
 }
 
 #endif
