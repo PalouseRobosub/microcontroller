@@ -29,13 +29,15 @@
  ************************************************************************/
 typedef enum //LED Patterns
 {
-    LED_PATTERN_ALL_BLUE,
-    LED_PATTERN_ALL_GREEN,
-    LED_PATTERN_ALL_RED,
-    LED_PATTERN_RBB,
-    LED_PATTERN_BRB,
-    LED_PATTERN_BBR
-
+    LED_PATTERN_ALL_BLUE,  //0
+    LED_PATTERN_ALL_GREEN, //1
+    LED_PATTERN_ALL_RED,   //2
+    LED_PATTERN_ALL_WHITE, //3
+    LED_PATTERN_RBB ,      //4
+    LED_PATTERN_BRB,       //5
+    LED_PATTERN_BBR,       //6
+    LED_PATTERN_RWR       //7
+    
 } LED_PATTERN;
 
 /*************************************************************************

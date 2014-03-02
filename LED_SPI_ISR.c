@@ -213,6 +213,14 @@ void led_spi_write_pattern( uint8 pattern )
                 led_spi_addToQueue(&LED_SPI_Queue, temp);
             break;
 
+        case LED_PATTERN_ALL_WHITE:
+            temp.data_G = 0x81;
+            temp.data_R = 0x81;
+            temp.data_B = 0x81;
+            for (i = 1; i < 35; i = i + 1)
+                led_spi_addToQueue(&LED_SPI_Queue, temp);
+            break;
+
         case LED_PATTERN_RBB:
             temp.data_G = 0x80;
             temp.data_R = 0x81;
