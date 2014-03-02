@@ -23,7 +23,7 @@
 /* These flags are used to compile for the various different boards.
    Do not activate more than one flag at once!   */
 
-//#define COMPILE_OLD_SUB
+#define COMPILE_OLD_SUB
 //#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
@@ -36,6 +36,7 @@
 typedef unsigned int uint;
 typedef unsigned short int uint16;
 typedef unsigned char uint8;
+typedef signed char sint8;
 typedef uint8 boolean;
 
 /*************************************************************************

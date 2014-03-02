@@ -204,6 +204,7 @@ void bg_process_sensor_comm_uart(void) {
     extern boolean MOTOR_UART_is_idle;
     uint8 received_byte;
     BG_COMM_UART_NODE temp_node;
+    sint8 processing_byte;
 
 
     if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
@@ -267,57 +268,51 @@ void bg_process_sensor_comm_uart(void) {
 
         //Packet Processing
         if (packet_recieved) {
-
+            processing_byte = received_bytes[2];
 #if defined (COMPILE_OLD_SUB)
             switch (received_bytes[1]) {
 
                     //Thrusters
                 case THRUSTER_BOW_SB:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor1_Forward(129, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor1_Forward(129, abs(processing_byte));
                     } else {
-                        Motor1_Backward(129, (received_bytes[2] & 0x7F));
+                        Motor1_Backward(129, abs(processing_byte));
                     }
                     break;
                 case THRUSTER_BOW_PORT:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor1_Forward(128, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor1_Forward(128, abs(processing_byte));
                     } else {
-                        Motor1_Backward(128, (received_bytes[2] & 0x7F));
+                        Motor1_Backward(128, abs(processing_byte));
                     }
                     break;
                 case THRUSTER_STERN_SB:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor2_Forward(129, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor2_Forward(129, abs(processing_byte));
                     } else {
-                        Motor2_Backward(129, (received_bytes[2] & 0x7F));
+                        Motor2_Backward(129, abs(processing_byte));
                     }
                     break;
                 case THRUSTER_STERN_PORT:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor2_Forward(128, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor2_Forward(128, abs(processing_byte));
                     } else {
-                        Motor2_Backward(128, (received_bytes[2] & 0x7F));
+                        Motor2_Backward(128, abs(processing_byte));
                     }
                     break;
                 case THRUSTER_DEPTH_SB:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor2_Forward(130, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor2_Forward(130, abs(processing_byte));
                     } else {
-                        Motor2_Backward(130, (received_bytes[2] & 0x7F));
+                        Motor2_Backward(130, abs(processing_byte));
                     }
                     break;
                 case THRUSTER_DEPTH_PORT:
-                    if (received_bytes[2] & 0x80) //Pull off the direction bit
-                    {
-                        Motor1_Forward(130, (received_bytes[2] & 0x7F));
+                    if (processing_byte > 0) {
+                        Motor1_Forward(130, abs(processing_byte));
                     } else {
-                        Motor1_Backward(130, (received_bytes[2] & 0x7F));
+                        Motor1_Backward(130, abs(processing_byte));
                     }
                     break;
 
