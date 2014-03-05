@@ -24,8 +24,8 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-//#define COMPILE_SENSOR_BOARD
-#define COMPILE_THRUSTER_BOARD
+#define COMPILE_SENSOR_BOARD
+//#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
 
@@ -190,6 +190,8 @@ enum
 #define ADC_INT_PRIORITY_set(x) IPC6SET = (x << 26) //sets the priority of the ADC interrupt
 #define ADC_INT_set(x) IEC1SET = (x << 1) //enables or disables the ADC interrupt
 #define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
+#define ADC_BATTERY_INPUT_PIN TRISAbits.TRISA6
+#define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA7
 
 
 //LED_SPI defines
@@ -227,6 +229,56 @@ enum
 #error "selected chip is not supported for COMPILE_SENSOR_BOARD option"
 
 #endif
+
+//comm_uart defines
+#define COMM_UART UART1
+#define COMM_UART_BRG U1BRG //baud rate register
+#define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
+#define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
+#define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
+#define COMM_UART_URXEN U1STAbits.URXEN //rx enable
+#define COMM_UART_ON U1MODEbits.ON //uart enable
+#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 8) //enablse or disables the rx interrupt
+#define COMM_UART_INT_PRIORITY_set(x) IPC8SET = (x << 2) //sets the priority of the uart interrupts
+#define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
+#define COMM_UART_RXIF IFS1bits.U1RXIF //Rx interrupt flag
+#define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
+#define COMM_UART_RXREG U1RXREG //Rx register
+#define COMM_UART_TXREG U1TXREG //Tx register
+
+//Sensor Timer defines
+#define _SENSOR_TIMER_VECTOR _TIMER_1_VECTOR
+#define SENSOR_TIMER_INT_PRIORITY_set(x) IPC1bits.T1IP = x
+#define SENSOR_TIMER_INT_set(x) IEC0bits.T1IE = x
+#define SENSOR_TIMER_IF IFS0bits.T1IF
+#define SENSOR_TIMER_PR PR1
+#define SENSOR_TIMER_EN T1CONbits.ON
+#define SENSOR_TIMER_PS T1CONbits.TCKPS
+
+//I2C Bank 0 defines
+#define _I2C_BANK_0_VECTOR _I2C_1_VECTOR
+#define I2C_BANK_0_BRG I2C1BRG //baud rate register
+#define I2C_BANK_0_INT_PRIORITY_set(x) IPC8SET = (x << 10)
+#define I2C_BANK_0_INT_set(x) IEC1SET = (x << 12)
+#define I2C_BANK_0_ON I2C1CONbits.ON
+#define I2C_BANK_0_MIF IFS1bits.I2C1MIF
+#define I2C_BANK_0_TRN I2C1TRN
+#define I2C_BANK_0_RSEN I2C1CONbits.RSEN
+#define I2C_BANK_0_PEN I2C1CONbits.PEN
+#define I2C_BANK_0_RCEN I2C1CONbits.RCEN
+#define I2C_BANK_0_RCV I2C1RCV
+#define I2C_BANK_0_ACKDT I2C1CONbits.ACKDT
+#define I2C_BANK_0_ACKEN I2C1CONbits.ACKEN
+#define I2C_BANK_0_SEN I2C1CONbits.SEN
+
+//ADC defines
+#define ADC_INT_PRIORITY_set(x) IPC5SET = (x << 26) //sets the priority of the ADC interrupt
+#define ADC_INT_set(x) IEC0SET = (x << 28) //enables or disables the ADC interrupt
+#define ADC_IF IFS0bits.AD1IF //ADC interrupt flag
+#define ADC_BATTERY_INPUT_PIN TRISAbits.TRISA0
+#define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA1
 
 #elif defined(COMPILE_THRUSTER_BOARD)
 
@@ -353,13 +405,13 @@ enum
  ************************************************************************/
 
  /********************************************************
- *   Function Name:
+ *   Function Name: Configure_PIC32MX250F128B_PPS()
  *
- *   Description:
- *
+ *   Description: This function configures the peripheral pin select function
+ *   for the PIC32MX250F128B microcontroller
  *
  *********************************************************/
-
+void Configure_PIC32MX250F128B_PPS(void);
 
 
 

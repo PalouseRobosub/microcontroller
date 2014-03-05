@@ -14,7 +14,7 @@
 #include "Sensors.h"
 #include "I2C_ISR.h"
 
-#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD)
 
 
 /*************************************************************************

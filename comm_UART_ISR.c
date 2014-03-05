@@ -1,8 +1,8 @@
 /********************************************************
- *   File Name: functions.c
+ *   File Name: comm_UART_ISR.c
  *
  *   Description:
- *              Main source code file
+ *              source code file for the communications UART ISR
  *
  *
  *********************************************************/
@@ -191,7 +191,7 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
 }
 
-#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD)
 
 /********************************************************
  *   Function Name: bg_process_sensor_comm_uart()
@@ -268,6 +268,7 @@ void bg_process_sensor_comm_uart(void) {
         //Packet Processing
         if (packet_recieved) {
 
+#if defined (COMPILE_OLD_SUB)
             switch (received_bytes[1]) {
 
                     //Thrusters
@@ -332,6 +333,7 @@ void bg_process_sensor_comm_uart(void) {
                 motor_uart_begin();
 
             }
+#endif
         }
     }
 

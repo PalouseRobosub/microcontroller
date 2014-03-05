@@ -12,7 +12,7 @@
  ************************************************************************/
 #include "system.h"
 
-#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD)
 #include "Sensors.h"
 #include "SENSOR_TIMER_ISR.h"
 #include "I2C_ISR.h"

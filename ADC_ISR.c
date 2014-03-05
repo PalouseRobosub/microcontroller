@@ -16,7 +16,7 @@
 #include "Sensors.h"
 #include "comm_UART_ISR.h"
 
-#if defined (COMPILE_OLD_SUB) || (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD)
 
 /*************************************************************************
  Variables
@@ -35,15 +35,15 @@ boolean ADC_initial;
 void adc_setup(void)
 {
     //configure AD1PCFG
-    AD1PCFG = 0x00000000;
+    //AD1PCFG = 0x00000000;
 
     //Select the analog inputs to the ADC multiplexers in AD1CHS
     AD1CHSbits.CH0NA = 0; //set the negative input for channel A to internal ground
 
 
     //make sure the pin is an input (not an output)
-    TRISAbits.TRISA6 = 1;
-    TRISAbits.TRISA7 = 1;
+    ADC_BATTERY_INPUT_PIN = 1;
+    ADC_DEPTH_INPUT_PIN = 1;
 
     //Select the data format with FORM<2:0> (AD1CON1)
     AD1CON1bits.FORM = 0; //set the format to be simple 16 bit unsigned integer
