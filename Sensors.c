@@ -40,12 +40,12 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing ACL 0
-    temp.device_address = 0x1D;
-    temp.sub_address[0] = 0x2D;
-    temp.sub_address_size = 1;
+    temp.device_address = ACL1_device_address;
+    temp.sub_address[0] = ACL1_WRITE_sub_address;
+    temp.sub_address_size = ACL1_WRITE_address_size;
     temp.mode = WRITE;
-    temp.data_size = 1;
-    temp.tx_data[0] = 0x08;
+    temp.data_size = ACL1_WRITE_date_size;
+    temp.tx_data[0] = ACL1_WRITE_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
 
@@ -64,12 +64,12 @@
 
     //read ACL 0
     temp.sensor_id = ACL_0;
-    temp.device_address = 0x1D;
-    temp.sub_address[0] = 0x32;
-    temp.sub_address_size = 1;
+    temp.device_address = ACL1_device_address;
+    temp.sub_address[0] = ACL1_READ_sub_address;
+    temp.sub_address_size = ACL1_READ_address_size;
     temp.mode = READ;
-    temp.data_size = 6;
-    temp.tx_data[0] = 0x08;
+    temp.data_size = ACL1_READ_date_size;
+    temp.tx_data[0] = ACL1_READ_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
 
@@ -87,12 +87,12 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing Gyro 0
-    temp.device_address = 0x69;
-    temp.sub_address[0] = 0x20;
-    temp.sub_address_size = 1;
+    temp.device_address = GYRO1_device_address;
+    temp.sub_address[0] = GYRO1_WRITE_sub_address;
+    temp.sub_address_size = GYRO1_WRITE_address_size;
     temp.mode = WRITE;
-    temp.data_size = 1;
-    temp.tx_data[0] = 0x0F;
+    temp.data_size = GYRO1_WRITE_date_size;
+    temp.tx_data[0] = GYRO1_WRITE_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }
@@ -111,11 +111,11 @@
 
     //read Gyro 0
     temp.sensor_id = GYRO_0;
-    temp.device_address = 0x69;
-    temp.sub_address[0] = 0x28 | (1 << 7); //This device wants MSB to be set when reading multiple bytes
-    temp.sub_address_size = 1;
+    temp.device_address = GYRO1_device_address;
+    temp.sub_address[0] = GYRO1_READ_sub_address | (1 << 7); //This device wants MSB to be set when reading multiple bytes
+    temp.sub_address_size = GYRO1_READ_address_size;
     temp.mode = READ;
-    temp.data_size = 6;
+    temp.data_size = GYRO1_READ_date_size;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }

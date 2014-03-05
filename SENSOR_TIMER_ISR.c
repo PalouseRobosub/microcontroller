@@ -35,8 +35,8 @@
  *
  *********************************************************/
 void sensor_timer_setup(void) {
-    SENSOR_TIMER_PS = 0b11; //set the prescaler bits (1/256 in this case)
-    SENSOR_TIMER_PR = 0xF40; //set the period register
+    SENSOR_TIMER_PS = SENSOR_TIMER_PRESCALER; //set the prescaler bits (1/256 in this case)
+    SENSOR_TIMER_PR = SENSOR_TIMER_PERIOD_REGISTER; //set the period register
 
     SENSOR_TIMER_INT_PRIORITY_set(7); //set the priority
     SENSOR_TIMER_INT_set(1); //enable the interrupt

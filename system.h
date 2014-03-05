@@ -193,13 +193,16 @@ enum
 #define SENSOR_TIMER_EN T1CONbits.ON
 #define SENSOR_TIMER_PS T1CONbits.TCKPS
 
+//Sensor Timer Configurations
+#define SENSOR_TIMER_PRESCALER		0b11
+#define SENSOR_TIMER_PERIOD_REGISTER	0xF40
+
 //ADC defines
 #define ADC_INT_PRIORITY_set(x) IPC6SET = (x << 26) //sets the priority of the ADC interrupt
 #define ADC_INT_set(x) IEC1SET = (x << 1) //enables or disables the ADC interrupt
 #define ADC_IF IFS1bits.AD1IF //ADC interrupt flag
 #define ADC_BATTERY_INPUT_PIN TRISAbits.TRISA6
 #define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA7
-
 
 //LED_SPI defines
 #define _LED_SPI_VECTOR _SPI_2_VECTOR
@@ -217,6 +220,26 @@ enum
 #define LED_SPI_CKP SPI2CONbits.CKP
 #define LED_SPI_CKE SPI2CONbits.CKE
 
+//Sensor defines
+#define ACL1_device_address		0x1D
+#define ACL1_WRITE_sub_address		0x2D
+#define ACL1_WRITE_address_size		1
+#define ACL1_WRITE_date_size		1
+#define ACL1_WRITE_tx_data		0x08
+#define ACL1_READ_sub_address		0x32
+#define ACL1_READ_address_size		1
+#define ACL1_READ_date_size		6
+#define ACL1_READ_tx_data		0x08
+
+#define GYRO1_device_address		0x69
+#define GYRO1_WRITE_sub_address		0x20
+#define GYRO1_WRITE_address_size	1
+#define GYRO1_WRITE_date_size		1
+#define GYRO1_WRITE_tx_data		0x0F
+#define GYRO1_READ_sub_address		0x28
+#define GYRO1_READ_address_size		1
+#define GYRO1_READ_date_size		6
+//#define GYRO1_READ_tx_data		0x08
 
 //pneumatics
 // Solenoid 1 G6
@@ -286,6 +309,10 @@ enum
 #define SENSOR_TIMER_EN T1CONbits.ON
 #define SENSOR_TIMER_PS T1CONbits.TCKPS
 
+//Sensor Timer Configurations
+#define SENSOR_TIMER_PRESCALER		0b11
+#define SENSOR_TIMER_PERIOD_REGISTER	0xF40
+
 //I2C Bank 0 defines
 #define _I2C_BANK_0_VECTOR _I2C_1_VECTOR
 #define I2C_BANK_0_BRG I2C1BRG //baud rate register
@@ -308,6 +335,27 @@ enum
 #define ADC_IF IFS0bits.AD1IF //ADC interrupt flag
 #define ADC_BATTERY_INPUT_PIN TRISAbits.TRISA0
 #define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA1
+
+//Sensor defines
+#define ACL1_device_address		0x1D
+#define ACL1_WRITE_sub_address		0x2D
+#define ACL1_WRITE_address_size		1
+#define ACL1_WRITE_date_size		1
+#define ACL1_WRITE_tx_data		0x08
+#define ACL1_READ_sub_address		0x32
+#define ACL1_READ_address_size		1
+#define ACL1_READ_date_size		6
+#define ACL1_READ_tx_data		0x08
+
+#define GYRO1_device_address		0x69
+#define GYRO1_WRITE_sub_address		0x20
+#define GYRO1_WRITE_address_size	1
+#define GYRO1_WRITE_date_size		1
+#define GYRO1_WRITE_tx_data		0x0F
+#define GYRO1_READ_sub_address		0x28
+#define GYRO1_READ_address_size		1
+#define GYRO1_READ_date_size		6
+//#define GYRO1_READ_tx_data		0x08
 
 #elif defined(COMPILE_THRUSTER_BOARD)
 
