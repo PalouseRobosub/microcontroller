@@ -102,6 +102,7 @@ int main(void) {
     motor_uart_setup();
     adc_setup();
     led_spi_setup();
+    GPIO_setup();
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();

@@ -27,7 +27,7 @@
 //#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
-#define COMPILE_ACTUATION_BOARD
+//#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -85,6 +85,12 @@ enum
 
 //LED control
 #define LED_CONTROL_0     0x30
+#define PNEUMATIC_TORPEDO_R      0x20
+#define PNEUMATIC_TORPEDO_L      0x21
+#define PNEUMATIC_MARKER_R       0x22
+#define PNEUMATIC_MARKER_L       0x23
+#define PNEUMATIC_CLAW_OPEN      0x24
+#define PNEUMATIC_CLAW_CLOSE     0x25
 
 //////////////////////////
 //Outgoing (to computer)
@@ -210,6 +216,28 @@ enum
 #define LED_SPI_SPIROV SPI2STATbits.SPIROV
 #define LED_SPI_CKP SPI2CONbits.CKP
 #define LED_SPI_CKE SPI2CONbits.CKE
+
+
+//pneumatics
+// Solenoid 1 G6
+// Solenoid 2 G9
+// Solenoid 3 D11
+// Solenoid 4 G8
+// Solenoid 5 B13
+// Solenoid 6 E6
+#define PNEUMATIC_TORPEDO_R_TRIS    TRISGbits.TRISG6
+#define PNEUMATIC_TORPEDO_L_TRIS    TRISGbits.TRISG9
+#define PNEUMATIC_MARKER_R_TRIS     TRISDbits.TRISD11
+#define PNEUMATIC_MARKER_L_TRIS     TRISGbits.TRISG8
+#define PNEUMATIC_CLAW_OPEN_TRIS    TRISBbits.TRISB13
+#define PNEUMATIC_CLAW_CLOSE_TRIS   TRISEbits.TRISE6
+
+#define PNEUMATIC_TORPEDO_R_PIN     PORTGbits.RG6
+#define PNEUMATIC_TORPEDO_L_PIN     PORTGbits.RG9
+#define PNEUMATIC_MARKER_R_PIN      PORTDbits.RD11
+#define PNEUMATIC_MARKER_L_PIN      PORTGbits.RG8
+#define PNEUMATIC_CLAW_OPEN_PIN     PORTBbits.RB13
+#define PNEUMATIC_CLAW_CLOSE_PIN    PORTEbits.RE6
 
 
 #elif defined(COMPILE_SENSOR_BOARD)
