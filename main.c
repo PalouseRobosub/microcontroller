@@ -153,13 +153,12 @@ int main(void) {
 
 #elif defined (COMPILE_ACTUATION_BOARD)
     //setup/configure hardware modules
-    timer_1_setup();
     comm_uart_setup();
 
     //load nodes onto queues to initialize sensors
 
     //start each ISR
-    comm_uart_begin();
+
 
 #endif
 

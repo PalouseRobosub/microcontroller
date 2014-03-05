@@ -12,7 +12,7 @@
  ************************************************************************/
 #include "system.h"
 #include "LED_SPI_ISR.h"
-#if defined (COMPILE_OLD_SUB) || (COMPILE_LED_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_LED_BOARD)
 
 /*************************************************************************
  Variables

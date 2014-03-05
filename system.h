@@ -24,10 +24,10 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-#define COMPILE_SENSOR_BOARD
+//#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
-//#define COMPILE_ACTUATION_BOARD
+#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -300,22 +300,22 @@ enum
 #endif
 
 //comm_uart defines
-#define COMM_UART UART1
-#define COMM_UART_BRG U1BRG //baud rate register
-#define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
-#define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
-#define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
-#define COMM_UART_URXEN U1STAbits.URXEN //rx enable
-#define COMM_UART_ON U1MODEbits.ON //uart enable
-#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 9) //enables or disables the tx interrupt
-#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 9) //enables or disables the tx interrupt
-#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 8) //enablse or disables the rx interrupt
-#define COMM_UART_INT_PRIORITY_set(x) IPC8SET = (x << 2) //sets the priority of the uart interrupts
+#define COMM_UART UART2
+#define COMM_UART_BRG U2BRG //baud rate register
+#define COMM_UART_PDSEL U2MODEbits.PDSEL //parity and data selection bits
+#define COMM_UART_UTXISEL U2STAbits.UTXISEL //tx interrupt selection bits
+#define COMM_UART_UTXEN U2STAbits.UTXEN //tx enable
+#define COMM_UART_URXEN U2STAbits.URXEN //rx enable
+#define COMM_UART_ON U2MODEbits.ON //uart enable
+#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 23) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 23) //enables or disables the tx interrupt
+#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 22) //enablse or disables the rx interrupt
+#define COMM_UART_INT_PRIORITY_set(x) IPC9SET = (x << 10) //sets the priority of the uart interrupts
 #define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
-#define COMM_UART_RXIF IFS1bits.U1RXIF //Rx interrupt flag
-#define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
-#define COMM_UART_RXREG U1RXREG //Rx register
-#define COMM_UART_TXREG U1TXREG //Tx register
+#define COMM_UART_RXIF IFS1bits.U2RXIF //Rx interrupt flag
+#define COMM_UART_TXIF IFS1bits.U2TXIF //Tx interrupt flag
+#define COMM_UART_RXREG U2RXREG //Rx register
+#define COMM_UART_TXREG U2TXREG //Tx register
 
 //Sensor Timer defines
 #define _THRUSTER_TIMER_VECTOR _TIMER_1_VECTOR
@@ -373,6 +373,40 @@ enum
 
 #endif
 
+//comm_uart defines
+#define COMM_UART UART1
+#define COMM_UART_BRG U1BRG //baud rate register
+#define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
+#define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
+#define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
+#define COMM_UART_URXEN U1STAbits.URXEN //rx enable
+#define COMM_UART_ON U1MODEbits.ON //uart enable
+#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 8) //enablse or disables the rx interrupt
+#define COMM_UART_INT_PRIORITY_set(x) IPC8SET = (x << 2) //sets the priority of the uart interrupts
+#define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
+#define COMM_UART_RXIF IFS1bits.U1RXIF //Rx interrupt flag
+#define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
+#define COMM_UART_RXREG U1RXREG //Rx register
+#define COMM_UART_TXREG U1TXREG //Tx register
+
+//LED_SPI defines
+#define _LED_SPI_VECTOR _SPI_2_VECTOR
+#define LED_SPI_TXIF IFS1bits.SPI1TXIF
+#define LED_SPI_TXIE IEC1bits.SPI1TXIE
+#define LED_SPI_STAT SPI1STAT
+#define LED_SPI_BUF  SPI1BUF
+#define LED_SPI_BRG  SPI1BRG
+#define LED_SPI_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
+#define LED_SPI_STXISEL SPI1CONbits.STXISEL
+#define LED_SPI_MSTEN SPI1CONbits.MSTEN
+#define LED_SPI_ON SPI1CONbits.ON
+#define LED_SPI_ENHBUF SPI1CONbits.ENHBUF
+#define LED_SPI_SPIROV SPI1STATbits.SPIROV
+#define LED_SPI_CKP SPI1CONbits.CKP
+#define LED_SPI_CKE SPI1CONbits.CKE
+
 #elif defined(COMPILE_ACTUATION_BOARD)
 
 //check for other compiler flags
@@ -391,6 +425,24 @@ enum
 #error "selected chip is not supported for COMPILE_ACTUATION_BOARD option"
 
 #endif
+
+//comm_uart defines
+#define COMM_UART UART1
+#define COMM_UART_BRG U1BRG //baud rate register
+#define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
+#define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
+#define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
+#define COMM_UART_URXEN U1STAbits.URXEN //rx enable
+#define COMM_UART_ON U1MODEbits.ON //uart enable
+#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 8) //enablse or disables the rx interrupt
+#define COMM_UART_INT_PRIORITY_set(x) IPC8SET = (x << 2) //sets the priority of the uart interrupts
+#define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
+#define COMM_UART_RXIF IFS1bits.U1RXIF //Rx interrupt flag
+#define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
+#define COMM_UART_RXREG U1RXREG //Rx register
+#define COMM_UART_TXREG U1TXREG //Tx register
 
 #else //no compile option was selected
 
