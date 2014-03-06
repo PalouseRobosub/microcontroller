@@ -106,6 +106,10 @@ enum
 #define ADC_DEPTH   0x30
 #define ADC_BATT    0x31
 
+#define MAG_0_X    0x40
+#define MAG_0_Y    0x41
+#define MAG_0_Z    0x42
+
 #endif	/* TRANSMISSION_PROTOCOL */
 
 

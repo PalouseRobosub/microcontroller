@@ -70,9 +70,9 @@ void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
     INTDisableInterrupts();
 
 
-
     i2c_GYRO_Read();
     i2c_ACL_Read();
+    i2c_MAG_Read();
 
 
     /*

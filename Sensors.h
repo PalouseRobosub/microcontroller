@@ -30,7 +30,8 @@ typedef enum
     ACL_0,
     GYRO_0,
     ADC_DEPTH_0,
-    ADC_BATT_0,            
+    ADC_BATT_0,
+    MAG_0
             
 }SENSOR_ID;
 
@@ -81,6 +82,24 @@ typedef enum
  *
  *********************************************************/
  void i2c_GYRO_Read(void);
+
+  /********************************************************
+ *   Function Name: i2c_MAG_Initialize()
+ *
+ *   Description: Sets the I2C for writing (Initialize) to the magnometer
+ *
+ *
+ *********************************************************/
+ void i2c_MAG_Initialize(void);
+
+/********************************************************
+ *   Function Name: i2c_MAG_Read()
+ *
+ *   Description: Sets the I2C for reading from the magnometer
+ *
+ *
+ *********************************************************/
+ void i2c_MAG_Read(void);
  
  /********************************************************
  *   Function Name: ADC_Depth_Read()

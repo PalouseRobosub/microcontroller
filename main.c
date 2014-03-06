@@ -107,6 +107,7 @@ int main(void) {
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();
     i2c_GYRO_Initialize();
+    i2c_MAG_Initialize();
 
     //start each ISR
     i2c_bank_0_begin();

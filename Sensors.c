@@ -120,6 +120,52 @@
 
  }
 
+  /********************************************************
+ *   Function Name: i2c_MAG_Initialize()
+ *
+ *   Description: Sets the I2C for writing (Initialize) to the magnometer
+ *
+ *
+ *********************************************************/
+ void i2c_MAG_Initialize(void)
+ {
+     I2C_Node temp;
+     extern I2C_Queue I2C_BANK_0_Queue;
+
+    //data for initializing MAG 0
+    temp.device_address = 0x0E;
+    temp.sub_address[0] = 0x10;
+    temp.sub_address_size = 1;
+    temp.mode = WRITE;
+    temp.data_size = 1;
+    temp.tx_data[0] = 0x01; //this starts the sensor reading
+    I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+ }
+
+
+/********************************************************
+ *   Function Name: i2c_MAG_Read()
+ *
+ *   Description: Sets the I2C for reading from the magnometer
+ *
+ *
+ *********************************************************/
+ void i2c_MAG_Read(void)
+{
+    I2C_Node temp;
+    extern I2C_Queue I2C_BANK_0_Queue;
+
+    //read MAG 0
+    temp.sensor_id = MAG_0;
+    temp.device_address = 0x0E;
+    temp.sub_address[0] = 0x01;
+    temp.sub_address_size = 1;
+    temp.mode = READ;
+    temp.data_size = 6;
+    
+    I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+ }
+
  /********************************************************
  *   Function Name: ADC_Depth_Read()
  *

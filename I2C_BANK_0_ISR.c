@@ -226,6 +226,12 @@ void I2C_Load_UART(SENSOR_ID sensor, uint8 received_data[])
             comm_uart_CreateNode(GYRO_0_Y, received_data[2], received_data[3]);
             comm_uart_CreateNode(GYRO_0_Z, received_data[4], received_data[5]);
             break;
+
+        case MAG_0:
+            comm_uart_CreateNode(MAG_0_X, received_data[0], received_data[1]);
+            comm_uart_CreateNode(MAG_0_Y, received_data[2], received_data[3]);
+            comm_uart_CreateNode(MAG_0_Z, received_data[4], received_data[5]);
+            break;
     }
 
     return;
