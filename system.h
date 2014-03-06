@@ -23,8 +23,8 @@
 /* These flags are used to compile for the various different boards.
    Do not activate more than one flag at once!   */
 
-//#define COMPILE_OLD_SUB
-#define COMPILE_SENSOR_BOARD
+#define COMPILE_OLD_SUB
+//#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
