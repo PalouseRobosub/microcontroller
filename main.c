@@ -116,6 +116,7 @@ int main(void) {
 
 #elif defined (COMPILE_SENSOR_BOARD)
     //setup/configure hardware modules
+    Configure_PIC32MX250F128B_PPS();
     sensor_timer_setup();
     i2c_bank_0_setup();
     comm_uart_setup();
@@ -131,6 +132,7 @@ int main(void) {
 
 #elif defined (COMPILE_THRUSTER_BOARD)
     //setup/configure hardware modules
+    Configure_PIC32MX250F128B_PPS();
     thruster_timer_setup();
     comm_uart_setup();
     thruster_LED_setup();
@@ -143,6 +145,7 @@ int main(void) {
 
 #elif defined (COMPILE_LED_BOARD)
     //setup/configure hardware modules
+    Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
     led_spi_setup();
 
@@ -154,6 +157,7 @@ int main(void) {
 
 #elif defined (COMPILE_ACTUATION_BOARD)
     //setup/configure hardware modules
+    Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
 
     //load nodes onto queues to initialize sensors

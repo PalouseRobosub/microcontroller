@@ -23,8 +23,8 @@
 /* These flags are used to compile for the various different boards.
    Do not activate more than one flag at once!   */
 
-#define COMPILE_OLD_SUB
-//#define COMPILE_SENSOR_BOARD
+//#define COMPILE_OLD_SUB
+#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
@@ -357,6 +357,10 @@ enum
 #define GYRO1_READ_date_size		6
 //#define GYRO1_READ_tx_data		0x08
 
+//PPS Defines
+#define UART_TX_PPS     RPB15R
+#define UART_RX_PPS     RPB13R
+
 #elif defined(COMPILE_THRUSTER_BOARD)
 
 //check for other compiler flags
@@ -430,6 +434,9 @@ enum
 #define DEPTH_PORT_DIR_LED_PORT PORTAbits.RA0
 #define DEPTH_PORT_MAG_LED_PORT PORTAbits.RA0
 
+//PPS Defines
+#define UART_TX_PPS     RPB10R
+#define UART_RX_PPS     RPB13R
 
 #elif defined(COMPILE_LED_BOARD)
 
@@ -484,6 +491,12 @@ enum
 #define LED_SPI_CKP SPI1CONbits.CKP
 #define LED_SPI_CKE SPI1CONbits.CKE
 
+//PPS Defines
+#define UART_TX_PPS     RPB4R
+#define UART_RX_PPS     RPA2R
+#define SPI_SDO1_PPS     RPB13R
+#define SPI_SDO2_PPS     RPA1R
+
 #elif defined(COMPILE_ACTUATION_BOARD)
 
 //check for other compiler flags
@@ -520,6 +533,10 @@ enum
 #define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
 #define COMM_UART_RXREG U1RXREG //Rx register
 #define COMM_UART_TXREG U1TXREG //Tx register
+
+//PPS Defines
+#define UART_TX_PPS     RPB4R
+#define UART_RX_PPS     RPA2R
 
 #else //no compile option was selected
 
