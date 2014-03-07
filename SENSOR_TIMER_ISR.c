@@ -80,10 +80,10 @@ void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
     not be necessary, but I remember removing it
     broke the uart. This needs to be debugged.
      */
-    comm_uart_CreateNode('A', 'B', 'C');
-    if (COMM_UART_is_idle) {
-        comm_uart_begin();
-    }
+//    comm_uart_CreateNode('A', 'B', 'C');
+//    if (COMM_UART_is_idle) {
+//        comm_uart_begin();
+//    }
 
     if (I2C_BANK_0_is_idle) {
         i2c_bank_0_begin();
