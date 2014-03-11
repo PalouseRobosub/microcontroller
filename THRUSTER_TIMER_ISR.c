@@ -198,7 +198,7 @@ void __ISR(_THRUSTER_TIMER_VECTOR, IPL7AUTO) thruster_timer_handler(void) {
     }
 
 
-    IFS0bits.T1IF = 0; //clear the interrupt flag
+    THRUSTER_TIMER_IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
 }
 

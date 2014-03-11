@@ -493,6 +493,148 @@ void bg_process_thruster_comm_uart(void) {
 }
 #endif
 
+#if defined (COMPILE_ACTUATION_BOARD)
+
+/********************************************************
+ *   Function Name: bg_process_sensor_comm_uart()
+ *
+ *   Description: background processing for the comm_uart
+ *
+ *
+ *********************************************************/
+void bg_process_sensor_comm_uart(void) {
+    uint8 received_byte;
+    BG_COMM_UART_NODE temp_node;
+    uint8 DeviceID;
+    extern int Fpos_goal; //Desired pos_current
+    extern int Fpos_current; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
+    extern int Freset; //Reset flag
+    extern int Bpos_goal; //Desired pos_current
+    extern int Bpos_current; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
+    extern int Breset; //Reset flag
+
+    extern int stepper_command, Ftrigger;
+
+
+    if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
+    {
+        //do nothing - the queue is empty
+    } else {
+
+        received_byte = temp_node.uart_data;
+
+        if (SYNC_LOCK) //if in sync
+        {
+
+            if (received_index == 0)//only check the first byte for the control byte
+            {
+                packet_recieved = FALSE; //start of a new packet
+                if (received_byte != CONTROL_BYTE) {
+                    SYNC_LOCK = FALSE;
+                    begin_sync = TRUE;
+                }
+                received_index++; //assuming we are synced, so dont add a new character to the packet
+            } else if (received_index == 1) //NOTE only indexes 1 and 2 are used
+            {
+                received_bytes[received_index] = received_byte;
+                received_index++;
+            } else if (received_index == 2) {
+                received_bytes[received_index] = received_byte;
+                received_index = 0; //Reset the index, we now have the full package
+                packet_recieved = TRUE;
+
+            }
+        } else {
+            if (begin_sync == TRUE) {
+                received_index = 0;
+                if (received_byte == CONTROL_BYTE) {
+                    begin_sync = FALSE;
+                }
+            }
+
+            if (begin_sync == FALSE) {
+
+                received_bytes[received_index] = received_byte;
+                ++received_index;
+
+                //X00X00
+                //012345
+                if (received_index == 6) {
+                    if (received_bytes[0] == CONTROL_BYTE &&
+                            received_bytes[3] == CONTROL_BYTE
+                            ) {
+                        SYNC_LOCK = TRUE;
+                        received_index = 0;
+
+                    } else {
+                        begin_sync = TRUE;
+
+                    }
+                }
+            }
+        }
+
+
+        //Packet Processing
+        if (packet_recieved) {
+            stepper_command = received_bytes[2];
+            DeviceID = received_bytes[1];
+            //Command decoding
+            //NOTE: Counting up = dir CLOSE
+            //100% open pos_current = 0
+            //100% close pos_current = FRONT_POS_MAX
+            //Each pos_current/pos_goal increment = STEPS_PER_COUNT
+
+            switch (stepper_command) //Receives command and sets reset or pos_goal
+            {
+                case RESET_COMMAND: //Also functions as open 100% command
+                    Freset = 1;
+                    break;
+
+                    //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
+                case DROP1_COMMAND:
+                    Freset = 0;
+                    Fpos_goal = DROP1_POS;
+
+                    break;
+
+                case DROP2_COMMAND:
+                    Freset = 0;
+                    Fpos_goal = DROP2_POS;
+
+                    break;
+
+                case CLOSE_COMMAND:
+                    Freset = 0;
+                    Fpos_goal = MAX_POS;
+
+                    break;
+
+                case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
+                    Freset = 0;
+                    Fpos_goal = Fpos_current;
+                    break;
+            }
+        }
+
+        //Prevents unacceptable position goals
+        if (Fpos_goal > MAX_POS) {
+            Fpos_goal = MAX_POS;
+        }
+
+        if (Fpos_goal < 0) {
+            Fpos_goal = 0;
+        }
+
+    }
+
+    return;
+
+
+}
+
+#endif
+
 /********************************************************
  *   Function Name:
  *

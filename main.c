@@ -34,7 +34,9 @@
 #include "comm_UART_ISR.h"
 #include "LED_SPI_ISR.h"
 #elif defined (COMPILE_ACTUATION_BOARD)
-
+#include "comm_UART_ISR.h"
+#include "ACTUATION_TIMER_ISR.h"
+#include "GPIO.h"
 #endif
 
 
@@ -160,6 +162,7 @@ int main(void) {
     //setup/configure hardware modules
     Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
+    sys_init();	// Initializes system
 
     //load nodes onto queues to initialize sensors
 

@@ -50,8 +50,7 @@ typedef uint8 boolean;
 /*************************************************************************
  Enums
  ************************************************************************/
-enum
-{
+enum {
     FALSE,
     TRUE
 };
@@ -84,13 +83,18 @@ enum
 #define THRUSTER_STERN_PORT 	 0x15
 
 //LED control
-#define LED_CONTROL_0     0x30
+#define LED_CONTROL_0            0x30
+
+//Actuation
 #define PNEUMATIC_TORPEDO_R      0x20
 #define PNEUMATIC_TORPEDO_L      0x21
 #define PNEUMATIC_MARKER_R       0x22
 #define PNEUMATIC_MARKER_L       0x23
 #define PNEUMATIC_CLAW_OPEN      0x24
 #define PNEUMATIC_CLAW_CLOSE     0x25
+
+#define STEPPER_FRONT            0x26
+#define STEPPER_BOTTOM           0x27
 
 //////////////////////////
 //Outgoing (to computer)
@@ -402,7 +406,7 @@ enum
 #define COMM_UART_RXREG U2RXREG //Rx register
 #define COMM_UART_TXREG U2TXREG //Tx register
 
-//Sensor Timer defines
+//Thruster Timer defines
 #define _THRUSTER_TIMER_VECTOR _TIMER_1_VECTOR
 #define THRUSTER_TIMER_INT_PRIORITY_set(x) IPC1bits.T1IP = x
 #define THRUSTER_TIMER_INT_set(x) IEC0bits.T1IE = x
@@ -542,6 +546,55 @@ enum
 #define UART_TX_PPS     RPB4R
 #define UART_RX_PPS     RPA2R
 
+#define CW 			0
+#define CCW			1
+#define FULLSTEP		0
+#define HALFSTEP		1
+#define BTN1			BIT_6
+#define BTN2			BIT_7
+#define STEPPER_MASK  	(BIT_7 | BIT_8 | BIT_9 | BIT_10)
+#define LEDA			BIT_2
+#define LEDB			BIT_3
+#define LEDC			BIT_4
+#define TCKS_PER_MS		1250
+#define PRESCALE_8		0x8010
+#define NUM_MS			1426
+
+#define RESET_COMMAND           0xF0
+#define DROP1_COMMAND           0xF1
+#define DROP2_COMMAND           0xF2
+#define CLOSE_COMMAND           0xF3
+#define STOP_COMMAND            0xF4
+
+#define FRONT_STEPPER           0
+#define BOTTOM_STEPPER          1
+#define DIR_OPEN                0
+#define DIR_CLOSED              1
+
+#define EN_ON                   1
+#define EN_OFF                  0
+#define STEPS_PER_POS           10
+#define STEP_PERIOD             50
+
+#define DROP1_POS               40
+#define DROP2_POS               60
+
+#define MAX_POS                 100
+
+
+enum STEPPER_STATE {
+    S_0_5, S_1_0, S_1_5, S_2_0, S_2_5, S_3_0, S_3_5, S_4_0
+};
+
+//Sensor Timer defines
+#define _ACTUATION_TIMER_VECTOR _TIMER_1_VECTOR
+#define ACTUATION_TIMER_INT_PRIORITY_set(x) IPC1bits.T1IP = x
+#define ACTUATION_TIMER_INT_set(x) IEC0bits.T1IE = x
+#define ACTUATION_TIMER_IF IFS0bits.T1IF
+#define ACTUATION_TIMER_PR PR1
+#define ACTUATION_TIMER_EN T1CONbits.ON
+#define ACTUATION_TIMER_PS T1CONbits.TCKPS
+
 #else //no compile option was selected
 
 #error "no compile option was selected"
@@ -554,7 +607,7 @@ enum
  Function Declarations
  ************************************************************************/
 
- /********************************************************
+/********************************************************
  *   Function Name: Configure_PIC32MX250F128B_PPS()
  *
  *   Description: This function configures the peripheral pin select function

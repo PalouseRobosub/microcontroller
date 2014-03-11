@@ -97,7 +97,7 @@ void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
 
 
 
-    IFS0bits.T1IF = 0; //clear the interrupt flag
+    SENSOR_TIMER_IF = 0; //clear the interrupt flag
     INTEnableInterrupts();
 }
 
