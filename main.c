@@ -153,6 +153,7 @@ int main(void) {
     led_spi_setup();
 
     //load nodes onto queues to initialize sensors
+    //initialize LEDS maybe? Either off or a particular pattern
 
     //start each ISR
     comm_uart_begin();
@@ -180,14 +181,14 @@ int main(void) {
         //background tasks
 
 #if defined (COMPILE_OLD_SUB)
-        bg_process_sensor_comm_uart();
+        bg_process_comm_uart();
 
 #elif defined (COMPILE_SENSOR_BOARD)
         //insert background tasks (if necessary)
 #elif defined (COMPILE_THRUSTER_BOARD)
         bg_process_thruster_comm_uart();
 #elif defined (COMPILE_LED_BOARD)
-        //insert background tasks (if necessary)
+        bg_process_comm_uart();
 #elif defined (COMPILE_ACTUATION_BOARD)
         //insert background tasks (if necessary)
 #endif

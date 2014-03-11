@@ -152,7 +152,7 @@ void bg_comm_uart_setup(void);
  *
  *
  *********************************************************/
-void bg_process_sensor_comm_uart(void);
+void bg_process_comm_uart(void);
 
 /********************************************************
  *   Function Name:

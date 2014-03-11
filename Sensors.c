@@ -40,12 +40,12 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing ACL 0
-    temp.device_address = ACL1_device_address;
-    temp.sub_address[0] = ACL1_WRITE_sub_address;
-    temp.sub_address_size = ACL1_WRITE_address_size;
+    temp.device_address = ACL_0_device_address;
+    temp.sub_address[0] = ACL_0_WRITE_sub_address;
+    temp.sub_address_size = ACL_0_WRITE_address_size;
     temp.mode = WRITE;
-    temp.data_size = ACL1_WRITE_date_size;
-    temp.tx_data[0] = ACL1_WRITE_tx_data;
+    temp.data_size = ACL_0_WRITE_data_size;
+    temp.tx_data[0] = ACL_0_WRITE_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
 
@@ -64,12 +64,12 @@
 
     //read ACL 0
     temp.sensor_id = ACL_0;
-    temp.device_address = ACL1_device_address;
-    temp.sub_address[0] = ACL1_READ_sub_address;
-    temp.sub_address_size = ACL1_READ_address_size;
+    temp.device_address = ACL_0_device_address;
+    temp.sub_address[0] = ACL_0_READ_sub_address;
+    temp.sub_address_size = ACL_0_READ_address_size;
     temp.mode = READ;
-    temp.data_size = ACL1_READ_date_size;
-    temp.tx_data[0] = ACL1_READ_tx_data;
+    temp.data_size = ACL_0_READ_data_size;
+    temp.tx_data[0] = ACL_0_READ_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
 
@@ -87,12 +87,12 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing Gyro 0
-    temp.device_address = GYRO1_device_address;
-    temp.sub_address[0] = GYRO1_WRITE_sub_address;
-    temp.sub_address_size = GYRO1_WRITE_address_size;
+    temp.device_address = GYRO_0_device_address;
+    temp.sub_address[0] = GYRO_0_WRITE_sub_address;
+    temp.sub_address_size = GYRO_0_WRITE_address_size;
     temp.mode = WRITE;
-    temp.data_size = GYRO1_WRITE_date_size;
-    temp.tx_data[0] = GYRO1_WRITE_tx_data;
+    temp.data_size = GYRO_0_WRITE_data_size;
+    temp.tx_data[0] = GYRO_0_WRITE_tx_data;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }
@@ -111,11 +111,11 @@
 
     //read Gyro 0
     temp.sensor_id = GYRO_0;
-    temp.device_address = GYRO1_device_address;
-    temp.sub_address[0] = GYRO1_READ_sub_address | (1 << 7); //This device wants MSB to be set when reading multiple bytes
-    temp.sub_address_size = GYRO1_READ_address_size;
+    temp.device_address = GYRO_0_device_address;
+    temp.sub_address[0] = GYRO_0_READ_sub_address | (1 << 7); //This device wants MSB to be set when reading multiple bytes
+    temp.sub_address_size = GYRO_0_READ_address_size;
     temp.mode = READ;
-    temp.data_size = GYRO1_READ_date_size;
+    temp.data_size = GYRO_0_READ_data_size;
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }
@@ -133,12 +133,12 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing MAG 0
-    temp.device_address = 0x0E;
-    temp.sub_address[0] = 0x10;
+    temp.device_address = MAG_0_device_address;
+    temp.sub_address[0] = MAG_0_CTRL_REG;
     temp.sub_address_size = 1;
     temp.mode = WRITE;
     temp.data_size = 1;
-    temp.tx_data[0] = 0x01; //this starts the sensor reading
+    temp.tx_data[0] = MAG_0_CTRL_REG_data; //this starts the sensor reading
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
 
@@ -157,11 +157,11 @@
 
     //read MAG 0
     temp.sensor_id = MAG_0;
-    temp.device_address = 0x0E;
+    temp.device_address = MAG_0_device_address;
     temp.sub_address[0] = 0x01;
     temp.sub_address_size = 1;
     temp.mode = READ;
-    temp.data_size = 6;
+    temp.data_size = MAG_0_READ_data_size;
     
     I2C_addToQueue(&I2C_BANK_0_Queue, temp);
  }
@@ -179,7 +179,7 @@
     extern ADC_Queue ADC_queue;
 
     temp.sensor_id = ADC_DEPTH;
-    temp.adc_channel = ADC_CH_7;
+    temp.adc_channel = ADC_DEPTH_CH;
 
     ADC_addToQueue(&ADC_queue, temp);
 
@@ -198,7 +198,7 @@
     extern ADC_Queue ADC_queue;
 
     temp.sensor_id = ADC_BATT;
-    temp.adc_channel = ADC_CH_6;
+    temp.adc_channel = ADC_BATTERY_CH;
 
     ADC_addToQueue(&ADC_queue, temp);
 

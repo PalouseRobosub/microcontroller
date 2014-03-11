@@ -191,20 +191,23 @@ void __ISR(_COMM_UART_VECTOR, IPL7AUTO) comm_uart_Handler(void) {
 
 }
 
-#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_OLD_SUB) || defined (COMPILE_SENSOR_BOARD) || defined (COMPILE_LED_BOARD)
 
 /********************************************************
- *   Function Name: bg_process_sensor_comm_uart()
+ *   Function Name: bg_process_comm_uart()
  *
  *   Description: background processing for the comm_uart
  *
  *
  *********************************************************/
-void bg_process_sensor_comm_uart(void) {
-    extern boolean MOTOR_UART_is_idle;
+void bg_process_comm_uart(void) {
     uint8 received_byte;
     BG_COMM_UART_NODE temp_node;
     sint8 processing_byte;
+
+#if defined (COMPILE_OLD_SUB)
+     extern boolean MOTOR_UART_is_idle;
+#endif
 
 
     if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
@@ -269,15 +272,18 @@ void bg_process_sensor_comm_uart(void) {
         //Packet Processing
         if (packet_recieved) {
             processing_byte = received_bytes[2];
-#if defined (COMPILE_OLD_SUB)
             switch (received_bytes[1]) {
-
+                
+#if defined (COMPILE_OLD_SUB)
                     //Thrusters
                 case THRUSTER_BOW_SB:
                     if (processing_byte > 0) {
                         Motor1_Forward(129, abs(processing_byte));
                     } else {
                         Motor1_Backward(129, abs(processing_byte));
+                    }
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
                     }
                     break;
                 case THRUSTER_BOW_PORT:
@@ -286,12 +292,18 @@ void bg_process_sensor_comm_uart(void) {
                     } else {
                         Motor1_Backward(128, abs(processing_byte));
                     }
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
+                    }
                     break;
                 case THRUSTER_STERN_SB:
                     if (processing_byte > 0) {
                         Motor2_Forward(129, abs(processing_byte));
                     } else {
                         Motor2_Backward(129, abs(processing_byte));
+                    }
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
                     }
                     break;
                 case THRUSTER_STERN_PORT:
@@ -301,6 +313,9 @@ void bg_process_sensor_comm_uart(void) {
                         Motor2_Backward(128, abs(processing_byte));
                     }
                     break;
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
+                    }
                 case THRUSTER_DEPTH_SB:
                     if (processing_byte > 0) {
                         Motor2_Forward(130, abs(processing_byte));
@@ -308,27 +323,34 @@ void bg_process_sensor_comm_uart(void) {
                         Motor2_Backward(130, abs(processing_byte));
                     }
                     break;
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
+                    }
                 case THRUSTER_DEPTH_PORT:
                     if (processing_byte > 0) {
                         Motor1_Forward(130, abs(processing_byte));
                     } else {
                         Motor1_Backward(130, abs(processing_byte));
                     }
+                    if (MOTOR_UART_is_idle) {
+                        motor_uart_begin();
+                    }
                     break;
-
-
+#endif
+                    
+#if defined (COMPILE_LED_BOARD)
                     //LEDs
                 case LED_CONTROL_0:
                     led_spi_write_pattern(received_bytes[2]);
                     break;
-
-            }
-
-            if (MOTOR_UART_is_idle) {
-                motor_uart_begin();
-
-            }
 #endif
+
+                default:
+                    //perhaps insert code to return "unknown device" error up to computer?
+                    break;
+
+            }
+
         }
     }
 

@@ -66,6 +66,8 @@ enum {
 
 //CONTROL BYTE (used for packet synchronization)
 #define CONTROL_BYTE             '\n'
+
+//H-BRIDGE ADDRESSES
 #define HBRIDGE_ADDRESS1         128
 #define HBRIDGE_ADDRESS2         129
 #define HBRIDGE_ADDRESS3         130
@@ -82,19 +84,19 @@ enum {
 #define THRUSTER_STERN_SB 	 0x14
 #define THRUSTER_STERN_PORT 	 0x15
 
-//LED control
-#define LED_CONTROL_0            0x30
-
 //Actuation
-#define PNEUMATIC_TORPEDO_R      0x20
-#define PNEUMATIC_TORPEDO_L      0x21
-#define PNEUMATIC_MARKER_R       0x22
-#define PNEUMATIC_MARKER_L       0x23
-#define PNEUMATIC_CLAW_OPEN      0x24
-#define PNEUMATIC_CLAW_CLOSE     0x25
+#define PNEUMATIC_TORPEDO_R     0x20
+#define PNEUMATIC_TORPEDO_L     0x21
+#define PNEUMATIC_MARKER_R      0x22
+#define PNEUMATIC_MARKER_L      0x23
+#define PNEUMATIC_CLAW_OPEN     0x24
+#define PNEUMATIC_CLAW_CLOSE    0x25
 
 #define STEPPER_FRONT            0x26
 #define STEPPER_BOTTOM           0x27
+
+//LED control
+#define LED_CONTROL_0           0x30
 
 //////////////////////////
 //Outgoing (to computer)
@@ -102,6 +104,10 @@ enum {
 #define ACL_0_X     0x10
 #define ACL_0_Y     0x11
 #define ACL_0_Z     0x12
+
+#define ACL_1_X     0x13
+#define ACL_1_Y     0x14
+#define ACL_1_Z     0x15
 
 #define GYRO_0_X    0x20
 #define GYRO_0_Y    0x21
@@ -229,25 +235,33 @@ enum {
 #define LED_SPI_CKE SPI2CONbits.CKE
 
 //Sensor defines
-#define ACL1_device_address		0x1D
-#define ACL1_WRITE_sub_address		0x2D
-#define ACL1_WRITE_address_size		1
-#define ACL1_WRITE_date_size		1
-#define ACL1_WRITE_tx_data		0x08
-#define ACL1_READ_sub_address		0x32
-#define ACL1_READ_address_size		1
-#define ACL1_READ_date_size		6
-#define ACL1_READ_tx_data		0x08
+#define ACL_0_device_address		0x1D
+#define ACL_0_WRITE_sub_address		0x2D
+#define ACL_0_WRITE_address_size		1
+#define ACL_0_WRITE_data_size		1
+#define ACL_0_WRITE_tx_data		0x08
+#define ACL_0_READ_sub_address		0x32
+#define ACL_0_READ_address_size		1
+#define ACL_0_READ_data_size		6
+#define ACL_0_READ_tx_data		0x08
 
-#define GYRO1_device_address		0x69
-#define GYRO1_WRITE_sub_address		0x20
-#define GYRO1_WRITE_address_size	1
-#define GYRO1_WRITE_date_size		1
-#define GYRO1_WRITE_tx_data		0x0F
-#define GYRO1_READ_sub_address		0x28
-#define GYRO1_READ_address_size		1
-#define GYRO1_READ_date_size		6
-//#define GYRO1_READ_tx_data		0x08
+#define GYRO_0_device_address		0x69
+#define GYRO_0_WRITE_sub_address		0x20
+#define GYRO_0_WRITE_address_size	1
+#define GYRO_0_WRITE_data_size		1
+#define GYRO_0_WRITE_tx_data		0x0F
+#define GYRO_0_READ_sub_address		0x28
+#define GYRO_0_READ_address_size		1
+#define GYRO_0_READ_data_size		6
+
+#define MAG_0_device_address		0x0E
+#define MAG_0_CTRL_REG                  0x10
+#define MAG_0_CTRL_REG_data		0x01
+#define MAG_0_DATA_sub_address		0x01
+#define MAG_0_READ_data_size		6
+
+#define ADC_DEPTH_CH    ADC_CH_7
+#define ADC_BATTERY_CH  ADC_CH_6
 
 //pneumatics
 // Solenoid 1 G6
@@ -269,6 +283,9 @@ enum {
 #define PNEUMATIC_MARKER_L_PIN      PORTGbits.RG8
 #define PNEUMATIC_CLAW_OPEN_PIN     PORTBbits.RB13
 #define PNEUMATIC_CLAW_CLOSE_PIN    PORTEbits.RE6
+
+
+//END OLD_SUB
 
 
 #elif defined(COMPILE_SENSOR_BOARD)
@@ -345,29 +362,40 @@ enum {
 #define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA1
 
 //Sensor defines
-#define ACL1_device_address		0x1D
-#define ACL1_WRITE_sub_address		0x2D
-#define ACL1_WRITE_address_size		1
-#define ACL1_WRITE_date_size		1
-#define ACL1_WRITE_tx_data		0x08
-#define ACL1_READ_sub_address		0x32
-#define ACL1_READ_address_size		1
-#define ACL1_READ_date_size		6
-#define ACL1_READ_tx_data		0x08
+#define ACL_0_device_address		0x1D
+#define ACL_0_WRITE_sub_address		0x2D
+#define ACL_0_WRITE_address_size		1
+#define ACL_0_WRITE_data_size		1
+#define ACL_0_WRITE_tx_data		0x08
+#define ACL_0_READ_sub_address		0x32
+#define ACL_0_READ_address_size		1
+#define ACL_0_READ_data_size		6
+#define ACL_0_READ_tx_data		0x08
 
-#define GYRO1_device_address		0x69
-#define GYRO1_WRITE_sub_address		0x20
-#define GYRO1_WRITE_address_size	1
-#define GYRO1_WRITE_date_size		1
-#define GYRO1_WRITE_tx_data		0x0F
-#define GYRO1_READ_sub_address		0x28
-#define GYRO1_READ_address_size		1
-#define GYRO1_READ_date_size		6
-//#define GYRO1_READ_tx_data		0x08
+#define GYRO_0_device_address		0x69
+#define GYRO_0_WRITE_sub_address		0x20
+#define GYRO_0_WRITE_address_size	1
+#define GYRO_0_WRITE_data_size		1
+#define GYRO_0_WRITE_tx_data		0x0F
+#define GYRO_0_READ_sub_address		0x28
+#define GYRO_0_READ_address_size		1
+#define GYRO_0_READ_data_size		6
+
+#define MAG_0_device_address		0x0E
+#define MAG_0_CTRL_REG                  0x10
+#define MAG_0_CTRL_REG_data		0x01
+#define MAG_0_DATA_sub_address		0x01
+#define MAG_0_READ_data_size		6
+
+#define ADC_DEPTH_CH    ADC_CH_7
+#define ADC_BATTERY_CH  ADC_CH_6
 
 //PPS Defines
 #define UART_TX_PPS     RPB15R
 #define UART_RX_PPS     RPB13R
+
+
+//END SENSOR_BOARD
 
 #elif defined(COMPILE_THRUSTER_BOARD)
 
@@ -450,6 +478,9 @@ enum {
 #define UART_TX_PPS     RPB10R
 #define UART_RX_PPS     RPB13R
 
+
+//END THRUSTER_BOARD
+
 #elif defined(COMPILE_LED_BOARD)
 
 //check for other compiler flags
@@ -509,6 +540,9 @@ enum {
 #define SPI_SDO1_PPS     RPB13R
 #define SPI_SDO2_PPS     RPA1R
 
+
+//END LED_BOARD
+
 #elif defined(COMPILE_ACTUATION_BOARD)
 
 //check for other compiler flags
@@ -549,6 +583,9 @@ enum {
 //PPS Defines
 #define UART_TX_PPS     RPB4R
 #define UART_RX_PPS     RPA2R
+
+
+//END ACTUATION_BOARD
 
 #define CW 			0
 #define CCW			1
