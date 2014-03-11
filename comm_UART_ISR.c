@@ -513,7 +513,7 @@ void bg_process_sensor_comm_uart(void) {
     extern int Bpos_current; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
     extern int Breset; //Reset flag
 
-    extern int stepper_command, Ftrigger;
+    extern int stepper_command;
 
 
     if (bg_comm_uart_popNode(&BG_COMM_UART_Queue, &temp_node)) //Returns a 1 if empty
@@ -573,64 +573,86 @@ void bg_process_sensor_comm_uart(void) {
                 }
             }
         }
+    }
 
+    //Packet Processing
+    if (packet_recieved) {
+        stepper_command = received_bytes[2];
+        DeviceID = received_bytes[1];
+        //Command decoding
+        //NOTE: Counting up = dir CLOSE
+        //100% open pos_current = 0
+        //100% close pos_current = FRONT_POS_MAX
+        //Each pos_current/pos_goal increment = STEPS_PER_COUNT
+        switch (DeviceID) {
+            case STEPPER_FRONT:
+                switch (stepper_command) //Receives command and sets reset or pos_goal
+                {
+                    case RESET_COMMAND: //Also functions as open 100% command
+                        Freset = 1;
+                        break;
+                        //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
+                    case DROP1_COMMAND:
+                        Freset = 0;
+                        Fpos_goal = DROP1_POS;
+                        break;
+                    case DROP2_COMMAND:
+                        Freset = 0;
+                        Fpos_goal = DROP2_POS;
+                        break;
+                    case CLOSE_COMMAND:
+                        Freset = 0;
+                        Fpos_goal = MAX_POS;
+                        break;
+                    case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
+                        Freset = 0;
+                        Fpos_goal = Fpos_current;
+                        break;
+                    case STEPPER_EN_ON:
+                        Freset = 0;
+                        Fpos_goal = Fpos_current;
+                        STEP_EN = EN_ON;
+                        break;
+                    case STEPPER_EN_OFF:
+                        Freset = 0;
+                        Fpos_goal = Fpos_current;
+                        STEP_EN = EN_OFF;
+                        break;
+                }
+                break;
 
-        //Packet Processing
-        if (packet_recieved) {
-            stepper_command = received_bytes[2];
-            DeviceID = received_bytes[1];
-            //Command decoding
-            //NOTE: Counting up = dir CLOSE
-            //100% open pos_current = 0
-            //100% close pos_current = FRONT_POS_MAX
-            //Each pos_current/pos_goal increment = STEPS_PER_COUNT
-
-            switch (stepper_command) //Receives command and sets reset or pos_goal
-            {
-                case RESET_COMMAND: //Also functions as open 100% command
-                    Freset = 1;
-                    break;
-
-                    //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
-                case DROP1_COMMAND:
-                    Freset = 0;
-                    Fpos_goal = DROP1_POS;
-
-                    break;
-
-                case DROP2_COMMAND:
-                    Freset = 0;
-                    Fpos_goal = DROP2_POS;
-
-                    break;
-
-                case CLOSE_COMMAND:
-                    Freset = 0;
-                    Fpos_goal = MAX_POS;
-
-                    break;
-
-                case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
-                    Freset = 0;
-                    Fpos_goal = Fpos_current;
-                    break;
-            }
-        }
-
-        //Prevents unacceptable position goals
-        if (Fpos_goal > MAX_POS) {
-            Fpos_goal = MAX_POS;
-        }
-
-        if (Fpos_goal < 0) {
-            Fpos_goal = 0;
+            case STEPPER_BOTTOM:
+                switch (stepper_command) //Receives command and sets reset or pos_goal
+                {
+                    case RESET_COMMAND: //Also functions as open 100% command
+                        Breset = 1;
+                        break;
+                        //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
+                    case CLOSE_COMMAND:
+                        Breset = 0;
+                        Bpos_goal = MAX_POS;
+                        break;
+                    case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
+                        Breset = 0;
+                        Bpos_goal = Bpos_current;
+                        break;
+                    case STEPPER_EN_ON:
+                        Breset = 0;
+                        Bpos_goal = Bpos_current;
+                        STEP_EN = EN_ON;
+                        break;
+                    case STEPPER_EN_OFF:
+                        Freset = 0;
+                        Bpos_goal = Bpos_current;
+                        STEP_EN = EN_OFF;
+                        break;
+                }
+                break;
         }
 
     }
 
     return;
-
-
 }
 
 #endif
@@ -661,7 +683,7 @@ void bg_comm_uart_setup(void) {
  *
  *
  *********************************************************/
-void thruster_status_Initialize(THRUSTER_STATUS* thruster_status) {
+void thruster_status_Initialize(THRUSTER_STATUS * thruster_status) {
     memset(thruster_status, 0, sizeof (THRUSTER_STATUS));
 }
 
@@ -672,7 +694,7 @@ void thruster_status_Initialize(THRUSTER_STATUS* thruster_status) {
  *
  *
  *********************************************************/
-void bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE* queue) {
+void bg_comm_uart_InitializeQueue(BG_COMM_UART_QUEUE * queue) {
     memset(queue, 0, sizeof (BG_COMM_UART_QUEUE));
 }
 
@@ -704,7 +726,7 @@ int bg_comm_uart_addToQueue(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE new_nod
  *
  *
  *********************************************************/
-int bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE* return_node) {
+int bg_comm_uart_popNode(BG_COMM_UART_QUEUE* queue, BG_COMM_UART_NODE * return_node) {
     if (queue->QueueLength == 0) {
         return 1; //Can't read from queue if empty
     }

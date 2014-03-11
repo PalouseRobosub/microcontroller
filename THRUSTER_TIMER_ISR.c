@@ -28,8 +28,8 @@
  *
  *********************************************************/
 void thruster_timer_setup(void) {
-    THRUSTER_TIMER_PS = 0b11; //set the prescaler bits (1/256 in this case)
-    THRUSTER_TIMER_PR = 0xF40; //set the period register
+    THRUSTER_TIMER_PS = THRUSTER_TIMER_PRESCALER; //set the prescaler bits (1/256 in this case)
+    THRUSTER_TIMER_PR = THRUSTER_TIMER_PERIOD_REGISTER; //set the period register
 
     THRUSTER_TIMER_INT_PRIORITY_set(7); //set the priority
     THRUSTER_TIMER_INT_set(1); //enable the interrupt

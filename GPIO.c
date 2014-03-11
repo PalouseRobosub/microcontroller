@@ -50,8 +50,6 @@ int Fsteps; //keeps track of total number of steps
 int Freset; //Reset flag
 int Fdir; //Direction (OPEN or CLOSE)
 int Foutput; //Used to output bits to stepper motor
-int Fstepper_en; //Half H-bridge enable
-int Fstep_delay;
 
 int Bpos_goal; //Desired pos_current
 int Bpos_current; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
@@ -59,10 +57,8 @@ int Bsteps; //keeps track of total number of steps
 int Breset; //Reset flag
 int Bdir; //Direction (OPEN or CLOSE)
 int Boutput; //Used to output bits to stepper motor
-int Bstepper_en; //Half H-bridge enable
-int Bstep_delay;
 
-int stepper_command, Btrigger, Ftrigger;
+int stepper_command;
 
 /* START FUNCTION DESCRIPTION ********************************************
 sys_init                <Tester.c>
@@ -73,25 +69,19 @@ RETURN VALUE: 		None.
 END DESCRIPTION **********************************************************/
 void sys_init(void) {
     stepper_command = STOP_COMMAND;
-    Ftrigger = 0;
     Fpos_goal = 0; //Desired pos_current
     Fpos_current = 0; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
     Fsteps = 0; //keeps track of total number of steps
     Freset = 0; //Reset flag
     Fdir = DIR_CLOSED; //Direction (OPEN or CLOSE)
     Foutput = 0; //Used to output bits to stepper motor
-    Fstepper_en = 0; //Half H-bridge enable
-    Fstep_delay = 0;
 
-    Btrigger = 0;
     Bpos_goal = 0; //Desired pos_current
     Bpos_current = 0; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
     Bsteps = 0; //keeps track of total number of steps
     Breset = 0; //Reset flag
     Bdir = DIR_CLOSED; //Direction (OPEN or CLOSE)
     Boutput = 0; //Used to output bits to stepper motor
-    Bstepper_en = 0; //Half H-bridge enable
-    Bstep_delay = 0;
 
     DDPCONbits.JTAGEN = 0;
 
@@ -163,11 +153,19 @@ RETURN VALUE: 		None.
 END DESCRIPTION **********************************************************/
 void output_to_stepper_motor(int command, int which_stepper) {
     if (which_stepper == FRONT_STEPPER) {
+
+        STEP_IN11 = command & 0b1000;
+        STEP_IN12 = command & 0b0100;
+        STEP_IN13 = command & 0b0010;
+        STEP_IN14 = command & 0b0001;
         //LATB = (command << 7) | (LATB & ~STEPPER_MASK);
     }
 
     if (which_stepper == BOTTOM_STEPPER) {
-        //Down stepper command bits TBD
+        STEP_IN21 = command & 0b1000;
+        STEP_IN22 = command & 0b0100;
+        STEP_IN23 = command & 0b0010;
+        STEP_IN24 = command & 0b0001;
     }
 }
 

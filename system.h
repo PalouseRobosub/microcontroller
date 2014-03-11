@@ -415,6 +415,10 @@ enum {
 #define THRUSTER_TIMER_EN T1CONbits.ON
 #define THRUSTER_TIMER_PS T1CONbits.TCKPS
 
+//Actuation Timer Configurations
+#define THRUSTER_TIMER_PRESCALER		0b11
+#define THRUSTER_TIMER_PERIOD_REGISTER         0xF40
+
 //LED Pin Mapping
 #define BOW_SB_DIR_LED_TRIS     TRISAbits.TRISA0
 #define BOW_SB_MAG_LED_TRIS     TRISAbits.TRISA0
@@ -565,6 +569,8 @@ enum {
 #define DROP2_COMMAND           0xF2
 #define CLOSE_COMMAND           0xF3
 #define STOP_COMMAND            0xF4
+#define STEPPER_EN_ON           0xF5
+#define STEPPER_EN_OFF          0xF6
 
 #define FRONT_STEPPER           0
 #define BOTTOM_STEPPER          1
@@ -594,6 +600,24 @@ enum STEPPER_STATE {
 #define ACTUATION_TIMER_PR PR1
 #define ACTUATION_TIMER_EN T1CONbits.ON
 #define ACTUATION_TIMER_PS T1CONbits.TCKPS
+
+//Actuation Timer Configurations
+#define ACTUATION_TIMER_PRESCALER		0b11
+#define ACTUATION_TIMER_PERIOD_REGISTER         0xF40
+
+//GPIO Pins
+#define SEN1        PORTAbits.RA0  //SEN1 RA0 pin 2
+#define SEN2        PORTAbits.RA1  //SEN2 RA1 pin 3
+#define STEP_IN11   PORTBbits.RB11 //STEP_IN11 RB11 pin 22
+#define STEP_IN12   PORTBbits.RB13 //STEP_IN12 RB13 pin 24
+#define STEP_IN13   PORTBbits.RB15 //STEP_IN13 RB15 pin 26
+#define STEP_IN14   PORTBbits.RB14 //STEP_IN14 RB14 pin 25
+#define STEP_IN21   PORTBbits.RB7  //STEP_IN21 RB7 pin 16
+#define STEP_IN22   PORTBbits.RB5  //STEP_IN22 RB5 pin 14
+#define STEP_IN23   PORTAbits.RA3  //STEP_IN23 RA3 pin 10
+#define STEP_IN24   PORTBbits.RB10 //STEP_IN24 RB10 pin 21
+#define STEP_EN     PORTAbits.RA4  //STEP_EN RA4 pin 12
+
 
 #else //no compile option was selected
 

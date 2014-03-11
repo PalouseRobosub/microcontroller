@@ -162,6 +162,7 @@ int main(void) {
     //setup/configure hardware modules
     Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
+    actuation_timer_setup();
     sys_init();	// Initializes system
 
     //load nodes onto queues to initialize sensors
