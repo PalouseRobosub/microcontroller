@@ -338,7 +338,7 @@ void bg_process_comm_uart(void) {
                     break;
 #endif
                     
-#if defined (COMPILE_LED_BOARD)
+#if defined (COMPILE_LED_BOARD) || defined(COMPILE_OLD_SUB)
                     //LEDs
                 case LED_CONTROL_0:
                     led_spi_write_pattern(received_bytes[2]);
