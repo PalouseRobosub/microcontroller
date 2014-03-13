@@ -23,20 +23,22 @@
 /*************************************************************************
  Macros
  ************************************************************************/
-
+#define SET_LED(x)  (0x80 | x)
 /*************************************************************************
  Enums
  ************************************************************************/
 typedef enum //LED Patterns
 {
-    LED_PATTERN_ALL_BLUE,  //0
-    LED_PATTERN_ALL_GREEN, //1
-    LED_PATTERN_ALL_RED,   //2
-    LED_PATTERN_ALL_WHITE, //3
-    LED_PATTERN_RBB ,      //4
-    LED_PATTERN_BRB,       //5
-    LED_PATTERN_BBR,       //6
-    LED_PATTERN_RWR       //7
+    LED_PATTERN_OFF,       //0
+    LED_PATTERN_ALL_ORANGE,//1
+    LED_PATTERN_ALL_GREEN, //2
+    LED_PATTERN_ALL_RED,   //3
+    LED_PATTERN_ALL_BLUE,  //4
+    LED_PATTERN_ALL_WHITE, //5
+    LED_PATTERN_RBB ,      //6
+    LED_PATTERN_BRB,       //7
+    LED_PATTERN_BBR,       //8
+    LED_PATTERN_RWR        //9
     
 } LED_PATTERN;
 
