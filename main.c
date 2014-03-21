@@ -184,13 +184,13 @@ int main(void) {
         bg_process_comm_uart();
 
 #elif defined (COMPILE_SENSOR_BOARD)
-        //insert background tasks (if necessary)
+        bg_process_comm_uart();
 #elif defined (COMPILE_THRUSTER_BOARD)
         bg_process_thruster_comm_uart();
 #elif defined (COMPILE_LED_BOARD)
         bg_process_comm_uart();
 #elif defined (COMPILE_ACTUATION_BOARD)
-        //insert background tasks (if necessary)
+        bg_process_actuation_comm_uart();
 #endif
 
 

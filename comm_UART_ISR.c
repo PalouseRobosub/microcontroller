@@ -518,13 +518,13 @@ void bg_process_thruster_comm_uart(void) {
 #if defined (COMPILE_ACTUATION_BOARD)
 
 /********************************************************
- *   Function Name: bg_process_sensor_comm_uart()
+ *   Function Name: bg_process_actuation_comm_uart()
  *
  *   Description: background processing for the comm_uart
  *
  *
  *********************************************************/
-void bg_process_sensor_comm_uart(void) {
+void bg_process_actuation_comm_uart(void) {
     uint8 received_byte;
     BG_COMM_UART_NODE temp_node;
     uint8 DeviceID;
