@@ -180,17 +180,15 @@ int main(void) {
     while (1) {
         //background tasks
 
-#if defined (COMPILE_OLD_SUB)
+#if defined (COMPILE_OLD_SUB) || \
+    defined (COMPILE_SENSOR_BOARD) || \
+    defined (COMPILE_LED_BOARD) || \
+    defined (COMPILE_ACTUATION_BOARD)
         bg_process_comm_uart();
 
-#elif defined (COMPILE_SENSOR_BOARD)
-        bg_process_comm_uart();
 #elif defined (COMPILE_THRUSTER_BOARD)
         bg_process_thruster_comm_uart();
-#elif defined (COMPILE_LED_BOARD)
-        bg_process_comm_uart();
-#elif defined (COMPILE_ACTUATION_BOARD)
-        bg_process_actuation_comm_uart();
+
 #endif
 
 

@@ -23,6 +23,7 @@
  *********************************************************/
 void GPIO_setup(void) {
 
+#if defined (COMPILE_OLD_SUB)
     //setup pneumatics tris registers
     PNEUMATIC_TORPEDO_R_TRIS = 0;
     PNEUMATIC_TORPEDO_L_TRIS = 0;
@@ -38,6 +39,8 @@ void GPIO_setup(void) {
     PNEUMATIC_MARKER_L_PIN = 0;
     PNEUMATIC_CLAW_OPEN_PIN = 0;
     PNEUMATIC_CLAW_CLOSE_PIN = 0;
+#endif
+
 }
 
 #elif defined (COMPILE_ACTUATION_BOARD)
