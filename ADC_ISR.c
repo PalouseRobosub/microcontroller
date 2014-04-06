@@ -32,8 +32,7 @@ boolean ADC_initial;
  *
  *
  *********************************************************/
-void adc_setup(void)
-{
+void adc_setup(void) {
     //configure AD1PCFG
     //AD1PCFG = 0x00000000;
 
@@ -96,18 +95,17 @@ b) Select ADC interrupt priority AD1IP<2:0> (IPC<28:26>) and subpriority AD1IS<1
 
 }
 
- /********************************************************
+/********************************************************
  *   Function Name: adc_begin()
  *
  *   Description: Starts an ADC read
  *
  *
  *********************************************************/
- inline void adc_begin(void)
- {
-     ADC_initial = TRUE; //say we are starting up the ADC
-     ADC_IF = 1; //set the interrupt flag
- }
+inline void adc_begin(void) {
+    ADC_initial = TRUE; //say we are starting up the ADC
+    ADC_IF = 1; //set the interrupt flag
+}
 
 /********************************************************
  *   Function Name: ADC_Handler()
@@ -116,33 +114,33 @@ b) Select ADC interrupt priority AD1IP<2:0> (IPC<28:26>) and subpriority AD1IS<1
  *
  *
  *********************************************************/
-void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
-{
+void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void) {
     uint16 adc_value;
     static ADC_Node current_node;
+    extern boolean COMM_UART_is_idle;
 
     INTDisableInterrupts();
-    
 
-    if (ADC_initial == FALSE)
-    {
-        adc_value =  ADC1BUF0;
 
-        comm_uart_CreateNode(current_node.sensor_id, (adc_value & 0xFF), ((adc_value & 0xFF00) >> 8) );
+    if (ADC_initial == FALSE) {
+        adc_value = ADC1BUF0;
+
+        comm_uart_CreateNode(current_node.sensor_id, (adc_value & 0xFF), ((adc_value & 0xFF00) >> 8));
+        if (COMM_UART_is_idle) {
+            comm_uart_begin();
+        }
     }
 
     if (ADC_popNode(&ADC_queue, &current_node)) //load next node from the queue
-         {
-             ADC_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
-             ADC_initial = TRUE;
-         }
-         else
-         {
-            ADC_is_idle = FALSE; //flag that the bus is working now
-            AD1CHSbits.CH0SA = current_node.adc_channel; //set the positive input to be channel AN0
-            AD1CON1bits.SAMP = 1;
-            ADC_initial = FALSE;
-         }
+    {
+        ADC_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
+        ADC_initial = TRUE;
+    } else {
+        ADC_is_idle = FALSE; //flag that the bus is working now
+        AD1CHSbits.CH0SA = current_node.adc_channel; //set the positive input to be channel AN0
+        AD1CON1bits.SAMP = 1;
+        ADC_initial = FALSE;
+    }
 
     ADC_IF = 0; //clear the interrupt flag
 
@@ -157,10 +155,10 @@ void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void)
  *
  *
  *********************************************************/
-void ADC_InitializeQueue( ADC_Queue* queue )
-{
-    memset(queue, 0, sizeof(ADC_Queue));
+void ADC_InitializeQueue(ADC_Queue* queue) {
+    memset(queue, 0, sizeof (ADC_Queue));
 }
+
 /********************************************************
  *   Function Name: ADC_addToQueue( ADC_Queue* queue, ADC_Node new_node )
  *
@@ -168,24 +166,20 @@ void ADC_InitializeQueue( ADC_Queue* queue )
  *
  *
  *********************************************************/
-int ADC_addToQueue( ADC_Queue* queue, ADC_Node new_node )
-{
-    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0)
-    {
+int ADC_addToQueue(ADC_Queue* queue, ADC_Node new_node) {
+    if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0) {
         return 1; //Error, would overwrite start of list
     }
     queue->DataBank[queue->QueueEnd] = new_node;
     queue->QueueLength++;
-    if (queue->QueueEnd == ADCQueueSize-1)
-    {
+    if (queue->QueueEnd == ADCQueueSize - 1) {
         queue->QueueEnd = 0;
-    }
-    else
-    {
+    } else {
         queue->QueueEnd++;
     }
     return 0;
 }
+
 /********************************************************
  *   Function Name: ADC_popNode( ADC_Queue* queue, ADC_Node* return_node )
  *
@@ -193,19 +187,14 @@ int ADC_addToQueue( ADC_Queue* queue, ADC_Node new_node )
  *
  *
  *********************************************************/
-int ADC_popNode( ADC_Queue* queue, ADC_Node* return_node )
-{
-    if (queue->QueueLength == 0)
-    {
+int ADC_popNode(ADC_Queue* queue, ADC_Node* return_node) {
+    if (queue->QueueLength == 0) {
         return 1; //Can't read from queue if empty
     }
     *return_node = (queue->DataBank[queue->QueueStart]); //Returns the Node
-    if (queue->QueueStart == ADCQueueSize-1)
-    {
+    if (queue->QueueStart == ADCQueueSize - 1) {
         queue->QueueStart = 0;
-    }
-    else
-    {
+    } else {
         queue->QueueStart++;
     }
     queue->QueueLength--;

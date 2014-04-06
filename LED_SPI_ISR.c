@@ -230,8 +230,8 @@ void led_spi_write_pattern( uint8 pattern )
                 led_spi_addToQueue(&LED_SPI_Queue, temp);
             break;
 
-        case LED_PATTERN_ALL_WHITE:
-            temp.data_G = SET_LED(50);
+        case LED_PATTERN_ALL_PURPLE:
+            temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(50);
             for (i = 1; i < 35; i = i + 1)
