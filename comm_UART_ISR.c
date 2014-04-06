@@ -388,12 +388,12 @@ void bg_process_comm_uart(void) {
                         case STEPPER_EN_ON:
                             Freset = 0;
                             Fpos_goal = Fpos_current;
-                            STEP_EN = EN_ON;
+                            STEP_EN_PIN = EN_ON;
                             break;
                         case STEPPER_EN_OFF:
                             Freset = 0;
                             Fpos_goal = Fpos_current;
-                            STEP_EN = EN_OFF;
+                            STEP_EN_PIN = EN_OFF;
                             break;
                     }
                     break;
@@ -416,12 +416,12 @@ void bg_process_comm_uart(void) {
                         case STEPPER_EN_ON:
                             Breset = 0;
                             Bpos_goal = Bpos_current;
-                            STEP_EN = EN_ON;
+                            STEP_EN_PIN = EN_ON;
                             break;
                         case STEPPER_EN_OFF:
                             Freset = 0;
                             Bpos_goal = Bpos_current;
-                            STEP_EN = EN_OFF;
+                            STEP_EN_PIN = EN_OFF;
                             break;
                     }
                     break;

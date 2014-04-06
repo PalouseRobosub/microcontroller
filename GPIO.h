@@ -10,12 +10,13 @@
 #ifndef GPIO_H
 #define	GPIO_H
 
-#include "system.h"
+
 
 
 /*************************************************************************
  System Includes
  ************************************************************************/
+#include "system.h"
 
 /*************************************************************************
  Typedefs
@@ -24,6 +25,9 @@
 /*************************************************************************
  Constants
  ************************************************************************/
+#define OUTPUT 0
+#define INPUT  1
+
 
 /*************************************************************************
  Structure Definitions
@@ -61,11 +65,7 @@
  *********************************************************/
 void GPIO_setup(void);
 
-void sys_init(void);
 
-int stepper_state_machine(int dir, int which_stepper);
-
-void output_to_stepper_motor(int command, int which_stepper);
 
 #endif	/* GPIO_H */
 

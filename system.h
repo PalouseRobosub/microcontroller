@@ -24,7 +24,7 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-#define COMPILE_SENSOR_BOARD
+//#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
@@ -580,12 +580,19 @@ enum {
 #define COMM_UART_RXREG U1RXREG //Rx register
 #define COMM_UART_TXREG U1TXREG //Tx register
 
+//Pneumatic Defines
+#define PNEUMATIC_TORPEDO_R_TRIS    TRISBbits.TRISB3
+#define PNEUMATIC_TORPEDO_L_TRIS    TRISBbits.TRISB2
+
+#define PNEUMATIC_TORPEDO_R_PIN    PORTBbits.RB3
+#define PNEUMATIC_TORPEDO_L_PIN    PORTBbits.RB2
+
 //PPS Defines
 #define UART_TX_PPS     RPB4R
 #define UART_RX_PPS     RPA2R
 
 
-//END ACTUATION_BOARD
+
 
 #define CW 			0
 #define CCW			1
@@ -643,18 +650,31 @@ enum STEPPER_STATE {
 #define ACTUATION_TIMER_PERIOD_REGISTER         0xF40
 
 //GPIO Pins
-#define SEN1        PORTAbits.RA0  //SEN1 RA0 pin 2
-#define SEN2        PORTAbits.RA1  //SEN2 RA1 pin 3
-#define STEP_IN11   PORTBbits.RB11 //STEP_IN11 RB11 pin 22
-#define STEP_IN12   PORTBbits.RB13 //STEP_IN12 RB13 pin 24
-#define STEP_IN13   PORTBbits.RB15 //STEP_IN13 RB15 pin 26
-#define STEP_IN14   PORTBbits.RB14 //STEP_IN14 RB14 pin 25
-#define STEP_IN21   PORTBbits.RB7  //STEP_IN21 RB7 pin 16
-#define STEP_IN22   PORTBbits.RB5  //STEP_IN22 RB5 pin 14
-#define STEP_IN23   PORTAbits.RA3  //STEP_IN23 RA3 pin 10
-#define STEP_IN24   PORTBbits.RB10 //STEP_IN24 RB10 pin 21
-#define STEP_EN     PORTAbits.RA4  //STEP_EN RA4 pin 12
+#define SEN1_TRIS        TRISAbits.TRISA0  //SEN1 RA0 pin 2
+#define SEN2_TRIS        TRISAbits.TRISA1  //SEN2 RA1 pin 3
+#define STEP_IN11_TRIS   TRISBbits.TRISB11 //STEP_IN11 RB11 pin 22
+#define STEP_IN12_TRIS   TRISBbits.TRISB13 //STEP_IN12 RB13 pin 24
+#define STEP_IN13_TRIS   TRISBbits.TRISB15 //STEP_IN13 RB15 pin 26
+#define STEP_IN14_TRIS   TRISBbits.TRISB14 //STEP_IN14 RB14 pin 25
+#define STEP_IN21_TRIS   TRISBbits.TRISB7  //STEP_IN21 RB7 pin 16
+#define STEP_IN22_TRIS   TRISBbits.TRISB5  //STEP_IN22 RB5 pin 14
+#define STEP_IN23_TRIS   TRISAbits.TRISA3  //STEP_IN23 RA3 pin 10
+#define STEP_IN24_TRIS   TRISBbits.TRISB10 //STEP_IN24 RB10 pin 21
+#define STEP_EN_TRIS     TRISAbits.TRISA4  //STEP_EN RA4 pin 12
 
+#define SEN1_PIN        PORTAbits.RA0  //SEN1 RA0 pin 2
+#define SEN2_PIN        PORTAbits.RA1  //SEN2 RA1 pin 3
+#define STEP_IN11_PIN   PORTBbits.RB11 //STEP_IN11 RB11 pin 22
+#define STEP_IN12_PIN   PORTBbits.RB13 //STEP_IN12 RB13 pin 24
+#define STEP_IN13_PIN   PORTBbits.RB15 //STEP_IN13 RB15 pin 26
+#define STEP_IN14_PIN   PORTBbits.RB14 //STEP_IN14 RB14 pin 25
+#define STEP_IN21_PIN   PORTBbits.RB7  //STEP_IN21 RB7 pin 16
+#define STEP_IN22_PIN   PORTBbits.RB5  //STEP_IN22 RB5 pin 14
+#define STEP_IN23_PIN   PORTAbits.RA3  //STEP_IN23 RA3 pin 10
+#define STEP_IN24_PIN   PORTBbits.RB10 //STEP_IN24 RB10 pin 21
+#define STEP_EN_PIN     PORTAbits.RA4  //STEP_EN RA4 pin 12
+
+//END ACTUATION_BOARD
 
 #else //no compile option was selected
 

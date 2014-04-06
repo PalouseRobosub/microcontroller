@@ -164,7 +164,8 @@ int main(void) {
     Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
     actuation_timer_setup();
-    sys_init();	// Initializes system
+    stepper_motor_setup();	// Initializes system
+    GPIO_setup();
 
     //load nodes onto queues to initialize sensors
 

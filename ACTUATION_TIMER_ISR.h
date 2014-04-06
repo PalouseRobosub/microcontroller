@@ -14,6 +14,8 @@
  System Includes
  ************************************************************************/
 
+
+
 /*************************************************************************
  Constants
  ************************************************************************/
@@ -62,6 +64,12 @@ void actuation_timer_setup(void);
  *
  *********************************************************/
 inline void actuation_timer_begin(void);
+
+void stepper_motor_setup(void);
+
+int stepper_state_machine(int dir, int which_stepper);
+
+void output_to_stepper_motor(int command, int which_stepper);
 
 
 
