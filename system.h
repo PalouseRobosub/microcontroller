@@ -24,8 +24,8 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-#define COMPILE_SENSOR_BOARD
-//#define COMPILE_THRUSTER_BOARD
+//#define COMPILE_SENSOR_BOARD
+#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
 
@@ -421,6 +421,7 @@ enum {
 //comm_uart defines
 #define COMM_UART UART2
 #define COMM_UART_BRG U2BRG //baud rate register
+#define COMM_UART_BAUD_RATE_DIV 194
 #define COMM_UART_PDSEL U2MODEbits.PDSEL //parity and data selection bits
 #define COMM_UART_UTXISEL U2STAbits.UTXISEL //tx interrupt selection bits
 #define COMM_UART_UTXEN U2STAbits.UTXEN //tx enable
@@ -478,7 +479,7 @@ enum {
 
 //PPS Defines
 #define UART_TX_PPS     RPB10R
-#define UART_RX_PPS     RPB13R
+#define UART_RX_PPS_PIN     3 //RPB13R
 
 
 //END THRUSTER_BOARD

@@ -56,6 +56,13 @@
 //insert configuration for new microcontrollers
 #include <xc.h>
 
+//select programming pins
+#if defined (COMPILE_SENSOR_BOARD)
+#pragma config ICESEL = ICS_PGx1// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#elif defined (COMPILE_THRUSTER_BOARD)
+#pragma config ICESEL = ICS_PGx3// ICE/ICD Comm Channel Select (Communicate on PGEC3/PGED3)
+#endif
+
 // DEVCFG3
 // USERID = No Setting
 #pragma config PMDL1WAY = OFF            // Peripheral Module Disable Configuration (Allow only one reconfiguration)
@@ -75,7 +82,7 @@
 #pragma config FSOSCEN = OFF            // Secondary Oscillator Enable (Disabled)
 #pragma config IESO = OFF               // Internal/External Switch Over (Disabled)
 #pragma config POSCMOD = OFF            // Primary Oscillator Configuration (Primary osc disabled)
-#pragma config OSCIOFNC = ON            // CLKO Output Signal Active on the OSCO Pin (Enabled)
+#pragma config OSCIOFNC = OFF            // CLKO Output Signal Active on the OSCO Pin (Enabled)
 #pragma config FPBDIV = DIV_2           // Peripheral Clock Divisor (Pb_Clk is Sys_Clk/2)
 #pragma config FCKSM = CSDCMD           // Clock Switching and Monitor Selection (Clock Switch Disable, FSCM Disabled)
 #pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
@@ -85,7 +92,7 @@
 
 // DEVCFG0
 #pragma config JTAGEN = ON              // JTAG Enable (JTAG Port Enabled)
-#pragma config ICESEL = ICS_PGx1        // ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+//programming pins are selected above
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
