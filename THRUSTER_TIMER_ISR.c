@@ -14,6 +14,7 @@
 #if defined (COMPILE_THRUSTER_BOARD)
 #include "THRUSTER_TIMER_ISR.h"
 #include "comm_UART_ISR.h"
+#include "GPIO.h"
 
 
 /*************************************************************************
@@ -210,18 +211,35 @@ void __ISR(_THRUSTER_TIMER_VECTOR, IPL7AUTO) thruster_timer_handler(void) {
  *
  *********************************************************/
 void thruster_LED_setup(void) {
-    BOW_SB_DIR_LED_TRIS = 0;
-    BOW_SB_MAG_LED_TRIS = 0;
-    BOW_PORT_DIR_LED_TRIS = 0;
-    BOW_PORT_MAG_LED_TRIS = 0;
-    STERN_SB_DIR_LED_TRIS = 0;
-    STERN_SB_MAG_LED_TRIS = 0;
-    STERN_PORT_DIR_LED_TRIS = 0;
-    STERN_PORT_MAG_LED_TRIS = 0;
-    DEPTH_SB_DIR_LED_TRIS = 0;
-    DEPTH_SB_MAG_LED_TRIS = 0;
-    DEPTH_PORT_DIR_LED_TRIS = 0;
-    DEPTH_PORT_MAG_LED_TRIS = 0;
+    int init_val = 1;
+
+    //set the tris registers to output
+    BOW_SB_DIR_LED_TRIS = OUTPUT;
+    BOW_SB_MAG_LED_TRIS = OUTPUT;
+    BOW_PORT_DIR_LED_TRIS = OUTPUT;
+    BOW_PORT_MAG_LED_TRIS = OUTPUT;
+    STERN_SB_DIR_LED_TRIS = OUTPUT;
+    STERN_SB_MAG_LED_TRIS = OUTPUT;
+    STERN_PORT_DIR_LED_TRIS = OUTPUT;
+    STERN_PORT_MAG_LED_TRIS = OUTPUT;
+    DEPTH_SB_DIR_LED_TRIS = OUTPUT;
+    DEPTH_SB_MAG_LED_TRIS = OUTPUT;
+    DEPTH_PORT_DIR_LED_TRIS = OUTPUT;
+    DEPTH_PORT_MAG_LED_TRIS = OUTPUT;
+    
+    //initialize all ports
+    BOW_SB_DIR_LED_PORT = init_val;
+    BOW_SB_MAG_LED_PORT = init_val;
+    BOW_PORT_DIR_LED_PORT = init_val;
+    BOW_PORT_MAG_LED_PORT = init_val;
+    STERN_SB_DIR_LED_PORT = init_val;
+    STERN_SB_MAG_LED_PORT = init_val;
+    STERN_PORT_DIR_LED_PORT = init_val;
+    STERN_PORT_MAG_LED_PORT = init_val;
+    DEPTH_SB_DIR_LED_PORT = init_val;
+    DEPTH_SB_MAG_LED_PORT = init_val;
+    DEPTH_PORT_DIR_LED_PORT = init_val;
+    DEPTH_PORT_MAG_LED_PORT = init_val;
 }
 
 #endif

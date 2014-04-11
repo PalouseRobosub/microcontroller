@@ -67,8 +67,8 @@
 // USERID = No Setting
 #pragma config PMDL1WAY = OFF            // Peripheral Module Disable Configuration (Allow only one reconfiguration)
 #pragma config IOL1WAY = OFF             // Peripheral Pin Select Configuration (Allow only one reconfiguration)
-#pragma config FUSBIDIO = ON            // USB USID Selection (Controlled by the USB Module)
-#pragma config FVBUSONIO = ON           // USB VBUS ON Selection (Controlled by USB Module)
+#pragma config FUSBIDIO = OFF            // USB USID Selection (Controlled by the USB Module)
+#pragma config FVBUSONIO = OFF           // USB VBUS ON Selection (Controlled by USB Module)
 
 // DEVCFG2
 #pragma config FPLLIDIV = DIV_2         // PLL Input Divider (2x Divider)
@@ -91,7 +91,7 @@
 #pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
 
 // DEVCFG0
-#pragma config JTAGEN = ON              // JTAG Enable (JTAG Port Enabled)
+#pragma config JTAGEN = OFF              // JTAG Enable (JTAG Port Enabled)
 //programming pins are selected above
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
