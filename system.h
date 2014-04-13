@@ -447,8 +447,8 @@ enum {
 #define THRUSTER_TIMER_PS T1CONbits.TCKPS
 
 //Actuation Timer Configurations
-#define THRUSTER_TIMER_PRESCALER		0b11
-#define THRUSTER_TIMER_PERIOD_REGISTER         0xF40
+#define THRUSTER_TIMER_PRESCALER		0b01
+#define THRUSTER_TIMER_PERIOD_REGISTER         300
 
 //LED Pin Mapping
 #define BOW_SB_DIR_LED_TRIS     TRISAbits.TRISA3  //DIR 1
