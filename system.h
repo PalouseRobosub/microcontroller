@@ -419,23 +419,23 @@ enum {
 #endif
 
 //comm_uart defines
-#define COMM_UART UART2
-#define COMM_UART_BRG U2BRG //baud rate register
+#define COMM_UART UART1
+#define COMM_UART_BRG U1BRG //baud rate register
 #define COMM_UART_BAUD_RATE_DIV 194
-#define COMM_UART_PDSEL U2MODEbits.PDSEL //parity and data selection bits
-#define COMM_UART_UTXISEL U2STAbits.UTXISEL //tx interrupt selection bits
-#define COMM_UART_UTXEN U2STAbits.UTXEN //tx enable
-#define COMM_UART_URXEN U2STAbits.URXEN //rx enable
-#define COMM_UART_ON U2MODEbits.ON //uart enable
-#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 23) //enables or disables the tx interrupt
-#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 23) //enables or disables the tx interrupt
-#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 22) //enablse or disables the rx interrupt
-#define COMM_UART_INT_PRIORITY_set(x) IPC9SET = (x << 10) //sets the priority of the uart interrupts
+#define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
+#define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
+#define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
+#define COMM_UART_URXEN U1STAbits.URXEN //rx enable
+#define COMM_UART_ON U1MODEbits.ON //uart enable
+#define COMM_UART_TX_INT_set(x) IEC1SET = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_TX_INT_clr(x) IEC1CLR = (x << 9) //enables or disables the tx interrupt
+#define COMM_UART_RX_INT_set(x) IEC1SET = (x << 8) //enablse or disables the rx interrupt
+#define COMM_UART_INT_PRIORITY_set(x) IPC8SET = (x << 2) //sets the priority of the uart interrupts
 #define _COMM_UART_VECTOR _UART1_VECTOR //interrupt vector
-#define COMM_UART_RXIF IFS1bits.U2RXIF //Rx interrupt flag
-#define COMM_UART_TXIF IFS1bits.U2TXIF //Tx interrupt flag
-#define COMM_UART_RXREG U2RXREG //Rx register
-#define COMM_UART_TXREG U2TXREG //Tx register
+#define COMM_UART_RXIF IFS1bits.U1RXIF //Rx interrupt flag
+#define COMM_UART_TXIF IFS1bits.U1TXIF //Tx interrupt flag
+#define COMM_UART_RXREG U1RXREG //Rx register
+#define COMM_UART_TXREG U1TXREG //Tx register
 
 //Thruster Timer defines
 #define _THRUSTER_TIMER_VECTOR _TIMER_1_VECTOR
@@ -478,7 +478,7 @@ enum {
 #define DEPTH_PORT_MAG_LED_PORT LATBbits.LATB5  //SPD 6
 
 //PPS Defines
-#define UART_TX_PPS     RPB10R
+#define UART_TX_PPS     RPB3R
 #define UART_RX_PPS_PIN     3 //RPB13R
 
 

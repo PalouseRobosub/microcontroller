@@ -18,6 +18,11 @@
  *
  *********************************************************/
 void Configure_PIC32MX250F128B_PPS(void) {
+
+    //set all analog pins to be digital
+    ANSELA = 0;
+    ANSELB = 0;
+
 #if defined (COMPILE_SENSOR_BOARD)
     UART_TX_PPS = 1; //RPB15R
     UART_RX_PPS = 3; //RPB13R
