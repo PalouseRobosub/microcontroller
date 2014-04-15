@@ -12,6 +12,7 @@
  ************************************************************************/
 #include "system.h"
 #include "comm_UART_ISR.h"
+#include "LED_SPI_ISR.h"
 
 /*************************************************************************
  Variables
@@ -223,6 +224,15 @@ void bg_process_comm_uart(void) {
     extern int stepper_command;
 #endif
 
+#if defined (COMPILE_OLD_SUB) ||  defined (COMPILE_LED_BOARD)
+    extern LED_SPI_QUEUE LED_SPI_0_Queue;
+    extern boolean LED_SPI_0_is_idle;
+#endif
+#if defined (COMPILE_LED_BOARD)
+    extern LED_SPI_QUEUE LED_SPI_1_Queue;
+    extern boolean LED_SPI_1_is_idle;
+#endif
+
 
 
 
@@ -357,8 +367,21 @@ void bg_process_comm_uart(void) {
 #if defined (COMPILE_LED_BOARD) || defined(COMPILE_OLD_SUB)
                     //LEDs
                 case LED_CONTROL_0:
-                    led_spi_write_pattern(received_bytes[2]);
+                    led_spi_load_pattern(received_bytes[2], &LED_SPI_0_Queue);
+                    //start the SPI ISR if it is idling
+                    if (LED_SPI_0_is_idle) {
+                        led_spi_0_begin();
+                    }
                     break;
+#if defined (COMPILE_LED_BOARD)
+                case LED_CONTROL_1:
+                    led_spi_load_pattern(received_bytes[2], &LED_SPI_1_Queue);
+                    //start the SPI ISR if it is idling
+                    if (LED_SPI_1_is_idle) {
+                        led_spi_1_begin();
+                    }
+                    break;
+#endif
 #endif
 
 #if defined (COMPILE_ACTUATION_BOARD)
@@ -596,7 +619,6 @@ void bg_process_thruster_comm_uart(void) {
 
 }
 #endif
-
 
 /********************************************************
  *   Function Name:

@@ -17,8 +17,8 @@
 /*************************************************************************
  Variables
  ************************************************************************/
-LED_SPI_QUEUE LED_SPI_Queue;
-boolean LED_SPI_is_idle;
+LED_SPI_QUEUE LED_SPI_0_Queue, LED_SPI_1_Queue;
+boolean LED_SPI_0_is_idle, LED_SPI_1_is_idle;
 
 /********************************************************
  *   Function Name: led_spi_setup()
@@ -27,53 +27,98 @@ boolean LED_SPI_is_idle;
  *
  *
  *********************************************************/
- void led_spi_setup(void) {
-     /*
-1. If using interrupts:
-    a) Clear the SPIxIF bit in the respective IFSx register.
-    b) Select an interrupt mode using the SISEL<2:0> bits (SPIxSTAT<4:2>).
-    c) Set the SPIxIE bit in the respective IECx register.
-    d) Write the SPIxIP bits in the respective IPCx register.
-2. When MSTEN (SPIxCON1<5>) = 1, write the desired settings to the SPIxCON1 and SPIxCON2 registers.
-3. Clear the SPIROV bit (SPIxSTAT<6>).
-4. Select Enhanced Buffer mode by setting the SPIBEN bit (SPIxCON2<0>).
-5. Enable the SPIx operation by setting the SPIEN bit (SPIxSTAT<15>).
-6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
-*/
+void led_spi_0_setup(void) {
+    /*
+    1. If using interrupts:
+   a) Clear the SPIxIF bit in the respective IFSx register.
+   b) Select an interrupt mode using the SISEL<2:0> bits (SPIxSTAT<4:2>).
+   c) Set the SPIxIE bit in the respective IECx register.
+   d) Write the SPIxIP bits in the respective IPCx register.
+    2. When MSTEN (SPIxCON1<5>) = 1, write the desired settings to the SPIxCON1 and SPIxCON2 registers.
+    3. Clear the SPIROV bit (SPIxSTAT<6>).
+    4. Select Enhanced Buffer mode by setting the SPIBEN bit (SPIxCON2<0>).
+    5. Enable the SPIx operation by setting the SPIEN bit (SPIxSTAT<15>).
+    6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
+     */
 
-     LED_SPI_BRG = 0x04; //spi_clk = bus_clk/(2*(BRG+1)) so this sets clock to 1 Mhz
+    LED_SPI_0_BRG = LED_SPI_0_CLK_DIV; //spi_clk = bus_clk/(2*(BRG+1)) so this sets clock to 1 Mhz
 
-     LED_SPI_TXIF = 0; // clear the Tx interrupt flag
-     LED_SPI_STXISEL = 0x01; //interrupt when the Tx buffer is empty
-     LED_SPI_TXIE = 1; //enable the Tx interrupt
-     LED_SPI_TX_INT_PRIORITY_set(7); //set the interrupt priority
+    LED_SPI_0_TXIF = 0; // clear the Tx interrupt flag
+    LED_SPI_0_STXISEL = 0x01; //interrupt when the Tx buffer is empty
+    LED_SPI_0_TXIE = 1; //enable the Tx interrupt
+    LED_SPI_0_TX_INT_PRIORITY_set(7); //set the interrupt priority
 
-     LED_SPI_MSTEN = 1; //enable master mode
-     LED_SPI_ENHBUF = 1; //enable enhanced buffer mode
-     LED_SPI_SPIROV = 0; //clear the receive overflow flag
-     LED_SPI_CKP = 1;
-     LED_SPI_CKE = 1;
+    LED_SPI_0_MSTEN = 1; //enable master mode
+    LED_SPI_0_ENHBUF = 1; //enable enhanced buffer mode
+    LED_SPI_0_SPIROV = 0; //clear the receive overflow flag
+    LED_SPI_0_CKP = 1;
+    LED_SPI_0_CKE = 1;
 
-     LED_SPI_ON = 1; //enable the SPI module
+    LED_SPI_0_ON = 1; //enable the SPI module
 
 
-     LED_SPI_is_idle = TRUE;
+    LED_SPI_0_is_idle = TRUE;
 
 }
 
- /********************************************************
+#if defined (COMPILE_LED_BOARD)
+void led_spi_1_setup(void) {
+    /*
+    1. If using interrupts:
+   a) Clear the SPIxIF bit in the respective IFSx register.
+   b) Select an interrupt mode using the SISEL<2:0> bits (SPIxSTAT<4:2>).
+   c) Set the SPIxIE bit in the respective IECx register.
+   d) Write the SPIxIP bits in the respective IPCx register.
+    2. When MSTEN (SPIxCON1<5>) = 1, write the desired settings to the SPIxCON1 and SPIxCON2 registers.
+    3. Clear the SPIROV bit (SPIxSTAT<6>).
+    4. Select Enhanced Buffer mode by setting the SPIBEN bit (SPIxCON2<0>).
+    5. Enable the SPIx operation by setting the SPIEN bit (SPIxSTAT<15>).
+    6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
+     */
+
+    LED_SPI_1_BRG = LED_SPI_1_CLK_DIV; //spi_clk = bus_clk/(2*(BRG+1)) so this sets clock to 1 Mhz
+
+    LED_SPI_1_TXIF = 0; // clear the Tx interrupt flag
+    LED_SPI_1_STXISEL = 0x01; //interrupt when the Tx buffer is empty
+    LED_SPI_1_TXIE = 1; //enable the Tx interrupt
+    LED_SPI_1_TX_INT_PRIORITY_set(7); //set the interrupt priority
+
+    LED_SPI_1_MSTEN = 1; //enable master mode
+    LED_SPI_1_ENHBUF = 1; //enable enhanced buffer mode
+    LED_SPI_1_SPIROV = 0; //clear the receive overflow flag
+    LED_SPI_1_CKP = 1;
+    LED_SPI_1_CKE = 1;
+
+    LED_SPI_1_ON = 1; //enable the SPI module
+
+
+    LED_SPI_1_is_idle = TRUE;
+
+}
+#endif
+
+/********************************************************
  *   Function Name: led_spi_begin()
  *
  *   Description: Starts the LED_SPI ISR
  *
  *
  *********************************************************/
- inline void led_spi_begin(void) {
+inline void led_spi_0_begin(void) {
 
-     LED_SPI_TXIE = 1;
-     LED_SPI_TXIF = 1;
+    LED_SPI_0_TXIE = 1;
+    LED_SPI_0_TXIF = 1;
 
 }
+
+#if defined (COMPILE_LED_BOARD)
+inline void led_spi_1_begin(void) {
+
+    LED_SPI_1_TXIE = 1;
+    LED_SPI_1_TXIF = 1;
+
+}
+#endif
 
 /********************************************************
  *   Function Name: led_spi_InitializeQueue( LED_SPI_QUEUE* queue )
@@ -82,7 +127,7 @@ boolean LED_SPI_is_idle;
  *
  *
  *********************************************************/
-void led_spi_InitializeQueue( LED_SPI_QUEUE* queue ) {
+void led_spi_InitializeQueue(LED_SPI_QUEUE* queue) {
     memset(queue, 0, sizeof (LED_SPI_QUEUE));
 }
 
@@ -93,7 +138,7 @@ void led_spi_InitializeQueue( LED_SPI_QUEUE* queue ) {
  *
  *
  *********************************************************/
-int led_spi_addToQueue( LED_SPI_QUEUE* queue, LED_SPI_NODE new_node ) {
+int led_spi_addToQueue(LED_SPI_QUEUE* queue, LED_SPI_NODE new_node) {
 
     if (queue->QueueEnd == queue->QueueStart && queue->QueueLength > 0) {
         return 1; //Error, would overwrite start of list
@@ -116,7 +161,7 @@ int led_spi_addToQueue( LED_SPI_QUEUE* queue, LED_SPI_NODE new_node ) {
  *
  *
  *********************************************************/
-int led_spi_popNode( LED_SPI_QUEUE* queue, LED_SPI_NODE* return_node ) {
+int led_spi_popNode(LED_SPI_QUEUE* queue, LED_SPI_NODE* return_node) {
 
     if (queue->QueueLength == 0) {
         return 1; //Can't read from queue if empty
@@ -138,42 +183,66 @@ int led_spi_popNode( LED_SPI_QUEUE* queue, LED_SPI_NODE* return_node ) {
  *             ISR for the LED SPI module
  *
  *********************************************************/
-void __ISR(_LED_SPI_VECTOR, IPL7AUTO) led_spi_Handler(void)
-{
+void __ISR(_LED_SPI_0_VECTOR, IPL7AUTO) led_spi_0_Handler(void) {
     LED_SPI_NODE current_node;
 
     INTDisableInterrupts();
 
 
-        if (led_spi_popNode(&LED_SPI_Queue, &current_node)) {
-            LED_SPI_is_idle = TRUE;
-            LED_SPI_TXIE = 0; //clear the interrupt, so it doesn't keep firing
-        } else {
-            LED_SPI_is_idle = FALSE;
-            //transmit the data
-            LED_SPI_BUF = current_node.data_G;
-            LED_SPI_BUF = current_node.data_R;
-            LED_SPI_BUF = current_node.data_B;
-            
+    if (led_spi_popNode(&LED_SPI_0_Queue, &current_node)) {
+        LED_SPI_0_is_idle = TRUE;
+        LED_SPI_0_TXIE = 0; //clear the interrupt, so it doesn't keep firing
+    } else {
+        LED_SPI_0_is_idle = FALSE;
+        //transmit the data
+        LED_SPI_0_BUF = current_node.data_G;
+        LED_SPI_0_BUF = current_node.data_R;
+        LED_SPI_0_BUF = current_node.data_B;
 
-        }
-       //clear the interrupt flag
-       LED_SPI_TXIF = 0;
+
+    }
+    //clear the interrupt flag
+    LED_SPI_0_TXIF = 0;
 
     INTEnableInterrupts();
 
 }
 
+#if defined (COMPILE_LED_BOARD)
+void __ISR(_LED_SPI_1_VECTOR, IPL7AUTO) led_spi_1_Handler(void) {
+    LED_SPI_NODE current_node;
+
+    INTDisableInterrupts();
+
+
+    if (led_spi_popNode(&LED_SPI_1_Queue, &current_node)) {
+        LED_SPI_1_is_idle = TRUE;
+        LED_SPI_1_TXIE = 0; //clear the interrupt, so it doesn't keep firing
+    } else {
+        LED_SPI_1_is_idle = FALSE;
+        //transmit the data
+        LED_SPI_1_BUF = current_node.data_G;
+        LED_SPI_1_BUF = current_node.data_R;
+        LED_SPI_1_BUF = current_node.data_B;
+
+
+    }
+    //clear the interrupt flag
+    LED_SPI_1_TXIF = 0;
+
+    INTEnableInterrupts();
+
+}
+#endif
 
 /********************************************************
- *   Function Name: led_spi_write_pattern( uint8 pattern )
+ *   Function Name: led_spi_load_pattern( uint8 pattern )
  *
- *   Description: writes a pattern to the LEDs
+ *   Description: Loads a pattern to the SPI LED write buffer
  *
  *
  *********************************************************/
-void led_spi_write_pattern( uint8 pattern )
-{
+void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
     int i;
     LED_SPI_NODE temp, temp0;
 
@@ -181,18 +250,17 @@ void led_spi_write_pattern( uint8 pattern )
     temp0.data_G = 0x00;
     temp0.data_R = 0x00;
     temp0.data_B = 0x00;
-    led_spi_addToQueue(&LED_SPI_Queue, temp0);
+    led_spi_addToQueue(queue, temp0);
 
 
 
-    switch (pattern)
-    {
+    switch (pattern) {
         case LED_PATTERN_OFF:
             temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(0);
             temp.data_B = SET_LED(0);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
 
             break;
 
@@ -201,7 +269,7 @@ void led_spi_write_pattern( uint8 pattern )
             temp.data_R = SET_LED(0);
             temp.data_B = SET_LED(50);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
 
             break;
 
@@ -210,7 +278,7 @@ void led_spi_write_pattern( uint8 pattern )
             temp.data_R = SET_LED(0);
             temp.data_B = SET_LED(0);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
 
             break;
 
@@ -219,7 +287,7 @@ void led_spi_write_pattern( uint8 pattern )
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(0);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
             break;
 
         case LED_PATTERN_ALL_ORANGE:
@@ -227,7 +295,7 @@ void led_spi_write_pattern( uint8 pattern )
             temp.data_R = SET_LED(50);
             temp.data_B = 0x80;
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
             break;
 
         case LED_PATTERN_ALL_PURPLE:
@@ -235,7 +303,7 @@ void led_spi_write_pattern( uint8 pattern )
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(50);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
             break;
 
         case LED_PATTERN_RBB:
@@ -247,15 +315,14 @@ void led_spi_write_pattern( uint8 pattern )
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1)
-            {
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
+            for (i = 1; i < 12; i = i + 1) {
+                led_spi_addToQueue(queue, temp);
+                led_spi_addToQueue(queue, temp0);
+                led_spi_addToQueue(queue, temp0);
             }
             break;
 
-          case LED_PATTERN_BRB:
+        case LED_PATTERN_BRB:
             temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(0);
@@ -264,15 +331,14 @@ void led_spi_write_pattern( uint8 pattern )
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1)
-            {
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
+            for (i = 1; i < 12; i = i + 1) {
+                led_spi_addToQueue(queue, temp0);
+                led_spi_addToQueue(queue, temp);
+                led_spi_addToQueue(queue, temp0);
             }
             break;
 
-            case LED_PATTERN_BBR:
+        case LED_PATTERN_BBR:
             temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(0);
@@ -281,29 +347,21 @@ void led_spi_write_pattern( uint8 pattern )
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1)
-            {
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
-                led_spi_addToQueue(&LED_SPI_Queue, temp0);
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+            for (i = 1; i < 12; i = i + 1) {
+                led_spi_addToQueue(queue, temp0);
+                led_spi_addToQueue(queue, temp0);
+                led_spi_addToQueue(queue, temp);
             }
             break;
 
-            default: //default pattern is turn white
+        default: //default pattern is turn white
             temp.data_G = SET_LED(50);
             temp.data_R = SET_LED(50);
             temp.data_B = SET_LED(50);
             for (i = 1; i < 35; i = i + 1)
-                led_spi_addToQueue(&LED_SPI_Queue, temp);
+                led_spi_addToQueue(queue, temp);
             break;
 
-    }
-
-
-    //start the SPI ISR if it is idling
-    if (LED_SPI_is_idle)
-    {
-        led_spi_begin();
     }
 }
 #endif

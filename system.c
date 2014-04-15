@@ -10,6 +10,11 @@
 
 #include "system.h"
 
+
+#if defined(COMPILE_SENSOR_BOARD) || \
+    defined (COMPILE_THRUSTER_BOARD) || \
+    defined (COMPILE_LED_BOARD) || \
+    defined (COMPILE_ACTUATION_BOARD)
 /********************************************************
  *   Function Name: Configure_PIC32MX250F128B_PPS()
  *
@@ -31,7 +36,7 @@ void Configure_PIC32MX250F128B_PPS(void) {
     U1RXR = UART_RX_PPS_PIN; //RPB13R - UART1
 #elif defined(COMPILE_LED_BOARD)
     UART_TX_PPS = 1; //RPB4R - U1TX
-    UART_RX_PPS = 0; //RPA2R - U1RX
+    U1RXR = UART_RX_PPS_PIN; //RPA2R - U1RX
 
     SPI_SDO1_PPS = 3; //RPB13R - SDO1
     SPI_SDO2_PPS = 4; //RPA1R - SDO2
@@ -41,3 +46,4 @@ void Configure_PIC32MX250F128B_PPS(void) {
 #endif
 
 }
+#endif

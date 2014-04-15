@@ -57,7 +57,7 @@
 #include <xc.h>
 
 //select programming pins
-#if defined (COMPILE_SENSOR_BOARD)
+#if defined (COMPILE_SENSOR_BOARD) || defined (COMPILE_LED_BOARD)
 #pragma config ICESEL = ICS_PGx1// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 #elif defined (COMPILE_THRUSTER_BOARD)
 #pragma config ICESEL = ICS_PGx3// ICE/ICD Comm Channel Select (Communicate on PGEC3/PGED3)
@@ -110,7 +110,7 @@ int main(void) {
     comm_uart_setup();
     motor_uart_setup();
     adc_setup();
-    led_spi_setup();
+    led_spi_0_setup();
     GPIO_setup();
 
     //load nodes onto queues to initialize sensors
@@ -122,7 +122,7 @@ int main(void) {
     i2c_bank_0_begin();
     motor_uart_begin();
     comm_uart_begin();
-    led_spi_begin();
+    led_spi_0_begin();
 
 #elif defined (COMPILE_SENSOR_BOARD)
     //setup/configure hardware modules
@@ -157,14 +157,16 @@ int main(void) {
     //setup/configure hardware modules
     Configure_PIC32MX250F128B_PPS();
     comm_uart_setup();
-    led_spi_setup();
+    led_spi_0_setup();
+    led_spi_1_setup();
 
     //load nodes onto queues to initialize sensors
     //initialize LEDS maybe? Either off or a particular pattern
 
     //start each ISR
     comm_uart_begin();
-    led_spi_begin();
+    led_spi_0_begin();
+    led_spi_1_begin();
 
 #elif defined (COMPILE_ACTUATION_BOARD)
     //setup/configure hardware modules

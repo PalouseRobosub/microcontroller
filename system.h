@@ -25,9 +25,9 @@
 
 //#define COMPILE_OLD_SUB
 //#define COMPILE_SENSOR_BOARD
-#define COMPILE_THRUSTER_BOARD
+//#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
-//#define COMPILE_ACTUATION_BOARD
+#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -97,6 +97,7 @@ enum {
 
 //LED control
 #define LED_CONTROL_0           0x30
+#define LED_CONTROL_1           0x31
 
 //////////////////////////
 //Outgoing (to computer)
@@ -220,20 +221,21 @@ enum {
 #define ADC_DEPTH_INPUT_PIN TRISAbits.TRISA7
 
 //LED_SPI defines
-#define _LED_SPI_VECTOR _SPI_2_VECTOR
-#define LED_SPI_TXIF IFS1bits.SPI2ATXIF
-#define LED_SPI_TXIE IEC1bits.SPI2ATXIE
-#define LED_SPI_STAT SPI2STAT
-#define LED_SPI_BUF  SPI2BUF
-#define LED_SPI_BRG  SPI2BRG
-#define LED_SPI_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
-#define LED_SPI_STXISEL SPI2CONbits.STXISEL
-#define LED_SPI_MSTEN SPI2CONbits.MSTEN
-#define LED_SPI_ON SPI2CONbits.ON
-#define LED_SPI_ENHBUF SPI2CONbits.ENHBUF
-#define LED_SPI_SPIROV SPI2STATbits.SPIROV
-#define LED_SPI_CKP SPI2CONbits.CKP
-#define LED_SPI_CKE SPI2CONbits.CKE
+#define _LED_SPI_0_VECTOR _SPI_2_VECTOR
+#define LED_SPI_0_TXIF IFS1bits.SPI2ATXIF
+#define LED_SPI_0_TXIE IEC1bits.SPI2ATXIE
+#define LED_SPI_0_STAT SPI2STAT
+#define LED_SPI_0_BUF  SPI2BUF
+#define LED_SPI_0_BRG  SPI2BRG
+#define LED_SPI_0_CLK_DIV 0x04
+#define LED_SPI_0_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
+#define LED_SPI_0_STXISEL SPI2CONbits.STXISEL
+#define LED_SPI_0_MSTEN SPI2CONbits.MSTEN
+#define LED_SPI_0_ON SPI2CONbits.ON
+#define LED_SPI_0_ENHBUF SPI2CONbits.ENHBUF
+#define LED_SPI_0_SPIROV SPI2STATbits.SPIROV
+#define LED_SPI_0_CKP SPI2CONbits.CKP
+#define LED_SPI_0_CKE SPI2CONbits.CKE
 
 //Sensor defines
 #define ACL_0_device_address		0x1D
@@ -523,24 +525,41 @@ enum {
 #define COMM_UART_TXREG U1TXREG //Tx register
 
 //LED_SPI defines
-#define _LED_SPI_VECTOR _SPI_2_VECTOR
-#define LED_SPI_TXIF IFS1bits.SPI1TXIF
-#define LED_SPI_TXIE IEC1bits.SPI1TXIE
-#define LED_SPI_STAT SPI1STAT
-#define LED_SPI_BUF  SPI1BUF
-#define LED_SPI_BRG  SPI1BRG
-#define LED_SPI_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
-#define LED_SPI_STXISEL SPI1CONbits.STXISEL
-#define LED_SPI_MSTEN SPI1CONbits.MSTEN
-#define LED_SPI_ON SPI1CONbits.ON
-#define LED_SPI_ENHBUF SPI1CONbits.ENHBUF
-#define LED_SPI_SPIROV SPI1STATbits.SPIROV
-#define LED_SPI_CKP SPI1CONbits.CKP
-#define LED_SPI_CKE SPI1CONbits.CKE
+#define _LED_SPI_0_VECTOR _SPI_1_VECTOR
+#define LED_SPI_0_TXIF IFS1bits.SPI1TXIF
+#define LED_SPI_0_TXIE IEC1bits.SPI1TXIE
+#define LED_SPI_0_STAT SPI1STAT
+#define LED_SPI_0_BUF  SPI1BUF
+#define LED_SPI_0_BRG  SPI1BRG
+#define LED_SPI_0_CLK_DIV 0x0C
+#define LED_SPI_0_TX_INT_PRIORITY_set(x) IPC7SET = (x << 26)
+#define LED_SPI_0_STXISEL SPI1CONbits.STXISEL
+#define LED_SPI_0_MSTEN SPI1CONbits.MSTEN
+#define LED_SPI_0_ON SPI1CONbits.ON
+#define LED_SPI_0_ENHBUF SPI1CONbits.ENHBUF
+#define LED_SPI_0_SPIROV SPI1STATbits.SPIROV
+#define LED_SPI_0_CKP SPI1CONbits.CKP
+#define LED_SPI_0_CKE SPI1CONbits.CKE
+
+#define _LED_SPI_1_VECTOR _SPI_2_VECTOR
+#define LED_SPI_1_TXIF IFS1bits.SPI2TXIF
+#define LED_SPI_1_TXIE IEC1bits.SPI2TXIE
+#define LED_SPI_1_STAT SPI2STAT
+#define LED_SPI_1_BUF  SPI2BUF
+#define LED_SPI_1_BRG  SPI2BRG
+#define LED_SPI_1_CLK_DIV 120
+#define LED_SPI_1_TX_INT_PRIORITY_set(x) IPC9SET = (x << 2)
+#define LED_SPI_1_STXISEL SPI2CONbits.STXISEL
+#define LED_SPI_1_MSTEN SPI2CONbits.MSTEN
+#define LED_SPI_1_ON SPI2CONbits.ON
+#define LED_SPI_1_ENHBUF SPI2CONbits.ENHBUF
+#define LED_SPI_1_SPIROV SPI2STATbits.SPIROV
+#define LED_SPI_1_CKP SPI2CONbits.CKP
+#define LED_SPI_1_CKE SPI2CONbits.CKE
 
 //PPS Defines
 #define UART_TX_PPS     RPB4R
-#define UART_RX_PPS     RPA2R
+#define UART_RX_PPS_PIN     RPA2R
 #define SPI_SDO1_PPS     RPB13R
 #define SPI_SDO2_PPS     RPA1R
 
@@ -569,6 +588,7 @@ enum {
 //comm_uart defines
 #define COMM_UART UART1
 #define COMM_UART_BRG U1BRG //baud rate register
+#define COMM_UART_BAUD_RATE_DIV 194
 #define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
 #define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
 #define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable

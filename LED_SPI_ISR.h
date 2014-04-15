@@ -79,7 +79,8 @@ typedef struct led_spi_queue
  *
  *
  *********************************************************/
- void led_spi_setup(void);
+ void led_spi_0_setup(void);
+ void led_spi_1_setup(void);
 
  /********************************************************
  *   Function Name: led_spi_begin()
@@ -88,7 +89,8 @@ typedef struct led_spi_queue
  *
  *
  *********************************************************/
- inline void led_spi_begin(void);
+ inline void led_spi_0_begin(void);
+ inline void led_spi_1_begin(void);
 
 /********************************************************
  *   Function Name: led_spi_InitializeQueue( LED_SPI_QUEUE* queue )
@@ -124,7 +126,7 @@ int led_spi_popNode( LED_SPI_QUEUE* queue, LED_SPI_NODE* return_node );
  *
  *
  *********************************************************/
-void led_spi_write_pattern( uint8 pattern );
+void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue);
 
 
 #endif	/* LED_SPI_ISR_H */
