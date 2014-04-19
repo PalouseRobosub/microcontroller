@@ -97,7 +97,7 @@ void __ISR(_ACTUATION_TIMER_VECTOR, IPL7AUTO) actuation_timer_handler(void) //St
     //Front motor
         if (Freset) //if reset rotates motor close until latch is triggered
         {
-            if (SEN1_PIN) {  //Sensor trigger 1
+            if (!SEN1_PIN) {  //Sensor trigger 1
                 Freset = 0;
                 Fsteps = 0;
                 Fpos_goal = 0;
@@ -118,7 +118,7 @@ void __ISR(_ACTUATION_TIMER_VECTOR, IPL7AUTO) actuation_timer_handler(void) //St
 
             if (Fpos_current > Fpos_goal) //if true, rotate open one step
             {
-                if (SEN1_PIN) //stops movement until next command if latch is triggered
+                if (!SEN1_PIN) //stops movement until next command if latch is triggered
                 {
                     Fsteps = 0;
                     Fpos_goal = 0;
@@ -135,7 +135,7 @@ void __ISR(_ACTUATION_TIMER_VECTOR, IPL7AUTO) actuation_timer_handler(void) //St
     //Bottom motor
     if (Breset) //if reset rotates motor close until latch is triggered
         {
-            if (SEN1_PIN) {  //Sensor trigger 1
+            if (!SEN2_PIN) {  //Sensor trigger 2
                 Breset = 0;
                 Bsteps = 0;
                 Bpos_goal = 0;
@@ -156,7 +156,7 @@ void __ISR(_ACTUATION_TIMER_VECTOR, IPL7AUTO) actuation_timer_handler(void) //St
 
             if (Bpos_current > Bpos_goal) //if true, rotate open one step
             {
-                if (SEN1_PIN) //stops movement until next command if latch is triggered
+                if (!SEN2_PIN) //stops movement until next command if latch is triggered
                 {
                     Bsteps = 0;
                     Bpos_goal = 0;
@@ -215,23 +215,6 @@ void stepper_motor_setup(void) {
     Bdir = DIR_CLOSED; //Direction (OPEN or CLOSE)
     Boutput = 0; //Used to output bits to stepper motor
 
-    DDPCONbits.JTAGEN = 0; //JMI: what does this do? Can we cut it?
-
-    //TRISGSET = (BTN1 | BTN2);
-    //TRISBCLR = (STEPPER_MASK | LEDA | LEDB| LEDC);
-
-    //LATB = LATB & ~(STEPPER_MASK | LEDA | LEDB| LEDC);
-
-    //CN Interrupt
-    //mCNOpen((CN_ON | CN_FRZ_OFF | CN_IDLE_STOP),(CN8_ENABLE | CN9_ENABLE), CN_PULLUP_DISABLE_ALL);
-    //ConfigIntCN(CHANGE_INT_ON | CHANGE_INT_PRI_1);
-
-    //Timer1 Interrupt (1ms)
-
-    //SET THIS
-
-    //OpenTimer1(T1_ON | T1_SOURCE_INT | T1_PS_1_8, TCKS_PER_MS);
-    //ConfigIntTimer1(T1_INT_ON | T1_INT_PRIOR_2);
 
 }
 
@@ -286,18 +269,18 @@ END DESCRIPTION **********************************************************/
 void output_to_stepper_motor(int command, int which_stepper) {
     if (which_stepper == FRONT_STEPPER) {
 
-        STEP_IN11_PIN = command & 0b1000;
-        STEP_IN12_PIN = command & 0b0100;
-        STEP_IN13_PIN = command & 0b0010;
-        STEP_IN14_PIN = command & 0b0001;
-        //LATB = (command << 7) | (LATB & ~STEPPER_MASK);
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
     }
 
     if (which_stepper == BOTTOM_STEPPER) {
-        STEP_IN21_PIN = command & 0b1000;
-        STEP_IN22_PIN = command & 0b0100;
-        STEP_IN23_PIN = command & 0b0010;
-        STEP_IN24_PIN = command & 0b0001;
+
+        STEP_IN21_PIN = !!(command & 0b1000);
+        STEP_IN22_PIN = !!(command & 0b0100);
+        STEP_IN23_PIN = !!(command & 0b0010);
+        STEP_IN24_PIN = !!(command & 0b0001);
     }
 }
 

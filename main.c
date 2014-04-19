@@ -176,9 +176,10 @@ int main(void) {
     stepper_motor_setup();	// Initializes system
     GPIO_setup();
 
-    //load nodes onto queues to initialize sensors
-
-    //start each ISR
+    //possibly start with reseting both motors?
+    //this could be an issue if the microcontroller randomly resets
+    //during runtime, especially if we currently holding something.
+    //Or the computer could do it.
 
 
 #endif
@@ -195,6 +196,7 @@ int main(void) {
     defined (COMPILE_LED_BOARD) || \
     defined (COMPILE_ACTUATION_BOARD)
         bg_process_comm_uart();
+
 
 #elif defined (COMPILE_THRUSTER_BOARD)
         bg_process_thruster_comm_uart();
