@@ -24,10 +24,10 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-//#define COMPILE_SENSOR_BOARD
+#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
-#define COMPILE_ACTUATION_BOARD
+//#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -391,8 +391,8 @@ enum {
 #define MAG_0_DATA_sub_address		0x01
 #define MAG_0_READ_data_size		6
 
-#define ADC_DEPTH_CH    ADC_CH_7
-#define ADC_BATTERY_CH  ADC_CH_6
+#define ADC_DEPTH_CH    ADC_CH_1
+#define ADC_BATTERY_CH  ADC_CH_0
 
 //PPS Defines
 #define UART_TX_PPS     RPB15R
