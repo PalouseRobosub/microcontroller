@@ -245,6 +245,8 @@ void __ISR(_LED_SPI_1_VECTOR, IPL7AUTO) led_spi_1_Handler(void) {
 void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
     int i;
     LED_SPI_NODE temp, temp0;
+    int count = 150;
+    int bright = 127;
 
     //send initial zero packet to prep the strip
     temp0.data_G = 0x00;
@@ -259,7 +261,7 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(0);
             temp.data_B = SET_LED(0);
-            for (i = 1; i < 35; i = i + 1)
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
 
             break;
@@ -267,26 +269,26 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
         case LED_PATTERN_ALL_BLUE:
             temp.data_G = SET_LED(0);
             temp.data_R = SET_LED(0);
-            temp.data_B = SET_LED(50);
-            for (i = 1; i < 35; i = i + 1)
+            temp.data_B = SET_LED(bright);
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
 
             break;
 
         case LED_PATTERN_ALL_GREEN:
-            temp.data_G = SET_LED(50);
+            temp.data_G = SET_LED(bright);
             temp.data_R = SET_LED(0);
             temp.data_B = SET_LED(0);
-            for (i = 1; i < 35; i = i + 1)
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
 
             break;
 
         case LED_PATTERN_ALL_RED:
             temp.data_G = SET_LED(0);
-            temp.data_R = SET_LED(50);
+            temp.data_R = SET_LED(bright);
             temp.data_B = SET_LED(0);
-            for (i = 1; i < 35; i = i + 1)
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
             break;
 
@@ -294,15 +296,15 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             temp.data_G = SET_LED(7);
             temp.data_R = SET_LED(50);
             temp.data_B = 0x80;
-            for (i = 1; i < 35; i = i + 1)
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
             break;
 
         case LED_PATTERN_ALL_PURPLE:
             temp.data_G = SET_LED(0);
-            temp.data_R = SET_LED(50);
-            temp.data_B = SET_LED(50);
-            for (i = 1; i < 35; i = i + 1)
+            temp.data_R = SET_LED(bright);
+            temp.data_B = SET_LED(bright);
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
             break;
 
@@ -315,7 +317,7 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1) {
+            for (i = 1; i < count/3; i = i + 1) {
                 led_spi_addToQueue(queue, temp);
                 led_spi_addToQueue(queue, temp0);
                 led_spi_addToQueue(queue, temp0);
@@ -331,7 +333,7 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1) {
+            for (i = 1; i < count/3; i = i + 1) {
                 led_spi_addToQueue(queue, temp0);
                 led_spi_addToQueue(queue, temp);
                 led_spi_addToQueue(queue, temp0);
@@ -347,7 +349,7 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             temp0.data_R = SET_LED(0);
             temp0.data_B = SET_LED(50);
 
-            for (i = 1; i < 12; i = i + 1) {
+            for (i = 1; i < count/3; i = i + 1) {
                 led_spi_addToQueue(queue, temp0);
                 led_spi_addToQueue(queue, temp0);
                 led_spi_addToQueue(queue, temp);
@@ -355,10 +357,10 @@ void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
             break;
 
         default: //default pattern is turn white
-            temp.data_G = SET_LED(50);
-            temp.data_R = SET_LED(50);
-            temp.data_B = SET_LED(50);
-            for (i = 1; i < 35; i = i + 1)
+            temp.data_G = SET_LED(bright);
+            temp.data_R = SET_LED(bright);
+            temp.data_B = SET_LED(bright);
+            for (i = 1; i < count; i = i + 1)
                 led_spi_addToQueue(queue, temp);
             break;
 
