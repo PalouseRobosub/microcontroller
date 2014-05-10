@@ -35,7 +35,7 @@ boolean I2C_BANK_0_is_idle;
  {
      
     //configure the clock for the I2C1
-    I2C_BANK_0_BRG = 0x2F; //if main clock is 80 MHz, use 0x2F for 100kHz I2C
+    I2C_BANK_0_BRG = I2C_BANK_0_CLK_DIV;
 
     //Setup I2C1 interrupts
     I2C_BANK_0_INT_PRIORITY_set(7); //set priority

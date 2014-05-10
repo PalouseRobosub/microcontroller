@@ -313,7 +313,7 @@ enum {
 //comm_uart defines
 #define COMM_UART UART1
 #define COMM_UART_BRG U1BRG //baud rate register
-#define COMM_UART_BAUD_RATE_DIV 194
+#define COMM_UART_BAUD_RATE_DIV 32
 #define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
 #define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
 #define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable
@@ -340,11 +340,12 @@ enum {
 
 //Sensor Timer Configurations
 #define SENSOR_TIMER_PRESCALER		0b11
-#define SENSOR_TIMER_PERIOD_REGISTER	0xF40
+#define SENSOR_TIMER_PERIOD_REGISTER	11719
 
 //I2C Bank 0 defines
 #define _I2C_BANK_0_VECTOR _I2C_1_VECTOR
 #define I2C_BANK_0_BRG I2C1BRG //baud rate register
+#define I2C_BANK_0_CLK_DIV 148
 #define I2C_BANK_0_INT_PRIORITY_set(x) IPC8SET = (x << 10)
 #define I2C_BANK_0_INT_set(x) IEC1SET = (x << 12)
 #define I2C_BANK_0_ON I2C1CONbits.ON
@@ -381,7 +382,7 @@ enum {
 #define GYRO_0_WRITE_address_size	1
 #define GYRO_0_WRITE_data_size		1
 #define GYRO_0_WRITE_tx_data		0x0F
-#define GYRO_0_READ_sub_address		0x28
+#define GYRO_0_READ_sub_address		29
 #define GYRO_0_READ_address_size		1
 #define GYRO_0_READ_data_size		6
 

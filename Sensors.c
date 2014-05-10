@@ -93,7 +93,7 @@
     temp.mode = WRITE;
     temp.data_size = GYRO_0_WRITE_data_size;
     temp.tx_data[0] = GYRO_0_WRITE_tx_data;
-    I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+    //I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }
 
@@ -112,7 +112,7 @@
     //read Gyro 0
     temp.sensor_id = GYRO_0;
     temp.device_address = GYRO_0_device_address;
-    temp.sub_address[0] = GYRO_0_READ_sub_address | (1 << 7); //This device wants MSB to be set when reading multiple bytes
+    temp.sub_address[0] = GYRO_0_READ_sub_address; // | (1 << 7); //This device wants MSB to be set when reading multiple bytes
     temp.sub_address_size = GYRO_0_READ_address_size;
     temp.mode = READ;
     temp.data_size = GYRO_0_READ_data_size;
