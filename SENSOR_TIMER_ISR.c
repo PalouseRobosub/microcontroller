@@ -64,25 +64,66 @@ inline void sensor_timer_begin(void) {
  *********************************************************/
 void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
     extern boolean I2C_BANK_0_is_idle;
+    extern uint8 I2C_BANK_0_reset_state;
+    extern I2C_STATE state;
     extern boolean COMM_UART_is_idle;
     extern boolean ADC_is_idle;
 
     INTDisableInterrupts();
 
+//I2C Sensors
 
-    i2c_GYRO_Read();
-    i2c_ACL_Read();
-    i2c_MAG_Read();
+    switch (I2C_BANK_0_reset_state)
+    {
+        case 0:
+            i2c_GYRO_Read();
+            i2c_ACL_Read();
+            i2c_MAG_Read();
+            break;
 
+        case 1:
+            I2C_BANK_0_reset_state = 2;
+            I2C_BANK_0_RESET_PIN = 1;
+            I2C_BANK_0_PEN = 1; //send the stop signal
+            state = STOPPED;
+            break;
 
-    /*
-    this creating and sending a uart node below should
-    not be necessary, but I remember removing it
-    broke the uart. This needs to be debugged.
-     */
-//    comm_uart_CreateNode('A', 'B', 'C');
-//    if (COMM_UART_is_idle) {
-//        comm_uart_begin();
+        case 2:
+            I2C_BANK_0_reset_state = 3;
+            I2C_BANK_0_RESET_PIN = 0;
+            break;
+
+        case 3:
+            I2C_BANK_0_reset_state = 0;
+            I2C_BANK_0_is_idle = TRUE;
+            i2c_ACL_Initialize();
+            i2c_GYRO_Initialize();
+            i2c_MAG_Initialize();
+            break;
+    }
+    
+//    if (I2C_BANK_0_reset_init == TRUE)
+//    {
+//        I2C_BANK_0_reset_init = FALSE;
+//        I2C_BANK_0_reset_finish = TRUE;
+//        I2C_BANK_0_RESET_PIN = 1;
+//        I2C_BANK_0_PEN = 1; //send the stop signal
+//        state = STOPPED;
+//    }
+//    else if (I2C_BANK_0_reset_finish == TRUE)
+//    {
+//        I2C_BANK_0_RESET_PIN = 0;
+//        I2C_BANK_0_is_idle = TRUE;
+//        I2C_BANK_0_reset_finish = FALSE;
+//        i2c_ACL_Initialize();
+//        i2c_GYRO_Initialize();
+//        i2c_MAG_Initialize();
+//    }
+//    else
+//    {
+//        i2c_GYRO_Read();
+//        i2c_ACL_Read();
+//        i2c_MAG_Read();
 //    }
 
     if (I2C_BANK_0_is_idle) {

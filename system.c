@@ -30,7 +30,7 @@ void Configure_PIC32MX250F128B_PPS(void) {
 
 #if defined (COMPILE_SENSOR_BOARD)
     UART_TX_PPS = 1; //RPB15R
-    UART_RX_PPS = 3; //RPB13R
+    U1RXR = UART_RX_PPS; // = 3; //RPB13R
 #elif defined(COMPILE_THRUSTER_BOARD)
     //UART_TX_PPS = 2; //RPB10R - UART2
     U1RXR = UART_RX_PPS_PIN; //RPB13R - UART1

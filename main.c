@@ -132,8 +132,8 @@ int main(void) {
     comm_uart_setup();
     adc_setup();
 
-    TRISBbits.TRISB7 = 0;
-    LATBbits.LATB7 = 0;
+    I2C_BANK_0_RESET_TRIS = 0;
+    I2C_BANK_0_RESET_PIN = 0;
 
     //load nodes onto queues to initialize sensors
     i2c_ACL_Initialize();

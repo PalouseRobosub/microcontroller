@@ -23,6 +23,9 @@
 I2C_STATE state;
 I2C_Queue I2C_BANK_0_Queue;
 boolean I2C_BANK_0_is_idle;
+uint8 I2C_BANK_0_reset_state;
+
+
 
 /********************************************************
  *   Function Name: i2c_bank_0_setup()

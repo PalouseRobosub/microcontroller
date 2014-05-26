@@ -76,6 +76,11 @@ enum {
 //Incoming (from computer)
 //////////////////////////
 
+//Special Commands
+#define I2C_0_RESET_CMD          0x01
+#define I2C_1_RESET_CMD          0x02
+
+
 //Thrusters
 #define THRUSTER_BOW_SB 	 0x10
 #define THRUSTER_BOW_PORT 	 0x11
@@ -359,6 +364,9 @@ enum {
 #define I2C_BANK_0_ACKEN I2C1CONbits.ACKEN
 #define I2C_BANK_0_SEN I2C1CONbits.SEN
 
+#define I2C_BANK_0_RESET_TRIS TRISBbits.TRISB7
+#define I2C_BANK_0_RESET_PIN  LATBbits.LATB7
+
 //ADC defines
 #define ADC_INT_PRIORITY_set(x) IPC5SET = (x << 26) //sets the priority of the ADC interrupt
 #define ADC_INT_set(x) IEC0SET = (x << 28) //enables or disables the ADC interrupt
@@ -397,7 +405,7 @@ enum {
 
 //PPS Defines
 #define UART_TX_PPS     RPB15R
-#define UART_RX_PPS     RPB13R
+#define UART_RX_PPS     3 //RPB13R
 
 
 //END SENSOR_BOARD

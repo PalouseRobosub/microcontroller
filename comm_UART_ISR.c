@@ -232,6 +232,9 @@ void bg_process_comm_uart(void) {
     extern LED_SPI_QUEUE LED_SPI_1_Queue;
     extern boolean LED_SPI_1_is_idle;
 #endif
+#if defined (COMPILE_SENSOR_BOARD)
+    extern uint8 I2C_BANK_0_reset_state;
+#endif
 
 
 
@@ -362,6 +365,16 @@ void bg_process_comm_uart(void) {
                         motor_uart_begin();
                     }
                     break;
+#endif
+
+#if defined (COMPILE_SENSOR_BOARD)
+                    case I2C_0_RESET_CMD:
+                        I2C_BANK_0_reset_state = 1;
+                    break;
+
+//                    case I2C_1_RESET_CMD:
+//                        I2C_BANK_1_reset_init = TRUE;
+//                    break;
 #endif
 
 #if defined (COMPILE_LED_BOARD) || defined(COMPILE_OLD_SUB)
