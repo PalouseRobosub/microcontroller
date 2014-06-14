@@ -14,6 +14,10 @@
 /*************************************************************************
  System Includes
  ************************************************************************/
+/*This define suppresses warning that new versions of compiler will not support
+ * periopheral/ports.h. New teams might need to download legacy compiler in the future
+ */
+#define _SUPPRESS_PLIB_WARNING
 #include <peripheral/ports.h>
 
 
