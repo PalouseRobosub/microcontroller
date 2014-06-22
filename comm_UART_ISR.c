@@ -368,9 +368,9 @@ void bg_process_comm_uart(void) {
 #endif
 
 #if defined (COMPILE_SENSOR_BOARD)
-                    case I2C_0_RESET_CMD:
-                        I2C_BANK_0_reset_state = 1;
-                    break;
+//                    case I2C_0_RESET_CMD:
+//                        I2C_BANK_0_reset_state = 1;
+//                    break;
 
 //                    case I2C_1_RESET_CMD:
 //                        I2C_BANK_1_reset_init = TRUE;

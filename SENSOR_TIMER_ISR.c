@@ -65,6 +65,7 @@ inline void sensor_timer_begin(void) {
 void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
     extern boolean I2C_BANK_0_is_idle;
     extern uint8 I2C_BANK_0_reset_state;
+    extern I2C_Queue I2C_BANK_0_Queue;
     extern I2C_STATE state;
     extern boolean COMM_UART_is_idle;
     extern boolean ADC_is_idle;
@@ -84,12 +85,16 @@ void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
         case 1:
             I2C_BANK_0_reset_state = 2;
             I2C_BANK_0_RESET_PIN = 1;
-            I2C_BANK_0_PEN = 1; //send the stop signal
+            I2C_BANK_0_ON = 0;
+            I2C_BANK_0_Queue.QueueEnd = 0;
+            I2C_BANK_0_Queue.QueueStart = 0;
+            I2C_BANK_0_Queue.QueueLength = 0;
             state = STOPPED;
             break;
 
         case 2:
             I2C_BANK_0_reset_state = 3;
+            I2C_BANK_0_ON = 1;
             I2C_BANK_0_RESET_PIN = 0;
             break;
 
@@ -101,33 +106,14 @@ void __ISR(_SENSOR_TIMER_VECTOR, IPL7AUTO) sensor_timer_handler(void) {
             i2c_MAG_Initialize();
             break;
     }
-    
-//    if (I2C_BANK_0_reset_init == TRUE)
-//    {
-//        I2C_BANK_0_reset_init = FALSE;
-//        I2C_BANK_0_reset_finish = TRUE;
-//        I2C_BANK_0_RESET_PIN = 1;
-//        I2C_BANK_0_PEN = 1; //send the stop signal
-//        state = STOPPED;
-//    }
-//    else if (I2C_BANK_0_reset_finish == TRUE)
-//    {
-//        I2C_BANK_0_RESET_PIN = 0;
-//        I2C_BANK_0_is_idle = TRUE;
-//        I2C_BANK_0_reset_finish = FALSE;
-//        i2c_ACL_Initialize();
-//        i2c_GYRO_Initialize();
-//        i2c_MAG_Initialize();
-//    }
-//    else
-//    {
-//        i2c_GYRO_Read();
-//        i2c_ACL_Read();
-//        i2c_MAG_Read();
-//    }
+   
 
     if (I2C_BANK_0_is_idle) {
         i2c_bank_0_begin();
+    }
+    else if(I2C_BANK_0_reset_state == 0)
+    {
+        I2C_BANK_0_reset_state = 1;
     }
 
     ADC_Depth_Read();
