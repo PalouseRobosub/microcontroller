@@ -30,8 +30,8 @@
 //#define COMPILE_OLD_SUB
 //#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
-#define COMPILE_LED_BOARD
-//#define COMPILE_ACTUATION_BOARD
+//#define COMPILE_LED_BOARD
+#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -623,6 +623,8 @@ enum {
 
 #define PNEUMATIC_TORPEDO_R_PIN    LATBbits.LATB3
 #define PNEUMATIC_TORPEDO_L_PIN    LATBbits.LATB2
+
+#define TORPEDO_DURATION 2
 
 //PPS Defines
 #define UART_TX_PPS     RPB4R

@@ -222,6 +222,9 @@ void bg_process_comm_uart(void) {
     extern int Breset; //Reset flag
 
     extern int stepper_command;
+
+    extern int torpedo_L_fire;
+    extern int torpedo_R_fire;
 #endif
 
 #if defined (COMPILE_OLD_SUB) ||  defined (COMPILE_LED_BOARD)
@@ -460,6 +463,14 @@ void bg_process_comm_uart(void) {
                             STEP_EN_PIN = EN_OFF;
                             break;
                     }
+                    break;
+
+                case PNEUMATIC_TORPEDO_R:
+                    ++torpedo_R_fire;
+                    break;
+
+                case PNEUMATIC_TORPEDO_L:
+                    ++torpedo_L_fire;
                     break;
 #endif
 

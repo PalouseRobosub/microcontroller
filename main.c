@@ -179,6 +179,7 @@ int main(void) {
     actuation_timer_setup();
     stepper_motor_setup();	// Initializes system
     GPIO_setup();
+    torpedo_setup();
 
     //possibly start with reseting both motors?
     //this could be an issue if the microcontroller randomly resets

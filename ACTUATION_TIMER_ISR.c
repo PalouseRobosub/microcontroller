@@ -22,6 +22,11 @@
 /*************************************************************************
  Variables
  ************************************************************************/
+//torpedo state variables
+int torpedo_L_fire;
+int torpedo_R_fire;
+
+//Stepper motor state variables
 int Fpos_goal; //Desired pos_current
 int Fpos_current; //Keeps track of steps/STEPS_PER_COUNT to compare to pos_goal
 int Fsteps; //keeps track of total number of steps
@@ -37,6 +42,18 @@ int Bdir; //Direction (OPEN or CLOSE)
 int Boutput; //Used to output bits to stepper motor
 
 int stepper_command;
+
+/********************************************************
+ *   Function Name: torpedo_setup
+ *
+ *   Description:
+ *
+ *
+ *********************************************************/
+void torpedo_setup(void) {
+    torpedo_R_fire = 0;
+    torpedo_L_fire = 0;
+}
 
 /********************************************************
  *   Function Name:
@@ -88,6 +105,39 @@ void __ISR(_ACTUATION_TIMER_VECTOR, IPL7AUTO) actuation_timer_handler(void) //St
     extern int Boutput; //Used to output bits to stepper motor
 
     INTDisableInterrupts();
+    //
+    //pneumatic logic
+    //
+
+    //right torpedo
+    if (torpedo_R_fire == 0)
+    {
+        PNEUMATIC_TORPEDO_R_PIN = 0;
+    }
+    else
+    {
+        PNEUMATIC_TORPEDO_R_PIN = 1;
+        ++torpedo_R_fire;
+        if (torpedo_R_fire > TORPEDO_DURATION)
+        {
+            torpedo_R_fire = 0;
+        }
+    }
+    
+    //left torpedo
+    if (torpedo_L_fire == 0)
+    {
+        PNEUMATIC_TORPEDO_L_PIN = 0;
+    }
+    else
+    {
+        PNEUMATIC_TORPEDO_L_PIN = 1;
+        ++torpedo_L_fire;
+        if (torpedo_L_fire > TORPEDO_DURATION)
+        {
+            torpedo_L_fire = 0;
+        }
+    }
 
     //BEGINNING OF FRONT STEPPER MOTOR SCRIPT
     Fpos_current = Fsteps / STEPS_PER_POS; //translates total steps into pos_current
