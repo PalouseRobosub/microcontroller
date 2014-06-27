@@ -28,9 +28,9 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-#define COMPILE_SENSOR_BOARD
+//#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
-//#define COMPILE_LED_BOARD
+#define COMPILE_LED_BOARD
 //#define COMPILE_ACTUATION_BOARD
 
 
@@ -521,7 +521,7 @@ enum {
 //comm_uart defines
 #define COMM_UART UART1
 #define COMM_UART_BRG U1BRG //baud rate register
-#define COMM_UART_BAUD_RATE_DIV 194
+#define COMM_UART_BAUD_RATE_DIV 16
 #define COMM_UART_PDSEL U1MODEbits.PDSEL //parity and data selection bits
 #define COMM_UART_UTXISEL U1STAbits.UTXISEL //tx interrupt selection bits
 #define COMM_UART_UTXEN U1STAbits.UTXEN //tx enable

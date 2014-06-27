@@ -245,7 +245,7 @@ void __ISR(_LED_SPI_1_VECTOR, IPL7AUTO) led_spi_1_Handler(void) {
 void led_spi_load_pattern(uint8 pattern, LED_SPI_QUEUE* queue) {
     int i;
     LED_SPI_NODE temp, temp0;
-    int count = 150;
+    int count = 200;
     int bright = 127;
 
     //send initial zero packet to prep the strip
