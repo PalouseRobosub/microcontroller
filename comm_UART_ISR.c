@@ -401,6 +401,42 @@ void bg_process_comm_uart(void) {
 #endif
 
 #if defined (COMPILE_ACTUATION_BOARD)
+                case STEPPER_BOTTOM:
+                    switch (stepper_command) //Receives command and sets reset or pos_goal
+                    {
+                        case RESET_COMMAND: //Also functions as open 100% command
+                            Breset = 1;
+                            break;
+                            //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
+                        case DROP1_COMMAND:
+                            Breset = 0;
+                            Bpos_goal = DROP1_POS;
+                            break;
+                        case DROP2_COMMAND:
+                            Breset = 0;
+                            Bpos_goal = DROP2_POS;
+                            break;
+                        case CLOSE_COMMAND:
+                            Breset = 0;
+                            Bpos_goal = MAX_POS;
+                            break;
+                        case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
+                            Breset = 0;
+                            Bpos_goal = Bpos_current;
+                            break;
+                        case STEPPER_EN_ON:
+                            Breset = 0;
+                            Bpos_goal = Bpos_current;
+                            STEP_EN_PIN = EN_ON;
+                            break;
+                        case STEPPER_EN_OFF:
+                            Breset = 0;
+                            Bpos_goal = Bpos_current;
+                            STEP_EN_PIN = EN_OFF;
+                            break;
+                    }
+                    break;
+
                 case STEPPER_FRONT:
                     switch (stepper_command) //Receives command and sets reset or pos_goal
                     {
@@ -408,14 +444,6 @@ void bg_process_comm_uart(void) {
                             Freset = 1;
                             break;
                             //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
-                        case DROP1_COMMAND:
-                            Freset = 0;
-                            Fpos_goal = DROP1_POS;
-                            break;
-                        case DROP2_COMMAND:
-                            Freset = 0;
-                            Fpos_goal = DROP2_POS;
-                            break;
                         case CLOSE_COMMAND:
                             Freset = 0;
                             Fpos_goal = MAX_POS;
@@ -432,34 +460,6 @@ void bg_process_comm_uart(void) {
                         case STEPPER_EN_OFF:
                             Freset = 0;
                             Fpos_goal = Fpos_current;
-                            STEP_EN_PIN = EN_OFF;
-                            break;
-                    }
-                    break;
-
-                case STEPPER_BOTTOM:
-                    switch (stepper_command) //Receives command and sets reset or pos_goal
-                    {
-                        case RESET_COMMAND: //Also functions as open 100% command
-                            Breset = 1;
-                            break;
-                            //DROP1_COUNT et al are measured in pos_goals (steps / STEPS_PER_COUNT), NOT total steps
-                        case CLOSE_COMMAND:
-                            Breset = 0;
-                            Bpos_goal = MAX_POS;
-                            break;
-                        case STOP_COMMAND: //Sets pos_goal = pos_current and thus stops movement
-                            Breset = 0;
-                            Bpos_goal = Bpos_current;
-                            break;
-                        case STEPPER_EN_ON:
-                            Breset = 0;
-                            Bpos_goal = Bpos_current;
-                            STEP_EN_PIN = EN_ON;
-                            break;
-                        case STEPPER_EN_OFF:
-                            Freset = 0;
-                            Bpos_goal = Bpos_current;
                             STEP_EN_PIN = EN_OFF;
                             break;
                     }
