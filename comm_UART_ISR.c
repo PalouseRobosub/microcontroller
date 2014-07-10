@@ -402,7 +402,7 @@ void bg_process_comm_uart(void) {
 
 #if defined (COMPILE_ACTUATION_BOARD)
                 case STEPPER_BOTTOM:
-                    switch (stepper_command) //Receives command and sets reset or pos_goal
+                    switch (received_bytes[2]) //Receives command and sets reset or pos_goal
                     {
                         case RESET_COMMAND: //Also functions as open 100% command
                             Breset = 1;
@@ -438,7 +438,7 @@ void bg_process_comm_uart(void) {
                     break;
 
                 case STEPPER_FRONT:
-                    switch (stepper_command) //Receives command and sets reset or pos_goal
+                    switch (received_bytes[2]) //Receives command and sets reset or pos_goal
                     {
                         case RESET_COMMAND: //Also functions as open 100% command
                             Freset = 1;
