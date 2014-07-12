@@ -442,10 +442,21 @@ void output_to_stepper_motor(int command, int which_stepper) {
 
     if (which_stepper == BOTTOM_STEPPER) {
 
-        STEP_IN21_PIN = !!(command & 0b1000);
-        STEP_IN22_PIN = !!(command & 0b0100);
+//        STEP_IN22_PIN = !!(command & 0b1000);
+//        STEP_IN23_PIN = !!(command & 0b0100);
+//        STEP_IN21_PIN = !!(command & 0b0010);
+//        STEP_IN24_PIN = !!(command & 0b0001);
+
+        STEP_IN24_PIN = !!(command & 0b1000);
+        STEP_IN21_PIN = !!(command & 0b0100);
         STEP_IN23_PIN = !!(command & 0b0010);
-        STEP_IN24_PIN = !!(command & 0b0001);
+        STEP_IN22_PIN = !!(command & 0b0001);
+
+
+//        STEP_IN21_PIN = !!(command & 0b1000);
+//        STEP_IN22_PIN = !!(command & 0b0100);
+//        STEP_IN23_PIN = !!(command & 0b0010);
+//        STEP_IN24_PIN = !!(command & 0b0001);
     }
 }
 
