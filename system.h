@@ -668,7 +668,7 @@ enum {
 #define DROP1_POS               40
 #define DROP2_POS               60
 
-#define MAX_POS                 100
+#define MAX_POS                 300
 
 
 enum STEPPER_STATE {
@@ -686,7 +686,7 @@ enum STEPPER_STATE {
 
 //Actuation Timer Configurations
 #define ACTUATION_TIMER_PRESCALER		0b11
-#define ACTUATION_TIMER_PERIOD_REGISTER         0xF40
+#define ACTUATION_TIMER_PERIOD_REGISTER         0x140  //0x5Fff//0xF40
 
 //GPIO Pins
 #define SEN1_TRIS        TRISAbits.TRISA0  //SEN1 RA0 pin 2

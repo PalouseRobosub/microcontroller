@@ -318,11 +318,126 @@ RETURN VALUE: 		None.
 END DESCRIPTION **********************************************************/
 void output_to_stepper_motor(int command, int which_stepper) {
     if (which_stepper == FRONT_STEPPER) {
-
+        /*
         STEP_IN11_PIN = !!(command & 0b1000);
         STEP_IN12_PIN = !!(command & 0b0100);
         STEP_IN13_PIN = !!(command & 0b0010);
         STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN12_PIN = !!(command & 0b1000);
+        STEP_IN11_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        ///*
+        STEP_IN12_PIN = !!(command & 0b1000);
+        STEP_IN13_PIN = !!(command & 0b0100);
+        STEP_IN11_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        //*/
+        
+        /*
+        STEP_IN12_PIN = !!(command & 0b1000);
+        STEP_IN13_PIN = !!(command & 0b0100);
+        STEP_IN14_PIN = !!(command & 0b0010);
+        STEP_IN11_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN13_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN14_PIN = !!(command & 0b0010);
+        STEP_IN11_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN13_PIN = !!(command & 0b1000);
+        STEP_IN14_PIN = !!(command & 0b0100);
+        STEP_IN12_PIN = !!(command & 0b0010);
+        STEP_IN11_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN13_PIN = !!(command & 0b1000);
+        STEP_IN14_PIN = !!(command & 0b0100);
+        STEP_IN11_PIN = !!(command & 0b0010);
+        STEP_IN12_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN14_PIN = !!(command & 0b1000);
+        STEP_IN13_PIN = !!(command & 0b0100);
+        STEP_IN11_PIN = !!(command & 0b0010);
+        STEP_IN12_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN14_PIN = !!(command & 0b1000);
+        STEP_IN11_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN12_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN14_PIN = !!(command & 0b1000);
+        STEP_IN11_PIN = !!(command & 0b0100);
+        STEP_IN12_PIN = !!(command & 0b0010);
+        STEP_IN13_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN14_PIN = !!(command & 0b0100);
+        STEP_IN12_PIN = !!(command & 0b0010);
+        STEP_IN13_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN14_PIN = !!(command & 0b0010);
+        STEP_IN13_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+        /*
+        STEP_IN11_PIN = !!(command & 0b1000);
+        STEP_IN12_PIN = !!(command & 0b0100);
+        STEP_IN13_PIN = !!(command & 0b0010);
+        STEP_IN14_PIN = !!(command & 0b0001);
+        */
+
+
     }
 
     if (which_stepper == BOTTOM_STEPPER) {
