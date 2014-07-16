@@ -28,10 +28,10 @@
    Do not activate more than one flag at once!   */
 
 //#define COMPILE_OLD_SUB
-//#define COMPILE_SENSOR_BOARD
+#define COMPILE_SENSOR_BOARD
 //#define COMPILE_THRUSTER_BOARD
 //#define COMPILE_LED_BOARD
-#define COMPILE_ACTUATION_BOARD
+//#define COMPILE_ACTUATION_BOARD
 
 
 /*************************************************************************
@@ -412,6 +412,16 @@ enum {
 #define UART_RX_PPS     3 //RPB13R
 
 
+//Mission start switch defines
+#define START_SW_TRIS TRISAbits.TRISA3
+#define START_SW_PIN  PORTAbits.RA3
+
+#define _MISSION_START_VECTOR _CHANGE_NOTICE_VECTOR
+#define CHANGE_NOTICE_INT_set(x) IEC1SET = (x << 13)
+#define CHANGE_NOTICE_INT_PRIORITY_set(x) IPC8SET = (x << 18)
+#define CHANGE_NOTICE_IF IFS1bits.CNAIF
+#define START_SW_CHANGE_NOTICE_ON CNCONAbits.ON
+#define START_SW_CN_PIN_EN CNENAbits.CNIEA3
 //END SENSOR_BOARD
 
 #elif defined(COMPILE_THRUSTER_BOARD)

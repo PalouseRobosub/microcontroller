@@ -78,8 +78,8 @@ void GPIO_setup(void)
     START_SW_TRIS = INPUT;
     
     //setup pin change interrrupts
-    CHANGE_NOTICE_ON = 1; //enable the change notice peripheral module
-       
+    START_SW_CHANGE_NOTICE_ON = 1; //enable the change notice peripheral module
+    
     CHANGE_NOTICE_INT_set(1); //enable interrupt
     CHANGE_NOTICE_INT_PRIORITY_set(7); //set priority
     CHANGE_NOTICE_IF = 0; //clear the interrupt flag
@@ -87,7 +87,7 @@ void GPIO_setup(void)
     
     //select which pins will activate a change notice interrupt
     START_SW_CN_PIN_EN = 1; //enable change notice for the mission start switch
-    
+
     
     
     //Read corresponding PORTx registers to clear mismatch condition on CN input pins.
