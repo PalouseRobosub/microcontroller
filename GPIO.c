@@ -73,4 +73,47 @@ void GPIO_setup(void)
     PNEUMATIC_TORPEDO_L_PIN = 0;
 #endif
 
+#if defined (COMPILE_SENSOR_BOARD)
+    //setup the pin as an input
+    START_SW_TRIS = INPUT;
+    
+    //setup pin change interrrupts
+    CHANGE_NOTICE_ON = 1; //enable the change notice peripheral module
+       
+    CHANGE_NOTICE_INT_set(1); //enable interrupt
+    CHANGE_NOTICE_INT_PRIORITY_set(7); //set priority
+    CHANGE_NOTICE_IF = 0; //clear the interrupt flag
+    
+    
+    //select which pins will activate a change notice interrupt
+    START_SW_CN_PIN_EN = 1; //enable change notice for the mission start switch
+    
+    
+    
+    //Read corresponding PORTx registers to clear mismatch condition on CN input pins.
+    
+#endif
+
+}
+
+/********************************************************
+ *   Function Name: mission_start_Handler
+ *
+ *   Description:
+ *             ISR for the mission start switch
+ *
+ *********************************************************/
+void __ISR(_MISSION_START_VECTOR, IPL7AUTO) mission_start_Handler(void) {
+
+    INTDisableInterrupts();
+    
+    if (START_SW_PIN == 1) //if the value is 1, then we are seeing a rising edge
+    {
+        comm_uart_CreateNode(/*insert parameters*/ ); //tell the computer we saw a rising edge 
+    } //else: falling edge, we don't care
+    
+    
+    CHANGE_NOTICE_IF = 0; //clear the interrupt flag
+    
+    INTEnableInterrupts();
 }
