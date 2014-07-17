@@ -130,6 +130,8 @@ enum {
 #define MAG_0_Y    0x41
 #define MAG_0_Z    0x42
 
+#define START_SW   0x50
+
 #endif	/* TRANSMISSION_PROTOCOL */
 
 

@@ -131,6 +131,7 @@ int main(void) {
     i2c_bank_0_setup();
     comm_uart_setup();
     adc_setup();
+    GPIO_setup();
 
     I2C_BANK_0_RESET_TRIS = 0;
     I2C_BANK_0_RESET_PIN = 0;

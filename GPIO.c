@@ -109,7 +109,7 @@ void __ISR(_MISSION_START_VECTOR, IPL7AUTO) mission_start_Handler(void) {
     
     if (START_SW_PIN == 1) //if the value is 1, then we are seeing a rising edge
     {
-        comm_uart_CreateNode(/*insert parameters*/ ); //tell the computer we saw a rising edge 
+        comm_uart_CreateNode(START_SW, 0x00, 0x01 ); //tell the computer we saw a rising edge
     } //else: falling edge, we don't care
     
     
