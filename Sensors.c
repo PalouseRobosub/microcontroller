@@ -88,12 +88,12 @@
 
     //data for initializing Gyro 0
     temp.device_address = GYRO_0_device_address;
-    temp.sub_address[0] = GYRO_0_WRITE_sub_address;
-    temp.sub_address_size = GYRO_0_WRITE_address_size;
+    temp.sub_address[0] = 0x16; //range/filtering control register
+    temp.sub_address_size = 1;
     temp.mode = WRITE;
-    temp.data_size = GYRO_0_WRITE_data_size;
-    temp.tx_data[0] = GYRO_0_WRITE_tx_data;
-    //I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+    temp.data_size = 1;
+    temp.tx_data[0] = 0x19; //set for 2000 degrees/second range, and LPF BW of 188Hz
+    I2C_addToQueue(&I2C_BANK_0_Queue, temp);
 
  }
 
@@ -133,6 +133,14 @@
      extern I2C_Queue I2C_BANK_0_Queue;
 
     //data for initializing MAG 0
+    temp.device_address = MAG_0_device_address;
+    temp.sub_address[0] = 0x11;
+    temp.sub_address_size = 1;
+    temp.mode = WRITE;
+    temp.data_size = 1;
+    temp.tx_data[0] = 0xA0; //configures for auto reset and raw data mode
+    I2C_addToQueue(&I2C_BANK_0_Queue, temp);
+
     temp.device_address = MAG_0_device_address;
     temp.sub_address[0] = MAG_0_CTRL_REG;
     temp.sub_address_size = 1;
