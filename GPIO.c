@@ -95,7 +95,7 @@ void GPIO_setup(void)
 #endif
 
 }
-
+#if defined (COMPILE_SENSOR_BOARD)
 /********************************************************
  *   Function Name: mission_start_Handler
  *
@@ -107,7 +107,7 @@ void __ISR(_MISSION_START_VECTOR, IPL7AUTO) mission_start_Handler(void) {
 
     INTDisableInterrupts();
     
-    if (START_SW_PIN == 1) //if the value is 1, then we are seeing a rising edge
+    if(START_SW_PIN == 1) //if the value is 1, then we are seeing a rising edge
     {
         comm_uart_CreateNode(START_SW, 0x00, 0x01 ); //tell the computer we saw a rising edge
     } //else: falling edge, we don't care
@@ -117,3 +117,5 @@ void __ISR(_MISSION_START_VECTOR, IPL7AUTO) mission_start_Handler(void) {
     
     INTEnableInterrupts();
 }
+
+#endif
