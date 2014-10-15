@@ -11,7 +11,8 @@
  System Includes
  ************************************************************************/
 #include "system.h"
-
+#include "hydrophone_timer.h"
+#include "comparator.h"
 
 /*************************************************************************
  Processor Configuration
@@ -62,12 +63,17 @@
 int main(void) {
 
 
+    //setup hardware modules, initialize variables
+    hydrophone_timer_setup();
+    comparator_setup();
+
+
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     INTEnableInterrupts();
 
     while (1) {
-
+        //do nothing here, all work should be handled by interrupts
     }
 
     return 0;

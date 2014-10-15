@@ -40,8 +40,7 @@ void hydrophone_timer_setup(void) {
  *
  *********************************************************/
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) hydrophone_timer_handler(void) {
-
-
+    
     INTDisableInterrupts();
 
 
