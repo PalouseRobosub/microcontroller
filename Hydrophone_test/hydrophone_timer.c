@@ -28,6 +28,19 @@
  *********************************************************/
 void hydrophone_timer_setup(void) {
 
+    T1CON = 0; //Clear all bits in register
+
+    T1CONbits.TCS = 0; //Internal Peripheral Clock
+    T1CONbits.TCKPS = 0b00; //Prescale Value 1:1
+
+    PR1 = 0xffff; //Cycles before and interupt is triggered
+    //Need to adjust for PB_Clk Speed
+    //Should give enough time for all hydrophones to trigger
+    //and trigger before the next ping
+
+    TMR1 = 0; //Set Timer Register to zero;
+
+    return 0;
 }
 
 
