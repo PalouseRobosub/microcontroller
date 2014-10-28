@@ -55,24 +55,26 @@ void hydrophone_timer_setup(void) {
  *
  *
  *********************************************************/
-void __ISR(_TIMER_1_VECTOR, IPL7AUTO) hydrophone_timer_handler(void) {
+void __ISR(_TIMER_1_VECTOR,  IPL7AUTO) hydrophone_timer_handler(void) {
     
     INTDisableInterrupts();
     
     IFS0bits.T1IF = 0; //Set flag to zero
 
-    //Reset the registers
-    s0 = 0;
-    s1 = 0;
-    s2 = 0;
-    s3 = 0;
-    s4 = 0;
+    int i;
 
+    //Reset the variables
+    for(i=0; i < 3; i++)
+    {
+        time_stamp[i] = 0;
+        comp_trig[i] = 0;
+    }
+    
     //Reset instance
-    s5 = 0;
+    instance = 0;
 
     //Set register for error message
-    s6 = 1;
+    error = 1;
 
     INTEnableInterrupts();
 

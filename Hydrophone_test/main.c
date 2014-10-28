@@ -58,6 +58,13 @@
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 
 /*************************************************************************
+ Global Variables
+ ************************************************************************/
+int time_stamp [3] = {0,0,0},
+        comp_trig [3] = {0,0,0},
+        instance = 0, error = 0;
+
+/*************************************************************************
  Main Function
  ************************************************************************/
 int main(void) {
@@ -66,13 +73,42 @@ int main(void) {
     hydrophone_timer_setup();
     comparator_setup();
 
-
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     INTEnableInterrupts();
 
+    int tHPhone [3] = {0,0,0};
+    int i = 0, j = 0;
+
     while (1) {
         //do nothing here, all work should be handled by interrupts
+        if(error > 0)
+            break;
+
+        //Decipher each instance and collect times when each comparator triggered
+        else if(((comp_trig[0] + comp_trig[1] + comp_trig[2]) & 7) == 7)
+        {
+            for(i = 0; i < 3; i++)
+            {
+                for(j = 0; j < 3; j++)
+                {
+                    if((1 << j) == (comp_trig[i] & (1 << j)))
+                    {
+                    tHPhone [0] = time_stamp[i];
+                     }
+                }
+            }
+
+            //Reset values for triggered interrupts
+            for(i = 0; i < 3; i++)
+            {
+                comp_trig[i] = 0;
+                time_stamp[i] = 0;
+            }
+            instance = 0;
+
+        }
+
     }
 
     return 0;

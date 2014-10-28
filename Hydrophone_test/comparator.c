@@ -103,17 +103,19 @@ void comparator_setup(void) {
 //you can have all three interrupts map to the same vector
 //void __ISR((_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR), IPL7AUTO) comparator_handler(void) {
 //or you could create individual ISRs for each interrupt
-void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler(void) {
+void __ISR(_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler(void) {
 
     INTDisableInterrupts();
 
-    switch(s5)
-    {
-        case(0):
-            T1CONbits.ON = 1;
-            s0 =
-    }
+    T1CONbits.ON = 1;
+
+    time_stamp[instance] = TMR1;
+    comp_trig[instance] = IFS1;
+       
     
+    instance++;
+
+    IFS1CLR = 0b0111; //clear interrupt flag bits
 
     INTEnableInterrupts();
 
