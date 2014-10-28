@@ -40,6 +40,9 @@ void hydrophone_timer_setup(void) {
 
     TMR1 = 0; //Set Timer Register to zero;
 
+    IFS0bits.T1IF = 0;
+    IEC0bits.T1IE = 1;
+
     return 0;
 }
 
@@ -55,9 +58,21 @@ void hydrophone_timer_setup(void) {
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) hydrophone_timer_handler(void) {
     
     INTDisableInterrupts();
+    
+    IFS0bits.T1IF = 0; //Set flag to zero
 
+    //Reset the registers
+    s0 = 0;
+    s1 = 0;
+    s2 = 0;
+    s3 = 0;
+    s4 = 0;
 
+    //Reset instance
+    s5 = 0;
 
+    //Set register for error message
+    s6 = 1;
 
     INTEnableInterrupts();
 

@@ -67,6 +67,15 @@ void comparator_setup(void) {
     CM2CONbits.CPOL = 1;
     CM3CONbits.CPOL = 1;
 
+    //Enable interrupts and clear flags
+    IFS1bits.CMP1IF = 0;
+    IFS1bits.CMP2IF = 0;
+    IFS1bits.CMP3IF = 0;
+
+    IEC1bits.CMP1IE = 1;
+    IEC1bits.CMP2IE = 1;
+    IEC1bits.CMP3IE = 1;
+
 
     //Voltage Reference Setting
     //CVref = 1/4*CVrsrc + CVR/32 * CVrsrc
@@ -98,7 +107,12 @@ void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler(void) {
 
     INTDisableInterrupts();
 
-
+    switch(s5)
+    {
+        case(0):
+            T1CONbits.ON = 1;
+            s0 =
+    }
     
 
     INTEnableInterrupts();
