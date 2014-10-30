@@ -43,7 +43,6 @@ void hydrophone_timer_setup(void) {
     IFS0bits.T1IF = 0;
     IEC0bits.T1IE = 1;
 
-    return 0;
 }
 
 
@@ -56,7 +55,11 @@ void hydrophone_timer_setup(void) {
  *
  *********************************************************/
 void __ISR(_TIMER_1_VECTOR,  IPL7AUTO) hydrophone_timer_handler(void) {
-    
+
+     extern int time_stamp [3],
+        comp_trig [3],
+        instance, error;
+     
     INTDisableInterrupts();
     
     IFS0bits.T1IF = 0; //Set flag to zero
