@@ -32,7 +32,7 @@ void comparator_setup(void) {
 
     CVRCON = 0; //Initialize everything to 0;
 
-    CVRCONbits.CVRSS = 0;   //Set Comparator Voltage Source to Internal VDD and VSS
+    CVRCONbits.CVRSS = 0;   //Set Comparator Voltage Source to AVDD - AVSS
     CVRCONbits.CVRR = 0;    //Set Range Selection between .25 to .75 Vref
                             //1 Set from 0 to .67
     CVRCONbits.CVROE = 1;    //Voltage level is output to CVrefout pin
@@ -68,6 +68,10 @@ void comparator_setup(void) {
     CM3CONbits.CPOL = 1;
 
     //Enable interrupts and clear flags
+    IPC6bits.CMP1IP = 7;
+    IPC7bits.CMP2IP = 7;
+    IPC7bits.CMP3IP = 7;
+
     IFS1bits.CMP1IF = 0;
     IFS1bits.CMP2IF = 0;
     IFS1bits.CMP3IF = 0;
@@ -76,10 +80,14 @@ void comparator_setup(void) {
     IEC1bits.CMP2IE = 1;
     IEC1bits.CMP3IE = 1;
 
+    //Setting up pins as inputs
+    TRISBbits.TRISB0 = 1;
+    TRISBbits.TRISB1 = 1;
+    TRISBbits.TRISB14 = 1;
 
     //Voltage Reference Setting
     //CVref = 1/4*CVrsrc + CVR/32 * CVrsrc
-    CVRCONbits.CVR = 0xf;
+    CVRCONbits.CVR = 0x4;
 
     //Turn on Comparators and Comparator Voltage Reference
     CVRCONbits.ON = 1;
@@ -101,7 +109,7 @@ void comparator_setup(void) {
 //you can have all three interrupts map to the same vector
 //void __ISR((_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR), IPL7AUTO) comparator_handler(void) {
 //or you could create individual ISRs for each interrupt
-void __ISR((_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR), IPL7AUTO) comparator_handler(void) {
+void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler(void) {
 
     extern int time_stamp [3],
         comp_trig [3],
@@ -122,3 +130,6 @@ void __ISR((_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR), I
     INTEnableInterrupts();
 
 }
+
+void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler(void);
+void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler(void);

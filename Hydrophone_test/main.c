@@ -21,7 +21,7 @@
 #include <xc.h>
 
 //select programming pins
-#pragma config ICESEL = ICS_PGx1// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config ICESEL = ICS_PGx3// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 
 // DEVCFG3
 // USERID = No Setting
@@ -79,6 +79,8 @@ int main(void) {
 
     int tHPhone [3] = {0,0,0};
     int i = 0, j = 0;
+
+    IFS1bits.CMP1IF = 1;
 
     while (1) {
         //do nothing here, all work should be handled by interrupts
