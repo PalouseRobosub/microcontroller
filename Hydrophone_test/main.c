@@ -13,6 +13,7 @@
 #include "system.h"
 #include "hydrophone_timer.h"
 #include "comparator.h"
+#include "uart.h"
 
 /*************************************************************************
  Processor Configuration
@@ -71,6 +72,7 @@ int main(void) {
     //setup hardware modules, initialize variables
     hydrophone_timer_setup();
     comparator_setup();
+    uart_setup();
 
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
