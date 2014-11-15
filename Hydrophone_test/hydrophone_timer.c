@@ -40,6 +40,7 @@ void hydrophone_timer_setup(void) {
 
     TMR1 = 0; //Set Timer Register to zero;
 
+    IPC1bits.T1IP = 6;
     IFS0bits.T1IF = 0;
     IEC0bits.T1IE = 1;
 
@@ -54,7 +55,7 @@ void hydrophone_timer_setup(void) {
  *
  *
  *********************************************************/
-void __ISR(_TIMER_1_VECTOR,  IPL7AUTO) hydrophone_timer_handler(void) {
+void __ISR(_TIMER_1_VECTOR,  IPL6AUTO) hydrophone_timer_handler(void) {
 
      extern int time_stamp [3],
         comp_trig [3],

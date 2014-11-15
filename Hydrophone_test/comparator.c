@@ -67,6 +67,12 @@ void comparator_setup(void) {
     CM2CONbits.CPOL = 1;
     CM3CONbits.CPOL = 1;
 
+    //Turn on Comparators and Comparator Voltage Reference
+    CVRCONbits.ON = 1;
+    CM1CONbits.ON = 1;
+    CM2CONbits.ON = 1;
+    CM3CONbits.ON = 1;
+
     //Enable interrupts and clear flags
     IPC6bits.CMP1IP = 7;
     IPC7bits.CMP2IP = 7;
@@ -88,12 +94,6 @@ void comparator_setup(void) {
     //Voltage Reference Setting
     //CVref = 1/4*CVrsrc + CVR/32 * CVrsrc
     CVRCONbits.CVR = 0x4;
-
-    //Turn on Comparators and Comparator Voltage Reference
-    CVRCONbits.ON = 1;
-    CM1CONbits.ON = 1;
-    CM2CONbits.ON = 1;
-    CM3CONbits.ON = 1;
 
 }
 
@@ -131,5 +131,10 @@ void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler(void) {
 
 }
 
-void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler(void);
-void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler(void);
+void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler2(void)
+{
+    return;
+}
+void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler3(void){
+    return;
+}
