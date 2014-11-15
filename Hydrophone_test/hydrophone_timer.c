@@ -58,8 +58,7 @@ void hydrophone_timer_setup(void) {
 void __ISR(_TIMER_1_VECTOR,  IPL6AUTO) hydrophone_timer_handler(void) {
 
      extern int time_stamp [3],
-        comp_trig [3],
-        instance, error;
+        numTrig, error;
      
     INTDisableInterrupts();
     
@@ -71,11 +70,11 @@ void __ISR(_TIMER_1_VECTOR,  IPL6AUTO) hydrophone_timer_handler(void) {
     for(i=0; i < 3; i++)
     {
         time_stamp[i] = 0;
-        comp_trig[i] = 0;
     }
-    
-    //Reset instance
-    instance = 0;
+    T1CONbits.ON = 0;
+    TMR1 = 0;
+    //Reset count trigger
+    numTrig = 0;
 
     //Set register for error message
     error = 1;

@@ -35,7 +35,7 @@ void comparator_setup(void) {
     CVRCONbits.CVRSS = 0;   //Set Comparator Voltage Source to AVDD - AVSS
     CVRCONbits.CVRR = 0;    //Set Range Selection between .25 to .75 Vref
                             //1 Set from 0 to .67
-    CVRCONbits.CVROE = 1;    //Voltage level is output to CVrefout pin
+    CVRCONbits.CVROE = 0;    //Voltage level is output to CVrefout pin
 
     //Setup Comparator
     CM1CON = 0; //Initialize Control Registers to 0
@@ -93,7 +93,7 @@ void comparator_setup(void) {
 
     //Voltage Reference Setting
     //CVref = 1/4*CVrsrc + CVR/32 * CVrsrc
-    CVRCONbits.CVR = 0x4;
+    CVRCONbits.CVR = 0x8;
 
 }
 
@@ -109,32 +109,96 @@ void comparator_setup(void) {
 //you can have all three interrupts map to the same vector
 //void __ISR((_COMPARATOR_1_VECTOR, _COMPARATOR_2_VECTOR, _COMPARATOR_3_VECTOR), IPL7AUTO) comparator_handler(void) {
 //or you could create individual ISRs for each interrupt
-void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler(void) {
+void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler1(void) {
 
-    extern int time_stamp [3],
-        comp_trig [3],
-        instance, error;
+    extern int  time_stamp [3],
+                numTrig;
     
     INTDisableInterrupts();
 
     T1CONbits.ON = 1;
 
-    time_stamp[instance] = TMR1;
-    comp_trig[instance] = IFS1;
-       
-    
-    instance++;
+    time_stamp[0] = TMR1;
 
-    IFS1CLR = 0b0111; //clear interrupt flag bits
+    numTrig++;
+    
+    if(numTrig == 3)
+    {
+        //reset
+        //send data
+        for(numTrig; numTrig > 0; numTrig--)
+        {
+            time_stamp[numTrig-1] = 0;
+        }
+        T1CONbits.ON = 0;
+        TMR1 = 0;
+    }
+
+    IFS1bits.CMP1IF = 0; //clear interrupt flag bit
 
     INTEnableInterrupts();
+
 
 }
 
 void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler2(void)
 {
-    return;
+
+    extern int time_stamp [3],
+        numTrig;
+
+    INTDisableInterrupts();
+
+    T1CONbits.ON = 1;
+
+    time_stamp[1] = TMR1;
+
+    numTrig++;
+
+    if(numTrig == 3)
+    {
+        //reset
+        //send data
+        for(numTrig; numTrig > 0; numTrig--)
+        {
+            time_stamp[numTrig-1] = 0;
+        }
+        T1CONbits.ON = 0;
+        TMR1 = 0;
+    }
+
+    IFS1bits.CMP2IF = 0; //clear interrupt flag bit
+
+    INTEnableInterrupts();
+
 }
 void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler3(void){
-    return;
+
+    extern int time_stamp [3],
+        numTrig;
+
+    INTDisableInterrupts();
+
+    T1CONbits.ON = 1;
+
+    time_stamp[2] = TMR1;
+
+    numTrig++;
+
+    if(numTrig == 3)
+    {
+        //reset
+        //send data
+        for(numTrig; numTrig > 0; numTrig--)
+        {
+            time_stamp[numTrig-1] = 0;
+        }
+        T1CONbits.ON = 0;
+        TMR1 = 0;
+    }
+
+    IFS1bits.CMP3IF = 0; //clear interrupt flag bit
+
+    INTEnableInterrupts();
+
 }
