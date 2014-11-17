@@ -93,7 +93,7 @@ void comparator_setup(void) {
 
     //Voltage Reference Setting
     //CVref = 1/4*CVrsrc + CVR/32 * CVrsrc
-    CVRCONbits.CVR = 0x4;
+    CVRCONbits.CVR = 0xA;
 
 }
 
@@ -127,17 +127,16 @@ void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler1(void) {
         //reset
         //send data
         U1TXREG = '\n';
-        for(numTrig; numTrig > 0; numTrig--)
+        while(0 < numTrig)
         {
-            U1TXREG = time_stamp[numTrig-1];
+            numTrig--;
+            U1TXREG = time_stamp[numTrig];
             U1TXREG = time_stamp[numTrig] >> 8;
-            time_stamp[numTrig-1] = 0;
+            time_stamp[numTrig] = 0;
         }
-        T1CONbits.ON = 0;
-        TMR1 = 0;
-
     }
 
+    IEC1bits.CMP1IE = 0;
     IFS1bits.CMP1IF = 0;
 
     INTEnableInterrupts();
@@ -164,17 +163,16 @@ void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler2(void)
         //reset
         //send data
         U1TXREG = '\n';
-        for(numTrig; numTrig > 0; numTrig--)
+        while(0 < numTrig)
         {
-            U1TXREG = time_stamp[numTrig-1];
+            numTrig--;
+            U1TXREG = time_stamp[numTrig];
             U1TXREG = time_stamp[numTrig] >> 8;
-            time_stamp[numTrig-1] = 0;
+            time_stamp[numTrig] = 0;
         }
-        T1CONbits.ON = 0;
-        TMR1 = 0;
-
     }
 
+    IEC1bits.CMP2IE = 0;
     IFS1bits.CMP2IF = 0;
 
     INTEnableInterrupts();
@@ -198,17 +196,16 @@ void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler3(void){
         //reset
         //send data
         U1TXREG = '\n';
-        for(numTrig; numTrig > 0; numTrig--)
+        while(0 < numTrig)
         {
-            U1TXREG = time_stamp[numTrig-1];
+            numTrig--;
+            U1TXREG = time_stamp[numTrig];
             U1TXREG = time_stamp[numTrig] >> 8;
-            time_stamp[numTrig-1] = 0;
+            time_stamp[numTrig] = 0;
         }
-        T1CONbits.ON = 0;
-        TMR1 = 0;
-
     }
 
+    IEC1bits.CMP3IE = 0;
     IFS1bits.CMP3IF = 0;
 
     INTEnableInterrupts();

@@ -75,6 +75,14 @@ void __ISR(_TIMER_1_VECTOR,  IPL6AUTO) hydrophone_timer_handler(void) {
     TMR1 = 0;
     //Reset count trigger
     numTrig = 0;
+    
+    IFS1bits.CMP1IF = 0;
+    IFS1bits.CMP2IF = 0;
+    IFS1bits.CMP3IF = 0;
+
+    IEC1bits.CMP1IE = 1;
+    IEC1bits.CMP2IE = 1;
+    IEC1bits.CMP3IE = 1;
 
     //Set register for error message
     error = 1;
