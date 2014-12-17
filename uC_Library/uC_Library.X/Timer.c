@@ -1,9 +1,9 @@
 #include "Timer.h"
-void *timer_1_callback;
-void *timer_2_callback;
-void *timer_3_callback;
-void *timer_4_callback;
-void *timer_5_callback;
+void (*timer_1_callback) (void);
+void (*timer_2_callback) (void);
+void (*timer_3_callback) (void);
+void (*timer_4_callback) (void);
+void (*timer_5_callback) (void);
 
 /*Timer_Setup function*/
 //this function initializes a specific timer on the microcontroller with the specified input
@@ -57,8 +57,8 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
             break;
     }
 }
-
-void __ISR(_Timer_1_Vector, IPL7AUTO) Timer_Handler_1(void) {
+/*
+void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer_Handler_1(void) {
     INTDisableInterrupts(); //display interrupts
 
 
@@ -70,7 +70,8 @@ void __ISR(_Timer_1_Vector, IPL7AUTO) Timer_Handler_1(void) {
     INTEnableInterrupts(); //reenable interrupts
 }
 
-void __ISR(_Timer_2_Vector, IPL7AUTO) Timer_Handler_2(void) {
+
+void __ISR(_TIMER_2_VECTOR, IPL7AUTO) Timer_Handler_2(void) {
     INTDisableInterrupts(); //display interrupts
 
 
@@ -82,7 +83,7 @@ void __ISR(_Timer_2_Vector, IPL7AUTO) Timer_Handler_2(void) {
     INTEnableInterrupts(); //reenable interrupts
 }
 
-void __ISR(_Timer_3_Vector, IPL7AUTO) Timer_Handler_3(void) {
+void __ISR(_TIMER_3_VECTOR, IPL7AUTO) Timer_Handler_3(void) {
     INTDisableInterrupts(); //display interrupts
 
 
@@ -94,7 +95,7 @@ void __ISR(_Timer_3_Vector, IPL7AUTO) Timer_Handler_3(void) {
     INTEnableInterrupts(); //reenable interrupts
 }
 
-void __ISR(_Timer_4_Vector, IPL7AUTO) Timer_Handler_4(void) {
+void __ISR(_TIMER_4_VECTOR, IPL7AUTO) Timer_Handler_4(void) {
     INTDisableInterrupts(); //display interrupts
 
 
@@ -106,7 +107,7 @@ void __ISR(_Timer_4_Vector, IPL7AUTO) Timer_Handler_4(void) {
     INTEnableInterrupts(); //reenable interrupts
 }
 
-void __ISR(_Timer_5_Vector, IPL7AUTO) Timer_Handler_5(void) {
+void __ISR(_TIMER_5_VECTOR, IPL7AUTO) Timer_Handler_5(void) {
     INTDisableInterrupts(); //display interrupts
 
 
@@ -117,12 +118,14 @@ void __ISR(_Timer_5_Vector, IPL7AUTO) Timer_Handler_5(void) {
     IFS0bits.T5IF= 0; //clear the interrupt flag
     INTEnableInterrupts(); //reenable interrupts
 }
+*/
 
-#define Timer_ISR_(x) void __ISR(_Timer_x_Vector, IPL7AUTO) Timer_Handler_x (void) {\
-    INTDisableInterrupts();\
-    if (timer_x_callback != NULL) {\
-        timer_x_callback();\
-    }\
-    IFS0bits.TxIF = 0;\
-    INTENableInterrupts();\
-} 
+//This creates ISR's for each of the timers. If additional timers are avaiable on the microcontroller, just add a new element with
+//value 6 and above, as relates to the timer name
+
+//if a new microcontroller is used, this function will be need to be changed in teh Timer.h file
+Timer_ISR_(1)
+Timer_ISR_(2)
+Timer_ISR_(3)
+Timer_ISR_(4)
+Timer_ISR_(5)

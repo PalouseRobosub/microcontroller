@@ -29,12 +29,22 @@ typedef enum {
     Timer_5
 }Timer_Type;
 
+
 /* #Define Functions / Inline Functions*/
-    //begin
+    //This function is the ISR #define function template
+    #define Timer_ISR_(x) void __ISR(_Timer_x_Vector, IPL7AUTO) Timer_Handler_x (void) {\
+        INTDisableInterrupts();\
+        if (timer_x_callback != NULL) {\
+            timer_x_callback();\
+        }\
+        IFS0bits.TxIF = 0;\
+        INTENableInterrupts();\
+    }
+
 
 /* Function Prototypes*/
     //setup
-    void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr);
+    void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable);
 
 
 

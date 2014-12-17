@@ -15,7 +15,7 @@ extern "C" {
 
 /* Includes*/
 #define _SUPPRESS_PLIB_WARNING
-#include <peripheral/ports.h>    
+#include <peripheral/ports.h>
 
 /* Type Defintions*/
 typedef unsigned int uint;
