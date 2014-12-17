@@ -14,7 +14,7 @@ extern "C" {
 
 
 /* Includes*/
-#define SUPPRESS_PLIB_WARNING
+#define _SUPPRESS_PLIB_WARNING
 #include <peripheral/ports.h>    
 
 /* Type Defintions*/
