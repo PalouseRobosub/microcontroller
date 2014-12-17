@@ -5,9 +5,9 @@
             <name>uC_Library</name>
             <creation-uuid>27212f3c-e99e-4834-96ab-cfa935bbd9a3</creation-uuid>
             <make-project-type>0</make-project-type>
-            <c-extensions/>
+            <c-extensions>c</c-extensions>
             <cpp-extensions/>
-            <header-extensions/>
+            <header-extensions>h</header-extensions>
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
