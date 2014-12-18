@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 
-/* Includes*/
+/* Includes */
 #define _SUPPRESS_PLIB_WARNING
 #include <peripheral/ports.h>
 
@@ -22,16 +22,27 @@ extern "C" {
     typedef unsigned short int uint16;
     typedef unsigned char uint8;
     typedef signed char sint8;
-    typedef uint8 boolean;
+
+    typedef enum {
+        FALSE,
+        TRUE
+    } boolean;
+
 
 /* Structure Definitions*/
     typedef struct QUEUE {
         uint8 *buffer; //pointer to the queue memory
-        uint8 buffer_size; //size of the supplied buffer
-        uint8 QueueStart; //location of first data point (start of queue)
-        uint8 QueueEnd; //location of the last data point (end of queue)
-        uint8 QueueLength; //amount of data within the queue
+        uint buffer_size; //size of the supplied buffer
+        uint QueueStart; //location of first data point (start of queue)
+        uint QueueEnd; //location of the last data point (end of queue)
+        uint QueueLength; //amount of data within the queue
     } Queue;
+
+
+/*Queue Functions*/
+    Queue create_queue(uint8* buffer, uint buffer_size);
+    int enqueue(Queue* queue, uint8* data, uint data_size);
+    int dequeue(Queue* queue, uint8* output_data, uint data_size);
 
 #ifdef	__cplusplus
 }

@@ -49,7 +49,7 @@
 #pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
 #pragma config WINDIS = OFF             // Watchdog Timer Window Enable (Watchdog Timer is in Non-Window Mode)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
-//#pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
+#pragma config FWDTWINSZ = WINSZ_25     // Watchdog Timer Window Size (Window Size is 25%)
 
 // DEVCFG0
 #pragma config JTAGEN = OFF              // JTAG Enable (JTAG Port Enabled)
@@ -63,14 +63,20 @@
  ************************************************************************/
 
 #include "../uC_Library.X/Timer.h"
+#include "../uC_Library.X/System.h"
+
 void routine1();
 void routine2();
 void routine3();
 void routine4();
 void routine5();
+
+
 int main(void) {
 
-
+    Queue testqueue;
+    uint8 buffer[32];
+    testqueue = create_queue(buffer, 32);
     timer_setup(Div_2, 100, Timer_1, &routine1, 1);
 
 
