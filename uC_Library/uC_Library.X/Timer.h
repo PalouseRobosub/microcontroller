@@ -16,8 +16,13 @@ extern "C" {
 
 typedef enum {
     Div_1,
+    Div_2,
+    Div_4,
     Div_8,
+    Div_16,
+    Div_32,
     Div_64,
+    Div_128,
     Div_256
 }Clock_Divider;
 
@@ -32,14 +37,14 @@ typedef enum {
 
 /* #Define Functions / Inline Functions*/
     //This function is the ISR #define function template
-    #define Timer_ISR_(x) void __ISR(_Timer_x_Vector, IPL7AUTO) Timer_Handler_x (void) {\
+   /* #define Timer_ISR_(x) void __ISR(_Timer_x_Vector, IPL7AUTO) Timer_Handler_x (void) {\
         INTDisableInterrupts();\
         if (timer_x_callback != NULL) {\
             timer_x_callback();\
         }\
         IFS0bits.TxIF = 0;\
         INTENableInterrupts();\
-    }
+    }*/
 
 
 /* Function Prototypes*/

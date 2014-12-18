@@ -17,11 +17,27 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
     //switch case to determine which timer we are working with
     switch (timer) {
         case Timer_1:
+            if (divide == Div_64) {
+                //we need to modify the divide value to be consistent for type A timers
+                divide = 0b10;
+            } else if (divide == Div_1 || divide == Div_8 || divide == Div_256){
+                //we will truncate to 2 binary numbers
+                divide = (divide >> 1) & 0b11;
+
+            } else {
+                //the user has input an invalid divide value
+                //we are truncating the invalid input into a usable value
+                divide = (divide >> 1) & 0b11;
+
+                //THIS IS A BAD WAY OF HANDLING THIS ERROR - YOU GET PRACTICALLY A RANDOM OUTPUT VALUE
+            }
+            
             T1CONbits.TCKPS = divide; //set the clock divider
             PR1 = period; //set the period for the timer
             IPC1bits.T1IP = 7; //set the interrupt to priority level 7
             IEC0bits.T1IE = enable; //enable the interrupt
             timer_1_callback = function_ptr; //set the ISR function pointer
+            T1CONbits.ON = 1; //actually turn the timer on
             break;
 
         case Timer_2:
@@ -30,6 +46,7 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
             IPC2bits.T2IP = 7; //set the interrupt priority
             IEC0bits.T2IE = enable; //set the interrupt enable
             timer_2_callback = function_ptr; //set the ISR function pointer
+            T2CONbits.ON = 1; //actually turn the timer on
             break;
 
         case Timer_3:
@@ -38,6 +55,7 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
             IPC3bits.T3IP = 7; //set the interrupt priotity
             IEC0bits.T3IE = enable; //enable the interrupt
             timer_3_callback = function_ptr; //set the ISR function pointer
+            T3CONbits.ON = 1; //actually turn the timer on
         break;
 
         case Timer_4:
@@ -46,6 +64,7 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
             IPC4bits.T4IP = 7;
             IEC0bits.T4IE = enable;
             timer_4_callback = function_ptr;
+            T4CONbits.ON = 1; //actually turn the timer on
             break;
 
         case Timer_5:
@@ -54,10 +73,11 @@ void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *fu
             IPC5bits.T5IP = 7;
             IEC0bits.T5IE = enable;
             timer_5_callback = function_ptr;
+            T5CONbits.ON = 1; //actually turn the timer on
             break;
     }
 }
-/*
+
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer_Handler_1(void) {
     INTDisableInterrupts(); //display interrupts
 
@@ -118,9 +138,8 @@ void __ISR(_TIMER_5_VECTOR, IPL7AUTO) Timer_Handler_5(void) {
     IFS0bits.T5IF= 0; //clear the interrupt flag
     INTEnableInterrupts(); //reenable interrupts
 }
-*/
 
-//This creates ISR's for each of the timers. If additional timers are avaiable on the microcontroller, just add a new element with
+/*//This creates ISR's for each of the timers. If additional timers are avaiable on the microcontroller, just add a new element with
 //value 6 and above, as relates to the timer name
 
 //if a new microcontroller is used, this function will be need to be changed in teh Timer.h file
@@ -128,4 +147,4 @@ Timer_ISR_(1)
 Timer_ISR_(2)
 Timer_ISR_(3)
 Timer_ISR_(4)
-Timer_ISR_(5)
+Timer_ISR_(5)*/

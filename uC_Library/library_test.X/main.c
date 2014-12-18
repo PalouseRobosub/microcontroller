@@ -49,7 +49,7 @@
 #pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
 #pragma config WINDIS = OFF             // Watchdog Timer Window Enable (Watchdog Timer is in Non-Window Mode)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
-#pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
+//#pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
 
 // DEVCFG0
 #pragma config JTAGEN = OFF              // JTAG Enable (JTAG Port Enabled)
@@ -61,7 +61,17 @@
 /*************************************************************************
  Main Function
  ************************************************************************/
+
+#include "../uC_Library.X/Timer.h"
+void routine1();
+void routine2();
+void routine3();
+void routine4();
+void routine5();
 int main(void) {
+
+
+    timer_setup(Div_2, 100, Timer_1, &routine1, 1);
 
 
     //Global interrupt enable. Do this last!
@@ -74,5 +84,31 @@ int main(void) {
     }
 
     return 0;
+}
+
+void routine1() {
+    int var = 0;
+    var += 1;
+    return;
+}
+void routine2() {
+    int var = 0;
+    var += 1;
+    return;
+}
+void routine3() {
+    int var = 0;
+    var += 1;
+    return;
+}
+void routine4() {
+    int var = 0;
+    var += 1;
+    return;
+}
+void routine5() {
+    int var = 0;
+    var += 1;
+    return;
 }
 
