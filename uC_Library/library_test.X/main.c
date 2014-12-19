@@ -76,13 +76,14 @@ int main(void) {
 
     Queue testqueue;
     uint8 buffer[32];
+
     testqueue = create_queue(buffer, 32);
     timer_setup(Div_2, 100, Timer_1, &routine1, 1);
 
 
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
-    INTEnableInterrupts();
+    asm volatile ("ei"); //reenable interrupts
 
     while (1) {
         //background tasks

@@ -30,6 +30,11 @@ extern "C" {
         bool is_idle;
 
     } Uart_Data;
+    
+    typedef enum {
+        UART0,
+        UART1
+    }Uart;
 
     /*Function Prototypes*/
     Uart_Data initialize_UART(uint speed, uint8 *rx_ptr, uint8 rx_size, uint8 *tx_ptr, uint8 tx_size, bool tx_en, bool rx_en);

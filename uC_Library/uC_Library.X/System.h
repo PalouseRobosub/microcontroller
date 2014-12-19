@@ -30,19 +30,7 @@ extern "C" {
 
 
 /* Structure Definitions*/
-    typedef struct QUEUE {
-        uint8 *buffer; //pointer to the queue memory
-        uint buffer_size; //size of the supplied buffer
-        uint QueueStart; //location of first data point (start of queue)
-        uint QueueEnd; //location of the last data point (end of queue)
-        uint QueueLength; //amount of data within the queue
-    } Queue;
-
-
-/*Queue Functions*/
-    Queue create_queue(uint8* buffer, uint buffer_size);
-    int enqueue(Queue* queue, uint8* data, uint data_size);
-    int dequeue(Queue* queue, uint8* output_data, uint data_size);
+    
 
 #ifdef	__cplusplus
 }
