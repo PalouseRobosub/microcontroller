@@ -21,13 +21,14 @@ extern "C" {
 
     typedef struct UART_DATA {
         //Rx queue
-        Queue Rx;
+        Queue Rx_queue;
         //Tx queue
-        Queue Tx;
+        Queue Tx_queue;
         //Callback function
         void (*function_ptr)(void);
         //idle information
-        bool is_idle;
+        bool Tx_is_idle;
+        bool Rx_is_idle;
 
     } Uart_Data;
     
