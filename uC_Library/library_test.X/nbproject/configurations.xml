@@ -30,7 +30,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>Simulator</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.33</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <compileType>
@@ -59,7 +59,7 @@
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>true</parseOnProdLoad>
+          <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
       </compileType>

@@ -3,7 +3,7 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>uC_Library</name>
-            <creation-uuid>27212f3c-e99e-4834-96ab-cfa935bbd9a3</creation-uuid>
+            <creation-uuid>ed697701-8d61-4ce2-b958-bf6956be41b2</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>

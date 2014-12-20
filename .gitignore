@@ -8,7 +8,6 @@
 *.sdb
 *.obj.dmp
 */*.X/html/
-*/*.X/nbproject/private/
 */*.X/nbproject/Package-*.bash
 */*.X/build/
 */*.X/nbbuild/

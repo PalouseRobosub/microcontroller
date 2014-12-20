@@ -52,8 +52,3 @@ Uart_Data* initialize_UART(uint speed, Uart which_uart, uint8 *rx_buffer_ptr, ui
 }
 
 
-
-
-
-
-}
