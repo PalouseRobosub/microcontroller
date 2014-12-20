@@ -14,6 +14,7 @@ extern "C" {
 
     /*Inclues*/
     #include "System.h"
+    #include "Queue.h"
 
     /*Enum Defintions*/
 
@@ -27,8 +28,8 @@ extern "C" {
         //Callback function
         void (*function_ptr)(void);
         //idle information
-        bool Tx_is_idle;
-        bool Rx_is_idle;
+        boolean Tx_is_idle;
+        boolean Rx_is_idle;
 
     } Uart_Data;
     
@@ -38,7 +39,7 @@ extern "C" {
     }Uart;
 
     /*Function Prototypes*/
-    Uart_Data initialize_UART(uint speed, uint8 *rx_ptr, uint8 rx_size, uint8 *tx_ptr, uint8 tx_size, bool tx_en, bool rx_en);
+    Uart_Data initialize_UART(uint speed, uint8 *rx_ptr, uint8 rx_size, uint8 *tx_ptr, uint8 tx_size, boolean tx_en, boolean rx_en);
 
 #ifdef	__cplusplus
 }

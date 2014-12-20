@@ -61,9 +61,11 @@
 /*************************************************************************
  Main Function
  ************************************************************************/
-
-#include "../uC_Library.X/Timer.h"
 #include "../uC_Library.X/System.h"
+#include "../uC_Library.X/Timer.h"
+#include "../uC_Library.X/Queue.h"
+#include "../uC_Library.X/UART.h"
+
 
 void routine1();
 void routine2();
