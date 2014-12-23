@@ -38,6 +38,8 @@ extern "C" {
     Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
         uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
         void* rx_callback, void* tx_callback);
+    int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr);
+    int receive_UART(Uart channel, Uart_Data data, uint8 data_size, uint8 *data_ptr);
 #ifdef	__cplusplus
 }
 #endif
