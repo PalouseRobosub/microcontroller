@@ -40,7 +40,7 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             uart_1_tx_callback = tx_callback; //link the callback functions
             uart_1_rx_callback = rx_callback;
 
-            u1.Tx_is_idle = FALSE;
+            u1.Tx_is_idle = TRUE;
 
             return &u1;
             break;
@@ -69,7 +69,7 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             uart_2_tx_callback = tx_callback; //link the callback functions
             uart_2_rx_callback = rx_callback;
 
-            u2.Tx_is_idle = FALSE;
+            u2.Tx_is_idle = TRUE;
             return &u2;
             break;
 
@@ -81,41 +81,43 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
     return NULL;
 }
 int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
+    int status;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
         case UART1:
-            enqueue(&(u1.Tx_queue), data_ptr, data_size);
-            if (!IFS1bits.U1TXIF) { //if the interrupt flag is not set, set it
+            status = enqueue(&(u1.Tx_queue), data_ptr, data_size);
+            if (u1.Tx_is_idle) { //if the tx is idle, force-start it
                 IFS1bits.U1TXIF = 1;
             }
             break;
         case UART2:
-            enqueue(&(u2.Tx_queue), data_ptr, data_size);
-            if (!IFS1bits.U2TXIF) { //if the interrupt flag is not set, set it
+            status = enqueue(&(u2.Tx_queue), data_ptr, data_size);
+            if (u2.Tx_is_idle) { ////if the tx is idle, force-start it
                 IFS1bits.U2TXIF = 1;
             }
             break;
         default:
-            return 0; //return failure
+            status = 1; //return failure
             break;
 
     }
-    return 1;
+    return status;
 }
 int receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
+    int status;
     //we need to read the specified data from the rx queue
     switch (channel) {
         case UART1:
-            dequeue(&(u1.Rx_queue), data_ptr, data_size);
+            status = dequeue(&(u1.Rx_queue), data_ptr, data_size);
             break;
         case UART2:
-            dequeue(&(u2.Rx_queue), data_ptr, data_size);
+            status = dequeue(&(u2.Rx_queue), data_ptr, data_size);
             break;
         default:
-            return 0; //return failure
+            status = 1; //return failure
             break;
     }
-    return 1; //return success
+    return status; //return success
 }
 
 void __ISR(_UART_1_VECTOR, IPL7AUTO) Uart_1_Handler(void) {
