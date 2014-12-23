@@ -47,8 +47,14 @@ extern "C" {
         I2C2
     } I2C_Channel;
 
+
+    /* helpful macros */
+#define get_read_addr(x) ((x << 1) | 0x01)
+#define get_write_addr(x) ((x << 1))
+
     /*Object Defintions*/
     //object for references to the data queues
+
     typedef struct I2C_DATA {
         //Rx queue
         Queue Rx_queue;
@@ -69,10 +75,10 @@ extern "C" {
         uint8 data_size; //how much data to send/read from device
         //buffer must be large enought able to hold this
         I2C_MODE mode; //reading or writing?
-        void  *callback; //callback function
+        void *callback; //callback function
     } I2C_Node;
 
-    
+
 
     /*Function Prototypes*/
 
