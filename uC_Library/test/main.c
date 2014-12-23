@@ -61,10 +61,10 @@
 /*************************************************************************
  Main Function
  ************************************************************************/
-#include "../uC_Library.X/System.h"
-#include "../uC_Library.X/Timer.h"
-#include "../uC_Library.X/Queue.h"
-#include "../uC_Library.X/UART.h"
+#include "../System.h"
+#include "../Timer.h"
+#include "../Queue.h"
+#include "../UART.h"
 
 
 void routine1();
@@ -80,7 +80,7 @@ int main(void) {
     uint8 buffer[32];
 
     testqueue = create_queue(buffer, 32);
-    timer_setup(Div_2, 100, Timer_1, &routine1, 1);
+    initialize_TIMER(Div_2, 100, Timer_1, &routine1, 1);
 
 
     //Global interrupt enable. Do this last!

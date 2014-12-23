@@ -12,7 +12,7 @@ void (*timer_5_callback) (void);
 //timer is the specific timer that is being worked with
 //function_ptr is the ISR function pointer
 //enable specifies whether to enable the interrupt or not
-void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable) {
+void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable) {
 
     //switch case to determine which timer we are working with
     switch (timer) {

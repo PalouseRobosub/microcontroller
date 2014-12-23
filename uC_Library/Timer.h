@@ -49,7 +49,7 @@ typedef enum {
 
 /* Function Prototypes*/
     //setup
-    void timer_setup(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable);
+    void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable);
 
 
 
