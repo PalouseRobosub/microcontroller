@@ -14,11 +14,16 @@ Queue create_queue(uint8* buffer, uint buffer_size){
 }
 int enqueue(Queue* queue, uint8* data, uint data_size) {
 	uint i, j;
+        uint interrupt_state;
+        
+        interrupt_state = __builtin_get_isr_state();
+        __builtin_disable_interrupts();
 
 	//check to see if there is room in the queue for the data
 	if ((queue->buffer_size - queue->numStored) < data_size)
 	{
-		return 1;
+            __builtin_set_isr_state(interrupt_state);
+            return 1;
 	}
 
 	//copy the memory
@@ -36,16 +41,19 @@ int enqueue(Queue* queue, uint8* data, uint data_size) {
 	queue->QueueEnd = j;
 	queue->numStored += data_size;
 
+        __builtin_set_isr_state(interrupt_state);
 	return 0;
 }
 int dequeue(Queue* queue, uint8* output_data, uint data_size) {
 	uint i, j;
+	uint interrupt_state;
 
-	//disable interrupts
+        interrupt_state = __builtin_get_isr_state();
+        __builtin_disable_interrupts();
 
 	//check if there is that much data in queue
 	if (data_size > queue->numStored) {
-		//re-enable interrupts
+		__builtin_set_isr_state(interrupt_state);
 		return 1;
 	}
 
@@ -63,6 +71,6 @@ int dequeue(Queue* queue, uint8* output_data, uint data_size) {
 	queue->QueueStart = j;
 	queue->numStored -= data_size;
 
-	//disable interrupts
+	__builtin_set_isr_state(interrupt_state);
 	return 0;
 }
