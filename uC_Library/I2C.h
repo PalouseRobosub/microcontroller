@@ -72,18 +72,25 @@ extern "C" {
         uint8 device_address; //I2C address for device
         uint8 sub_address; //internal device address
         uint8* data_buffer; //data buffer to store the recieved data or write data
-        uint8 data_size; //how much data to send/read from device
-        //buffer must be large enought able to hold this
+        uint8 data_size; //how much data to send/read from device (must be <= buffer size)
         I2C_MODE mode; //reading or writing?
-        void *callback; //callback function
+        void (*callback) (struct I2C_NODE); //callback function
     } I2C_Node;
 
 
 
     /*Function Prototypes*/
+I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
+        uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback);
 
+//set up an I2C transaction
+int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
+        uint8 sub_address, uint8* data_buffer, uint8 data_size,
+        I2C_MODE read_write, void* callback);
 
-
+//run this background process in the main while loop to
+//process the results of I2C transactions
+int bg_process_I2C(void);
 
 #ifdef	__cplusplus
 }
