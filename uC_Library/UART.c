@@ -41,6 +41,8 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             uart_1_rx_callback = rx_callback;
 
             u1.Tx_is_idle = FALSE;
+
+            return &u1;
             break;
             
         case UART2:
@@ -68,13 +70,15 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             uart_2_rx_callback = rx_callback;
 
             u2.Tx_is_idle = FALSE;
-            
+            return &u2;
             break;
 
         default:
             //some sort of error handling?
             break;
     }
+    
+    return NULL;
 }
 int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     //we need to place the provided data onto the Tx queue
