@@ -80,17 +80,17 @@ extern "C" {
 
 
     /*Function Prototypes*/
-I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-        uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback);
+    I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
+            uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback);
 
-//set up an I2C transaction
-int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
-        uint8 sub_address, uint8* data_buffer, uint8 data_size,
-        I2C_MODE read_write, void* callback);
+    //set up an I2C transaction
+    int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
+            uint8 sub_address, uint8* data_buffer, uint8 data_size,
+            I2C_MODE read_write, void* callback);
 
-//run this background process in the main while loop to
-//process the results of I2C transactions
-int bg_process_I2C(void);
+    //run this background process in the main while loop to
+    //process the results of I2C transactions
+    int bg_process_I2C(void);
 
 #ifdef	__cplusplus
 }

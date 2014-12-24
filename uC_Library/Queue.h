@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
     /*Include Statements*/
-    #include "System.h"
+#include "System.h"
 
     /*Structure Defintions*/
     typedef struct QUEUE {
@@ -25,7 +25,7 @@ extern "C" {
     } Queue;
 
 
-/*Queue Functions*/
+    /*Queue Functions*/
     Queue create_queue(uint8* buffer, uint buffer_size);
     int enqueue(Queue* queue, uint8* data, uint data_size);
     int dequeue(Queue* queue, uint8* output_data, uint data_size);

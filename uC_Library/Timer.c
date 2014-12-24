@@ -12,6 +12,7 @@ void (*timer_5_callback) (void);
 //timer is the specific timer that is being worked with
 //function_ptr is the ISR function pointer
 //enable specifies whether to enable the interrupt or not
+
 void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable) {
 
     //switch case to determine which timer we are working with
@@ -20,7 +21,7 @@ void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, voi
             if (divide == Div_64) {
                 //we need to modify the divide value to be consistent for type A timers
                 divide = 0b10;
-            } else if (divide == Div_1 || divide == Div_8 || divide == Div_256){
+            } else if (divide == Div_1 || divide == Div_8 || divide == Div_256) {
                 //we will truncate to 2 binary numbers
                 divide = (divide >> 1) & 0b11;
 
@@ -31,7 +32,7 @@ void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, voi
 
                 //THIS IS A BAD WAY OF HANDLING THIS ERROR - YOU GET PRACTICALLY A RANDOM OUTPUT VALUE
             }
-            
+
             T1CONbits.TCKPS = divide; //set the clock divider
             PR1 = period; //set the period for the timer
             IPC1bits.T1IP = 7; //set the interrupt to priority level 7
@@ -56,7 +57,7 @@ void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, voi
             IEC0bits.T3IE = enable; //enable the interrupt
             timer_3_callback = function_ptr; //set the ISR function pointer
             T3CONbits.ON = 1; //actually turn the timer on
-        break;
+            break;
 
         case Timer_4:
             T4CONbits.TCKPS = divide;
@@ -77,6 +78,7 @@ void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, voi
             break;
     }
 }
+
 void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer_Handler_1(void) {
     asm volatile ("di"); //disable interrupt
 
@@ -85,9 +87,10 @@ void __ISR(_TIMER_1_VECTOR, IPL7AUTO) Timer_Handler_1(void) {
         timer_1_callback();
     }
 
-    IFS0bits.T1IF= 0; //clear the interrupt flag
+    IFS0bits.T1IF = 0; //clear the interrupt flag
     asm volatile ("ei"); //reenable interrupts
 }
+
 void __ISR(_TIMER_2_VECTOR, IPL7AUTO) Timer_Handler_2(void) {
     asm volatile ("di"); //display interrupts
 
@@ -96,9 +99,10 @@ void __ISR(_TIMER_2_VECTOR, IPL7AUTO) Timer_Handler_2(void) {
         timer_2_callback();
     }
 
-    IFS0bits.T2IF= 0; //clear the interrupt flag
+    IFS0bits.T2IF = 0; //clear the interrupt flag
     asm volatile ("ei"); //reenable interrupts
 }
+
 void __ISR(_TIMER_3_VECTOR, IPL7AUTO) Timer_Handler_3(void) {
     asm volatile ("di"); //disable interrupts
 
@@ -107,9 +111,10 @@ void __ISR(_TIMER_3_VECTOR, IPL7AUTO) Timer_Handler_3(void) {
         timer_3_callback();
     }
 
-    IFS0bits.T3IF= 0; //clear the interrupt flag
+    IFS0bits.T3IF = 0; //clear the interrupt flag
     asm volatile ("ei"); //reenable interrupts
 }
+
 void __ISR(_TIMER_4_VECTOR, IPL7AUTO) Timer_Handler_4(void) {
     asm volatile ("di"); //disable interrupts
 
@@ -118,9 +123,10 @@ void __ISR(_TIMER_4_VECTOR, IPL7AUTO) Timer_Handler_4(void) {
         timer_4_callback();
     }
 
-    IFS0bits.T4IF= 0; //clear the interrupt flag
+    IFS0bits.T4IF = 0; //clear the interrupt flag
     asm volatile ("ei"); //reenable interrupts
 }
+
 void __ISR(_TIMER_5_VECTOR, IPL7AUTO) Timer_Handler_5(void) {
     asm volatile ("di"); //disable interrupts
 
@@ -129,6 +135,6 @@ void __ISR(_TIMER_5_VECTOR, IPL7AUTO) Timer_Handler_5(void) {
         timer_5_callback();
     }
 
-    IFS0bits.T5IF= 0; //clear the interrupt flag
+    IFS0bits.T5IF = 0; //clear the interrupt flag
     asm volatile ("ei"); //reenable interrupts
 }

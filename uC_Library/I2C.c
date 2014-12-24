@@ -14,7 +14,7 @@ I2C_STATE i2c_1_state;
 I2C_STATE i2c_2_state;
 
 I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-        uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback) {
+                         uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback) {
 
     switch (channel) {
         case I2C1:
@@ -58,8 +58,8 @@ I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr,
 }
 
 int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
-        uint8 sub_address, uint8* data_buffer, uint8 data_size,
-        I2C_MODE read_write, void* callback) {
+             uint8 sub_address, uint8* data_buffer, uint8 data_size,
+             I2C_MODE read_write, void* callback) {
     I2C_Node new_node;
     int status;
 
@@ -103,6 +103,7 @@ int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
 
 //run this background process in the main while loop to
 //process the results of I2C transactions
+
 int bg_process_I2C(void) {
     I2C_Node current_node;
 
@@ -113,7 +114,7 @@ int bg_process_I2C(void) {
         }
     }
 
-    
+
     //process channel 2
     while (!dequeue(&(i2c2.Tx_queue), (uint8*) & current_node, sizeof (current_node))) {
         if (current_node.callback != NULL) {

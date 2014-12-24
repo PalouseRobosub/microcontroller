@@ -12,12 +12,12 @@ Uart_Data u1;
 Uart_Data u2;
 
 Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-        uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
-        void* rx_callback, void* tx_callback) {
-    
+                           uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
+                           void* rx_callback, void* tx_callback) {
+
     switch (which_uart) {
         case UART1:
-            U1BRG = pb_clk/(16*speed) - 1; //calculate the proper baud rate
+            U1BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
 
             U1MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
 
@@ -44,9 +44,9 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
 
             return &u1;
             break;
-            
+
         case UART2:
-            U2BRG = pb_clk/(16*speed) - 1; //calculate the proper baud rate
+            U2BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
 
             U2MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
 
@@ -77,9 +77,10 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             //some sort of error handling?
             break;
     }
-    
+
     return NULL;
 }
+
 int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     int status;
     //we need to place the provided data onto the Tx queue
@@ -103,6 +104,7 @@ int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     }
     return status;
 }
+
 int receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     int status;
     //we need to read the specified data from the rx queue
