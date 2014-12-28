@@ -91,31 +91,25 @@ void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void) {
 
     asm volatile ("di"); //disable interrupts
 
-     uint16 adc_value;
     static ADC_Node current_node;
-    extern boolean COMM_UART_is_idle;
 
     INTDisableInterrupts();
 
 
-    if (ADC_startup == FALSE) {
-        adc_value = ADC1BUF0;
-
-        comm_uart_CreateNode(current_node.sensor_id, (adc_value & 0xFF), ((adc_value & 0xFF00) >> 8));
-        if (COMM_UART_is_idle) {
-            comm_uart_begin();
-        }
+    if (ADC_startup == FALSE) { //if there is data in the ADC buffer
+        current_node.data = ADC1BUF0;
+        enqueue(&(adc_data.Results_queue), (uint8*) & current_node, sizeof(current_node));
     }
 
-    if (ADC_popNode(&ADC_queue, &current_node)) //load next node from the queue
+    if (dequeue(&(adc_data.Work_queue), (uint8*) & current_node, sizeof(current_node))) //load next node from the queue
     {
-        ADC_is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
+        adc_data.is_idle = TRUE; //flag that the bus is idle (nothing in the send queue)
         ADC_startup = TRUE;
     } else {
-        ADC_is_idle = FALSE; //flag that the bus is working now
-        AD1CHSbits.CH0SA = current_node.adc_channel; //set the positive input to be channel AN0
-        AD1CON1bits.SAMP = 1;
-        ADC_startup = FALSE;
+        adc_data.is_idle = FALSE; //flag that the bus is working now
+        AD1CHSbits.CH0SA = current_node.channel; //set the positive input to be channel
+        AD1CON1bits.SAMP = 1; //start sampling
+        ADC_startup = FALSE; //set that this is not the first run
     }
 
 

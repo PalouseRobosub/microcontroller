@@ -16,7 +16,6 @@ extern "C" {
 #include "System.h"
 #include "Queue.h"
 
-#define I2C_SPEED (100000)
 
     /* Enums */
     typedef enum {
