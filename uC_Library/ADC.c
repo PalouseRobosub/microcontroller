@@ -9,7 +9,7 @@ ADC_Data adc_data;
 
 boolean ADC_startup;
 
-ADC_Data* initialize_ADC(uint8 *work_buffer_ptr, uint8 work_buffer_size,
+ADC_Data* initialize_ADC(uint16 channels, uint8 *work_buffer_ptr, uint8 work_buffer_size,
                          uint8 *result_buffer_ptr, uint8 result_buffer_size, void* callback) {
 
     //setup the rx and tx buffers
@@ -24,13 +24,9 @@ ADC_Data* initialize_ADC(uint8 *work_buffer_ptr, uint8 work_buffer_size,
     AD1CHSbits.CH0NA = 0; //set the negative input for channel A to internal ground
 
 
-    //make sure the pin is an input (not an output)
-    //how to do this for only certain pins?
-
-    //set pins to be analog
-    //ANSELA
-    //how to do this for only certain pins?
-
+    //set up pins for analog function
+    setup_ADC_pins(channels);
+    
     //Select the data format with FORM<2:0> (AD1CON1)
     AD1CON1bits.FORM = 0; //set the format to be simple 16 bit unsigned integer
 
@@ -122,4 +118,73 @@ void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void) {
     IFS0bits.AD1IF = 0; //clear the interrupt flag
 
     asm volatile ("ei"); //reenable interrupts
+}
+
+//setup the proper pins for analog use
+void setup_ADC_pins(uint16 channels) {
+    /* Analog pin mapping:
+     * AN0 - RA0
+     * AN1 - RA1
+     * AN2 - RB0
+     * AN3 - RB1
+     * AN4 - RB2
+     * AN5 - RB3
+     * AN9 - RB15
+     * AN10 - RB14
+     * AN11 - RB13
+     *
+     * Needs to be configured:
+     * TRISx
+     * ANSELx
+     *
+     * The method below sucks, if anybody has a better idea that requires
+     * less code I welcome, a refactor of this function.
+     */
+
+    if (channels & (1 << ADC_CH_0))
+    {
+        TRISAbits.TRISA0 = 1;
+        ANSELAbits.ANSA0 = 1;
+    }
+    if (channels & (1 << ADC_CH_1))
+    {
+        TRISAbits.TRISA1 = 1;
+        ANSELAbits.ANSA1 = 1;
+    }
+    if (channels & (1 << ADC_CH_2))
+    {
+        TRISBbits.TRISB0 = 1;
+        ANSELBbits.ANSB0 = 1;
+    }
+    if (channels & (1 << ADC_CH_3))
+    {
+        TRISBbits.TRISB1 = 1;
+        ANSELBbits.ANSB1 = 1;
+    }
+    if (channels & (1 << ADC_CH_4))
+    {
+        TRISBbits.TRISB2 = 1;
+        ANSELBbits.ANSB2 = 1;
+    }
+    if (channels & (1 << ADC_CH_5))
+    {
+        TRISBbits.TRISB3 = 1;
+        ANSELBbits.ANSB3 = 1;
+    }
+    if (channels & (1 << ADC_CH_9))
+    {
+        TRISBbits.TRISB15 = 1;
+        ANSELBbits.ANSB15 = 1;
+    }
+    if (channels & (1 << ADC_CH_10))
+    {
+        TRISBbits.TRISB14 = 1;
+        ANSELBbits.ANSB14 = 1;
+    }
+    if (channels & (1 << ADC_CH_11))
+    {
+        TRISBbits.TRISB13 = 1;
+        ANSELBbits.ANSB13 = 1;
+    }
+
 }

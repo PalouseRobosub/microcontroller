@@ -25,16 +25,9 @@ extern "C" {
         ADC_CH_3,
         ADC_CH_4,
         ADC_CH_5,
-        ADC_CH_6,
-        ADC_CH_7,
-        ADC_CH_8,
-        ADC_CH_9,
+        ADC_CH_9 = 9,
         ADC_CH_10,
-        ADC_CH_11,
-        ADC_CH_12,
-        ADC_CH_13,
-        ADC_CH_14,
-        ADC_CH_15,
+        ADC_CH_11
     } ADC_Channel;
 
 
@@ -62,11 +55,14 @@ extern "C" {
 
 
     /*Function Prototypes*/
-    ADC_Data* initialize_ADC(uint8 *work_buffer_ptr, uint8 work_buffer_size,
+    ADC_Data* initialize_ADC(uint16 channels, uint8 *work_buffer_ptr, uint8 work_buffer_size,
                          uint8 *result_buffer_ptr, uint8 result_buffer_size, void* callback);
 
     //set up an ADC read
     int read_ADC(ADC_Channel channel, uint8 device_id, void* callback);
+
+    //configures the necessary pins as analog pins
+    void setup_ADC_pins(uint16 channels);
 
 
 
