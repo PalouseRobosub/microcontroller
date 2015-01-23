@@ -18,19 +18,23 @@ void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, voi
     //switch case to determine which timer we are working with
     switch (timer) {
         case Timer_1:
-            if (divide == Div_64) {
-                //we need to modify the divide value to be consistent for type A timers
-                divide = 0b10;
-            } else if (divide == Div_1 || divide == Div_8 || divide == Div_256) {
-                //we will truncate to 2 binary numbers
-                divide = (divide >> 1) & 0b11;
-
-            } else {
-                //the user has input an invalid divide value
-                //we are truncating the invalid input into a usable value
-                divide = (divide >> 1) & 0b11;
-
-                //THIS IS A BAD WAY OF HANDLING THIS ERROR - YOU GET PRACTICALLY A RANDOM OUTPUT VALUE
+            switch (divide) {
+                case Div_1:
+                    divide = 0b00;
+                    break;
+                case Div_8:
+                    divide = 0b01;
+                    break;
+                case Div_64:
+                    divide = 0b10;
+                    break;
+                case Div_256:
+                    divide = 0b11;
+                    break;
+                default:
+                    //set divide to 64? this is bad error handling
+                    divide = 0b10;
+                    break;
             }
 
             T1CONbits.TCKPS = divide; //set the clock divider

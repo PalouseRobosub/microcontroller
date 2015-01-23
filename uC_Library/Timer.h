@@ -22,7 +22,6 @@ extern "C" {
         Div_16,
         Div_32,
         Div_64,
-        Div_128,
         Div_256
     } Clock_Divider;
 

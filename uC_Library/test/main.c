@@ -73,15 +73,27 @@ void routine3();
 void routine4();
 void routine5();
 
+void initialize_pins() {
+    U1RXR = 0b0011; // Set the pin to RPB13
+    RPB15R = 0b0001; //set the output pin to RPB15 U1TX queue
+}
 
 int main(void) {
 
-    Queue testqueue;
-    uint8 buffer[32];
+    uint8 buffer_tx[100];
+    uint8 buffer_rx[100];
 
-    testqueue = create_queue(buffer, 32);
-    initialize_TIMER(Div_2, 100, Timer_1, &routine1, 1);
+    initialize_pins();
 
+    TRISBbits.TRISB11 = 0;
+
+    //testqueue = create_queue(buffer, 32);
+    initialize_TIMER(Div_256, 50000, Timer_1, &routine1, 1);
+    initialize_UART(9600, 15000000, UART1, buffer_rx, 100, buffer_tx, 100, 1, 1, NULL, NULL);
+
+    //uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
+                          // uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
+                          // void* rx_callback, void* tx_callback
 
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
@@ -96,8 +108,9 @@ int main(void) {
 }
 
 void routine1() {
-    int var = 0;
-    var += 1;
+    char c[10] = "coolstuff\n";
+    send_UART(UART1, sizeof(char)*10, c);
+    LATBbits.LATB11 = !LATBbits.LATB11;
     return;
 }
 void routine2() {

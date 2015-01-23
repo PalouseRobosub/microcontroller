@@ -88,12 +88,14 @@ int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
         case UART1:
             status = enqueue(&(u1.Tx_queue), data_ptr, data_size);
             if (u1.Tx_is_idle) { //if the tx is idle, force-start it
+                IEC1bits.U1TXIE = 1;
                 IFS1bits.U1TXIF = 1;
             }
             break;
         case UART2:
             status = enqueue(&(u2.Tx_queue), data_ptr, data_size);
             if (u2.Tx_is_idle) { ////if the tx is idle, force-start it
+                IEC1bits.U1TXIE = 1;
                 IFS1bits.U2TXIF = 1;
             }
             break;
@@ -142,7 +144,7 @@ void __ISR(_UART_1_VECTOR, IPL7AUTO) Uart_1_Handler(void) {
         IFS1bits.U1RXIF = 0;
     }
     if (IFS1bits.U1TXIF) { //if the interrupt flag of TX is set
-
+        u1.Tx_is_idle = 0; //tx is not idle
         //if the transmit queue is empty
         if (u1.Tx_queue.numStored == 0) {
             //our buffer is empty
@@ -190,6 +192,7 @@ void __ISR(_UART_2_VECTOR, IPL7AUTO) Uart_2_Handler(void) {
         IFS1bits.U2RXIF = 0;
     }
     if (IFS1bits.U2TXIF) { //if the interrupt flag of TX is set
+        u2.Tx_is_idle = 0; //tx is not idle
 
         //if the transmit queue is empty
         if (u2.Tx_queue.numStored == 0) {
