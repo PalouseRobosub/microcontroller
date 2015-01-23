@@ -35,9 +35,9 @@ void uart_setup(void) {
     U1BRG = 15E6/(16*baud_rate) - 1; //configure baud rate
     
     U1MODEbits.PDSEL = 0; //select 8 bit format, no parity
-    // IEC1bits.U1TXIE = 1; //enable the Tx interrupt
+    IEC1bits.U1TXIE = 1; //enable the Tx interrupt
     IPC8bits.U1IP = 7;  //set Tx interrrupt priority
-    //U1STAbits.UTXISEL = 2; //fire when tx buffer is empty
+    U1STAbits.UTXISEL = 2; //fire when tx buffer is empty
     U1STAbits.UTXEN = 1; //enable transmitter
     U1MODEbits.ON = 1; //enable uart module
     RPB15R = 1; //configure uart 1 to be on RPB15 pin

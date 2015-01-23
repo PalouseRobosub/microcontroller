@@ -49,7 +49,7 @@
 #pragma config WDTPS = PS1048576        // Watchdog Timer Postscaler (1:1048576)
 #pragma config WINDIS = OFF             // Watchdog Timer Window Enable (Watchdog Timer is in Non-Window Mode)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable (WDT Disabled (SWDTEN Bit Controls))
-#pragma config FWDTWINSZ = WISZ_25      // Watchdog Timer Window Size (Window Size is 25%)
+#pragma config FWDTWINSZ = WINSZ_25      // Watchdog Timer Window Size (Window Size is 25%)
 
 // DEVCFG0
 #pragma config JTAGEN = OFF              // JTAG Enable (JTAG Port Enabled)
