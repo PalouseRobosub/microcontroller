@@ -35,7 +35,7 @@ void comparator_setup(void) {
     CVRCONbits.CVRSS = 0;   //Set Comparator Voltage Source to AVDD - AVSS
     CVRCONbits.CVRR = 0;    //Set Range Selection between .25 to .75 Vref
                             //1 Set from 0 to .67
-    CVRCONbits.CVROE = 0;    //Voltage level is output to CVrefout pin
+    CVRCONbits.CVROE = 1;    //Voltage level is output to CVrefout pin
 
     //Setup Comparator
     CM1CON = 0; //Initialize Control Registers to 0
@@ -58,9 +58,9 @@ void comparator_setup(void) {
     //01 low-to-high
     //10 high-to-low
     //11 low-to-high and high-to-low
-    CM1CONbits.EVPOL = 0b01;
-    CM2CONbits.EVPOL = 0b01;
-    CM3CONbits.EVPOL = 0b01;
+    CM1CONbits.EVPOL = 0b10;
+    CM2CONbits.EVPOL = 0b10;
+    CM3CONbits.EVPOL = 0b10;
 
     //Output is 1 when inverting pin is higher than non-inverting pin
     CM1CONbits.CPOL = 1;
@@ -88,7 +88,7 @@ void comparator_setup(void) {
 
     //Setting up pins as inputs
     TRISBbits.TRISB0 = 1;
-    TRISBbits.TRISB1 = 1;
+    TRISBbits.TRISB2 = 1;
     TRISBbits.TRISB14 = 1;
 
     //Voltage Reference Setting
@@ -124,6 +124,7 @@ void __ISR(_COMPARATOR_1_VECTOR, IPL7AUTO) comparator_handler1(void) {
         
     if(numTrig == 3)
     {
+        numTrig = 2;
         //reset
         //send data
         U1TXREG = '\n';
@@ -156,10 +157,11 @@ void __ISR(_COMPARATOR_2_VECTOR, IPL7AUTO) comparator_handler2(void)
 
     time_stamp[1] = TMR1;
 
-    numTrig++;
+    numTrig+=2;
     
     if(numTrig == 3)
     {
+        numTrig = 2;
         //reset
         //send data
         U1TXREG = '\n';
@@ -193,6 +195,7 @@ void __ISR(_COMPARATOR_3_VECTOR, IPL7AUTO) comparator_handler3(void){
 
     if(numTrig == 3)
     {
+        numTrig = 2;
         //reset
         //send data
         U1TXREG = '\n';
