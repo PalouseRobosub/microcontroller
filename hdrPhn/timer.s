@@ -1,17 +1,34 @@
-# Timer Module
-# Description: Setup timer to count time between hydrophone pings
+#          Clan: RoboSub
+#         Mates: Connor Henning
+#  Date Created: 2015-2-7
+# Last Modified: 2015-2-7
+#        Scheme: Hydrophone Assembly Code
+#      Ambition: Detect time delays from three hydrophones in response to a signal
+#                using analog comparators and timers. Than send the information
+#                over UART to the computer.
 
-# Function: Timer1 Setup
-# Programmer: Connor Henning
-# Date Created: 2015-1-20
-# Last Date Modified:
-# Latest Programmer:
-# Description: Setup up timer1 for hydrophone input
+#          File: Timer
+#      Contents: Timer Setup, Timer ISR Handler
 
 .TEXT
 
-.ENT timer23_setup
-timer23_setup:
+# ******************************************************************************
+#      Function: Timer 2 and 3 32 bit Setup
+#    Programmer: Connor Henning
+#  Date Created: 2015-1-15
+# Last Modified: 2015-7-15
+#     Objective: Setup timer 2 and 3 as 32 bit timers with prescaling of 1 and interrupts
+#                with priority of 6
+#
+# Modifications: Trigger Rising Signal
+#
+# Known Problems:
+#
+#        Inputs:
+#       Outputs:
+
+.ENT tmr23_setup
+tmr23_setup:
 
 # Setup Timer Control set for 32 bit timer
 LI $t0, 0 | (0 << 1) | (1 << 3) | (0b000 << 4)
@@ -37,14 +54,26 @@ SW $t0, PR3
 
 JR $ra
 
-.END timer23_setup
+.END tmr23_setup
+
+# ******************************************************************************
+#      Function: Timer 2 and 3 32 bit ISR Handler
+#    Programmer: Connor Henning
+#  Date Created: 2015-1-15
+# Last Modified: 2015-7-15
+#     Objective: Reset
+#
+# Modifications: Trigger Rising Signal
+#
+# Known Problems:
+#
 
 .SECTION .vector_12, code
-    J timer23_handler
+    J tmr23_hndl
 
 .TEXT
-.ENT timer23_handler
-timer23_handler:
+.ENT tmr23_hndl
+tmr23_hndl:
 
     DI
 
@@ -65,7 +94,7 @@ timer23_handler:
 
     ERET
 
-.END timer23_handler
+.END tmr23_hndl
 
 
 

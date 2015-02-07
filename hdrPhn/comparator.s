@@ -1,17 +1,36 @@
-# Comparator Module
-# Description: Setup analog compartor modules and comparator ISRs
+#          Clan: RoboSub
+#         Mates: Connor Henning
+#  Date Created: 2015-2-7
+# Last Modified: 2015-2-7
+#        Scheme: Hydrophone Assembly Code
+#      Ambition: Detect time delays from three hydrophones in response to a signal
+#                using analog comparators and timers. Than send the information
+#                over UART to the computer.
 
-# Function: Comparator Setup
-# Programmer: Connor Henning
-# Date Created: 2015-1-17
-# Last Date Modified:
-# Latest Programmer:
-# Description: Setup up analog comparator for hydrophone input
+#          File: Comparator
+#      Contents: Comparator Setup, Comparator ISR Handlers, and UART Packet Transmitter
 
 .TEXT
 
-.ENT comparator_setup
-comparator_setup:
+# ******************************************************************************
+#      Function: Comparator Setup
+#    Programmer: Connor Henning
+#  Date Created: 2015-1-15
+# Last Modified: 2015-7-15
+#     Objective: Setup the comparators and comparator voltage reference for the
+#                hydrophones using comparator B pins.
+#
+# Modifications: Trigger Rising Signal
+#
+# Known Problems:
+# 
+#        Inputs:
+#       Outputs: 
+
+
+
+.ENT cmpr_setup
+cmpr_setup:
 
 LI $t0, 0 | 0xA | (0 << 4) | (0 << 5) | (0 << 6)
 SW $t0, CVRCON
@@ -47,7 +66,7 @@ SW $t0, CM2CONSET
 # Modify to adjust the reference voltage
 LI $t0, 0xA
 SW $t0, CVRCONSET
-# ###############################
+# ##############################
 
 LI $t0, (1<<15)
 
@@ -60,16 +79,31 @@ SW $t0, CM3CONSET
 
 JR $ra
 
-.END comparator_setup
+.END cmpr_setup
+
+
+# ******************************************************************************
+#      Function: ISR Comparator Handlers
+#    Programmer: Connor Henning
+#  Date Created: 2015-7-15
+# Last Modified: 2015-7-15
+#     Objective: Start a timer, if not already running when a comparator interrupt
+#                is triggered and take a time stamp of the TMR register. When all
+#                comparators have been triggered send the time stamps via UART.
+# 
+# Modifications:
+# 
+# Known Problems:
+# 
 
 .SECTION .vector_27, code
 
-    J cmp1_handler
+    J cmpr1_hndl
 
 .TEXT
 
-.ENT cmp1_handler
-cmp1_handler:
+.ENT cmpr1_hndl
+cmpr1_hndl:
 
     DI
 
@@ -93,16 +127,16 @@ cmp1_handler:
 
     ERET
 
-.END cmp1_handler
+.END cmpr1_hndl
 
 .SECTION .vector_28, code
 
-    J cmp2_handler
+    J cmpr2_hndl
 
 .TEXT
 
-.ENT cmp2_handler
-cmp2_handler:
+.ENT cmpr2_hndl
+cmpr2_hndl:
 
     DI
     LI $t0, (1 << 15)
@@ -125,16 +159,16 @@ cmp2_handler:
 
     ERET
 
-.END cmp2_handler
+.END cmpr2_hndl
 
 .SECTION .vector_29, code
 
-    J cmp3_handler
+    J cmpr3_hndl
 
 .TEXT
 
-.ENT cmp3_handler
-cmp3_handler:
+.ENT cmpr3_hndl
+cmpr3_hndl:
 
     DI
     LI $t0, (1 << 15)
@@ -157,13 +191,28 @@ cmp3_handler:
 
     ERET
 
-.END cmp3_handler
+.END cmpr3_hndl
+
+# ******************************************************************************
+#      Function: Send Time Stamps
+#    Programmer: Connor Henning
+#  Date Created: 2015-7-15
+# Last Modified: 2015-7-15
+#     Objective: Send the time stamps from the comparators over UART starting with
+#                'STX' start of heading and ending with 'ETX' control bytes.
+#
+# Modifications:
+#
+# Known Problems:
+# 
+#        Inputs: Time Stamps
+#       Outputs: 
 
 .ENT send_stamps
 send_stamps:
 
     LA $t1, U1TXREG
-    LI $t0, '\n'
+    LI $t0, 2 # STX
     SW $t0, ($t1)
     SRL $t0, $s0, 8
     SW $t0, ($t1)
@@ -174,6 +223,8 @@ send_stamps:
     SRL $t0, $t2, 8
     SW $t0, ($t1)
     SW $s2, ($t1)
+    LI $t0, 3 # ETX
+    SW $t0, ($t1)
 
     JR $ra
 
