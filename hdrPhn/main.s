@@ -49,6 +49,15 @@ main:
 
     DI  # Call setup routines
 
+    LI $t0, (1<<12)
+    SW $t0, INTCON
+    LA $s4, TMR2
+    LA $s5, IEC1CLR
+    LA $s6, T2CONSET
+    LI $s7, (1<<15)
+    LI $t7, (1<<0)
+    LI $t8, (1<<1)
+    LI $t9, (1<<2)
     jal setup_UART1
     jal cmpr_setup
     jal tmr23_setup
@@ -60,3 +69,5 @@ main:
 		J main_loop
            
 .END main
+
+

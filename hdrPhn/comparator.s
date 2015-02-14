@@ -32,7 +32,7 @@
 .ENT cmpr_setup
 cmpr_setup:
 
-LI $t0, 0 | 0xA | (0 << 4) | (0 << 5) | (0 << 6)
+LI $t0, 0 | 0xA | (0 << 4) | (0 << 5) | (1 << 6)
 SW $t0, CVRCON
 
 LI $t0, 0 | 0b00 | (1 << 4) | (0b01 << 6)
@@ -61,7 +61,7 @@ SW $t0, IEC1SET
 LI $t0, (1 << 13)
 SW $t0, CM1CONSET
 SW $t0, CM2CONSET
-SW $t0, CM2CONSET
+SW $t0, CM3CONSET
 
 # Modify to adjust the reference voltage
 LI $t0, 0xA
@@ -74,8 +74,6 @@ SW $t0, CVRCONSET
 SW $t0, CM1CONSET
 SW $t0, CM2CONSET
 SW $t0, CM3CONSET
-
-
 
 JR $ra
 
@@ -107,15 +105,13 @@ cmpr1_hndl:
 
     DI
 
-    LI $t0, (1 << 15)
-    SW $t0, T2CONSET
+    SW $s7, ($s6)
 
-    LW $s0, TMR2
+    LW $s0, ($s4)
 
-    LI $t0, (1 << 0)
-    SW $t0, IEC1CLR
+    SW $t7, ($s5)
 
-    SUB $s3, $s3, 1
+    ADDI $s3, $s3, -1
 
     BNE $s3, $zero, endcmp1
 
@@ -139,15 +135,13 @@ cmpr1_hndl:
 cmpr2_hndl:
 
     DI
-    LI $t0, (1 << 15)
-    SW $t0, T2CONSET
+    SW $s7, ($s6)
 
-    LW $s1, TMR2
+    LW $s1, ($s4)
 
-    LI $t0, (1 << 1)
-    SW $t0, IEC1CLR
+    SW $t8, ($s5)
 
-    SUB $s3, $s3, 1
+    ADDI $s3, $s3, -1
 
     BNE $s3, $zero, endcmp2
 
@@ -171,15 +165,13 @@ cmpr2_hndl:
 cmpr3_hndl:
 
     DI
-    LI $t0, (1 << 15)
-    SW $t0, T2CONSET
+    SW $s7, ($s6)
 
-    LW $s2, TMR2
+    LW $s2, ($s4)
 
-    LI $t0, (1 << 2)
-    SW $t0, IEC1CLR
+    SW $t9, ($s5)
 
-    SUB $s3, $s3, 1
+    ADDI $s3, $s3, -1
 
     BNE $s3, $zero, endcmp3
 
@@ -217,10 +209,10 @@ send_stamps:
     SRL $t0, $s0, 8
     SW $t0, ($t1)
     SW $s0, ($t1)
-    SRL $t0, $t1, 8
+    SRL $t0, $s1, 8
     SW $t0, ($t1)
     SW $s1, ($t1)
-    SRL $t0, $t2, 8
+    SRL $t0, $s2, 8
     SW $t0, ($t1)
     SW $s2, ($t1)
     LI $t0, 3 # ETX

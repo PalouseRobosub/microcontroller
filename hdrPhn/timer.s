@@ -36,21 +36,26 @@ SW $t0, T2CON
 
 SW $zero, TMR2
 SW $zero, TMR3
+# Intial Clear of time stamps registers and interrupt counter
+MOVE $s0, $zero
+MOVE $s1, $zero
+MOVE $s2, $zero
+LI $s3, 3
+LI $t0, (6<<2)
+SW $t0, IPC3
+
+
+
+# Setup Period Registers
+LI $t0, 0xFFFF
+SW $t0, PR2
+LI $t0, 0x8F
+SW $t0, PR3
 
 # Configure Interrupt
 LI $t0, (1<<14)
 SW $t0, IFS0CLR
 SW $t0, IEC0SET
-
-LI $t0, (6<<2)
-SW $t0, IPC3
-
-
-# Setup Period Registers
-LI $t0, 0xF
-SW $t0, PR2
-LI $t0, 0xF
-SW $t0, PR3
 
 JR $ra
 
@@ -77,8 +82,11 @@ tmr23_hndl:
 
     DI
 
-    LI $t0, 15
+    LI $t0, (1 << 15)
     SW $t0, T2CONCLR
+
+    SW $zero, TMR2
+    SW $zero, TMR3
 
     # Reset timestamp registers
     MOVE $s0, $zero
@@ -89,6 +97,9 @@ tmr23_hndl:
     LI $t0, 0 | (1<<0) | (1<<1) | (1<<2)
     SW $t0, IEC1SET
     SW $t0, IFS1CLR
+
+    LI $t0, (1<<14)
+    SW $t0, IFS0CLR
 
     EI
 
