@@ -13,7 +13,8 @@ import argparse
 #Global Constants#############################################################################
 #These values are temporary, for testing. They WILL change in the final product
 #It was recommended that these values should be placed in a dictionary
-control_byte = '\n'
+start_byte = chr(2)
+stop_byte  = chr(3)
 
 #Function Definitions#########################################################################
 
@@ -32,7 +33,7 @@ def exit_handler(signum, frame):
 	Here we are trying to make sure we have actually found
 	a control byte, so we receive several packets, then look
 	at where we expect the control bytes to be. If they are not in the expected
-	locastions, we wait for a new control byte and try again.
+	locations, we wait for a new control byte and try again.
 	X000X000X
 	012345678
 """
@@ -54,19 +55,18 @@ def get_lock():
 
 		#if the byte is the control_byte, then receive several packets
 		#otherwise, we will jump back to the top of the loop and get another byte
-		if current_byte == control_byte:
+		if current_byte == start_byte:
 			packet_array = "" # clear out the array
 			packet_array += current_byte  # add the byte to the array
 
 			#receive several packets
-			while len(packet_array) != 15:
+			while len(packet_array) != 8:
 				packet_array += s.read()
 			
 			#x000000x000000x000000
 			#check to see if the control byte is in the proper location in the received packets
-			if (packet_array[0] == control_byte and \
-				packet_array[7] == control_byte and \
-				packet_array[14] == control_byte):
+			if  packet_array[0] == start_byte and \
+				packet_array[7] == stop_byte:
 
 				#throw away rest of last packet
 				s.read(6)
@@ -89,16 +89,14 @@ def get_packet():
 
 	success = False
 
-	while (s.inWaiting() < 7):
-		time.sleep(.05)
-
 	while success == False:
 
 		#read 4 bytes from the serial port
-		packet = s.read(7)
+		packet = s.read(8)
 
 		#ensure we are in sync by checking that the control byte is in the correct place
-		if packet[0] != control_byte : #if we are not in sync
+		if packet[0] != start_byte and \
+		   packet[7] != stop_byte: #if we are not in sync
 			print "Error: lost sync. Press the [Enter] key to attempt to re-sync"
 			raw_input() #waits for the user to press the enter key
 			s.flushInput() #flushes the serial rx buffer
@@ -136,9 +134,9 @@ def main(args):
 		packet = get_packet() #get a new packet from the serial interface (this is a blocking call)
 		for x in packet:
 			print hex(ord(x))
-		t_h0 = ord(packet[1]) | (ord(packet[2]) << 8)
-		t_hx = ord(packet[5]) | (ord(packet[6]) << 8)
-		t_hy = ord(packet[3]) | (ord(packet[4]) << 8)
+		t_h0 = ord(packet[2]) | (ord(packet[1]) << 8)
+		t_hx = ord(packet[6]) | (ord(packet[5]) << 8)
+		t_hy = ord(packet[4]) | (ord(packet[3]) << 8)
 		
 		
 		
