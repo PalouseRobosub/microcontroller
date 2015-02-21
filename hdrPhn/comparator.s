@@ -58,13 +58,13 @@ SW $t0, IEC1SET
 # Modify to switch polarity of comparator
 # Set for low to high signal
 # Comment for high to low signal
-LI $t0, (1 << 13)
-SW $t0, CM1CONSET
-SW $t0, CM2CONSET
-SW $t0, CM3CONSET
+# LI $t0, (1 << 13)
+# SW $t0, CM1CONSET
+# SW $t0, CM2CONSET
+# SW $t0, CM3CONSET
 
 # Modify to adjust the reference voltage
-LI $t0, 0xA
+LI $t0, 0xD
 SW $t0, CVRCONSET
 # ##############################
 

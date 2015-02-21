@@ -95,8 +95,9 @@ tmr23_hndl:
     LI $s3, 3
 
     LI $t0, 0 | (1<<0) | (1<<1) | (1<<2)
-    SW $t0, IEC1SET
     SW $t0, IFS1CLR
+    SW $t0, IEC1SET
+    
 
     LI $t0, (1<<14)
     SW $t0, IFS0CLR
