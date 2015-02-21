@@ -21,18 +21,27 @@ void initialize_packetizer(Data_Channel which_channel, uint8 control_byte, void*
 
 void send_packet(Data_Channel which_channel, uint8* data, uint8 data_size) {
     uint interrupt_state;
+    Error ret;
     interrupt_state = __builtin_get_isr_state();
     __builtin_disable_interrupts();
 
     switch (which_channel) {
         case PACKET_UART1:
             send_UART(UART1, 1, &(UART1_channel.control_byte));
-            send_UART(UART1, data_size, data);
+            send_UART(UART1, 1, &(data_size));
+            ret = send_UART(UART1, data_size, data);
             break;
         case PACKET_UART2:
             send_UART(UART2, 1, &(UART2_channel.control_byte));
-            send_UART(UART2, data_size, data);
+            send_UART(UART2, 1, &(data_size));
+            ret = send_UART(UART2, data_size, data);
             break;
+    }
+
+    if (ret) {
+            //do stuff
+            //this means the queue is full and the packet is broken.
+            //We will lose sync
     }
 
     __builtin_set_isr_state(interrupt_state);
@@ -71,7 +80,7 @@ void packetizer_background_process(Data_Channel which_channel) {
             packet_length = &UART1_channel.packet_length;
             break;
         case PACKET_UART2:
-            status = send_UART(UART2, 1, &current_byte);
+            status = receive_UART(UART2, 1, &current_byte);
             receive_callback = UART2_channel.receive_callback;
             control_byte = &UART2_channel.control_byte;
             sync_lock = &UART2_channel.sync_lock;
@@ -89,9 +98,9 @@ void packetizer_background_process(Data_Channel which_channel) {
                 case 0: //first byte, should be control byte
                     *packet_received = FALSE;
                     ++(*received_index);
-                    if (current_byte != *control_byte) {
-                        *sync_lock = FALSE;
-                        *received_index = 0;
+                    if (current_byte != *control_byte) { //if we lost sync
+                        *sync_lock = FALSE; //we fucked up
+                        *received_index = 0; //restart
                     }
                     break;
                 case 1: //second byte, length byte
@@ -100,7 +109,8 @@ void packetizer_background_process(Data_Channel which_channel) {
                     break;
 
                 default: //any other bytes are data bytes
-                    received_bytes[*received_index - 2] = current_byte; //store the received data
+                    received_bytes[(*received_index) - 2] = current_byte; //store the received data
+                    ++(*received_index);
                     if (*received_index == *packet_length) //we've received the entire packet
                     {
                         *packet_received = TRUE;
