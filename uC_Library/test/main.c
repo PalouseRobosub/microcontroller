@@ -82,15 +82,18 @@ int main(void) {
 
     uint8 buffer_tx[100];
     uint8 buffer_rx[100];
+    UARTConfig config = TX_EN | RX_EN;
 
     initialize_pins();
 
     TRISBbits.TRISB11 = 0;
+    I2C1CON = 1;
 
     //testqueue = create_queue(buffer, 32);
     initialize_TIMER(Div_256, 50000, Timer_1, &routine1, 1);
-    initialize_UART(9600, 15000000, UART1, buffer_rx, 100, buffer_tx, 100, 1, 1, NULL, NULL);
+    initialize_UART(9600, 15000000, UART1, buffer_rx, 100, buffer_tx, 100, config, NULL, NULL);
 
+    //initialize_I2C(15000000, I2C1, buffer_rx, 100, buffer_tx, 100, NULL, NULL);
     //uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
                           // uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
                           // void* rx_callback, void* tx_callback

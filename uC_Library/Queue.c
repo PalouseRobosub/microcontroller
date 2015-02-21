@@ -13,7 +13,7 @@ Queue create_queue(uint8* buffer, uint buffer_size) {
     return queue;
 }
 
-int enqueue(Queue* queue, uint8* data, uint data_size) {
+Error enqueue(Queue* queue, uint8* data, uint data_size) {
     uint i, j;
     uint interrupt_state;
 
@@ -23,7 +23,7 @@ int enqueue(Queue* queue, uint8* data, uint data_size) {
     //check to see if there is room in the queue for the data
     if ((queue->buffer_size - queue->numStored) < data_size) {
         __builtin_set_isr_state(interrupt_state);
-        return 1;
+        return ERR_INVALID_SEND;
     }
 
     //copy the memory
@@ -44,7 +44,7 @@ int enqueue(Queue* queue, uint8* data, uint data_size) {
     return 0;
 }
 
-int dequeue(Queue* queue, uint8* output_data, uint data_size) {
+Error dequeue(Queue* queue, uint8* output_data, uint data_size) {
     uint i, j;
     uint interrupt_state;
 
@@ -54,7 +54,7 @@ int dequeue(Queue* queue, uint8* output_data, uint data_size) {
     //check if there is that much data in queue
     if (data_size > queue->numStored) {
         __builtin_set_isr_state(interrupt_state);
-        return 1;
+        return ERR_QUEUE_INVALID_READ;
     }
 
     //copy the memory

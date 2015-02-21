@@ -27,8 +27,8 @@ extern "C" {
 
     /*Queue Functions*/
     Queue create_queue(uint8* buffer, uint buffer_size);
-    int enqueue(Queue* queue, uint8* data, uint data_size);
-    int dequeue(Queue* queue, uint8* output_data, uint data_size);
+    Error enqueue(Queue* queue, uint8* data, uint data_size);
+    Error dequeue(Queue* queue, uint8* output_data, uint data_size);
 
 
 

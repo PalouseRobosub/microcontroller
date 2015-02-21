@@ -27,6 +27,12 @@ extern "C" {
         FALSE,
         TRUE
     } boolean;
+    typedef enum {
+        //UART errors
+        ERR_INVALID_SEND,
+        ERR_QUEUE_FULL,
+        ERR_QUEUE_INVALID_READ
+    }Error;
 
 
 /* Structure Definitions*/

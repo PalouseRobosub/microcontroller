@@ -12,7 +12,7 @@ Uart_Data u1;
 Uart_Data u2;
 
 Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-                           uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
+                           uint8 *tx_buffer_ptr, uint8 tx_buffer_size, UARTConfig configuration,
                            void* rx_callback, void* tx_callback) {
 
     switch (which_uart) {
@@ -25,15 +25,15 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             u1.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
             u1.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
 
-            IEC1bits.U1TXIE = (tx_en & 0b1); //enable or disable the rx/tx interrupts
-            IEC1bits.U1RXIE = (rx_en & 0b1);
+            IEC1bits.U1TXIE = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx interrupts
+            IEC1bits.U1RXIE = ((configuration & RX_EN) ? 1 : 0);
             IPC8bits.U1IP = 7; //set interrupt priority to 7
 
             U1STAbits.UTXISEL = 2; //set tx interrupt to fire when the tx buffer is empty
             U1STAbits.URXISEL = 0; //set rx interrupt to fire whenever a new byte is received
 
-            U1STAbits.UTXEN = (tx_en & 0b1); //enable or disable the rx/tx modules
-            U1STAbits.URXEN = (rx_en & 0b1); //enable or disable the rx/tx modules
+            U1STAbits.UTXEN = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx modules
+            U1STAbits.URXEN = ((configuration & RX_EN) ? 1 : 0); //enable or disable the rx/tx modules
 
             U1MODEbits.ON = 1; //enable the UART
 
@@ -54,15 +54,15 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             u2.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
             u2.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
 
-            IEC1bits.U2TXIE = (tx_en & 0b1); //enable or disable the rx/tx interrupts
-            IEC1bits.U2RXIE = (rx_en & 0b1);
+            IEC1bits.U2TXIE = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx interrupts
+            IEC1bits.U2RXIE = ((configuration & RX_EN) ? 1 : 0);
             IPC9bits.U2IP = 7; //set interrupt priority to 7
 
             U2STAbits.UTXISEL = 2; //set tx interrupt to fire when the tx buffer is empty
             U2STAbits.URXISEL = 0; //set rx interrupt to fire whenever a new byte is received
 
-            U2STAbits.UTXEN = (tx_en & 0b1); //enable or disable the rx/tx modules
-            U2STAbits.URXEN = (rx_en & 0b1); //enable or disable the rx/tx modules
+            U2STAbits.UTXEN = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx modules
+            U2STAbits.URXEN = ((configuration & RX_EN) ? 1 : 0); //enable or disable the rx/tx modules
 
             U2MODEbits.ON = 1; //enable the UART
 
@@ -81,8 +81,8 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
     return NULL;
 }
 
-int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
-    int status;
+Error send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
+    Error status = 0;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
         case UART1:
@@ -100,7 +100,7 @@ int send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
             }
             break;
         default:
-            status = 1; //return failure
+            status = ERR_INVALID_SEND; //return failure
             break;
 
     }
