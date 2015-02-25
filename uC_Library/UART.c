@@ -107,7 +107,7 @@ Error send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     return status;
 }
 
-int receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
+Error receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     int status;
     //we need to read the specified data from the rx queue
     switch (channel) {

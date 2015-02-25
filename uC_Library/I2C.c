@@ -15,7 +15,7 @@ I2C_STATE i2c_2_state;
 
 I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
                          uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback) {
-
+                         //comment
     switch (channel) {
         case I2C1:
             I2C1BRG = 1 / (2 * I2C_SPEED) * pb_clk - 2; //calculate the proper divider
@@ -28,6 +28,11 @@ I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr,
 
             i2c1.Tx_is_idle = TRUE; //set the I2C state machine to idling
             i2c_1_state = STOPPED;
+
+            //WTF MPLAB
+            IEC1bits.I2C1MIE = 1; //enable interrupts
+            IFS1bits.I2C1MIF = 0; //turn interrupts off
+            IPC8bits.I2C1IP = 7;
 
             I2C1CONbits.ON = 0b1; //enable the I2C module
             return &i2c1;
@@ -44,6 +49,11 @@ I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr,
 
             i2c2.Tx_is_idle = TRUE; //set the I2C state machine to idling
             i2c_2_state = STOPPED;
+
+            //WTF MPLAB
+            IEC1bits.I2C2MIE = 1; //enable interrupts
+            IFS1bits.I2C2MIF = 0; //turn interrupts off
+            IPC9bits.I2C2IP = 7;
 
             I2C2CONbits.ON = 0b1; //enable the I2C module
             return &i2c2;
@@ -108,7 +118,7 @@ int bg_process_I2C(void) {
     I2C_Node current_node;
 
     //process channel 1
-    while (!dequeue(&(i2c1.Tx_queue), (uint8*) & current_node, sizeof (current_node))) {
+    while (!dequeue(&(i2c1.Rx_queue), (uint8*) & current_node, sizeof (current_node))) {
         if (current_node.callback != NULL) {
             current_node.callback(current_node);
         }
@@ -116,13 +126,12 @@ int bg_process_I2C(void) {
 
 
     //process channel 2
-    while (!dequeue(&(i2c2.Tx_queue), (uint8*) & current_node, sizeof (current_node))) {
+    while (!dequeue(&(i2c2.Rx_queue), (uint8*) & current_node, sizeof (current_node))) {
         if (current_node.callback != NULL) {
             current_node.callback(current_node);
         }
     }
 }
-
 void __ISR(_I2C_1_VECTOR, IPL7AUTO) I2C_1_Handler(void) {
     static I2C_Node current_node;
     static uint8 data_index;
