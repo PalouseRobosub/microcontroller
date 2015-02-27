@@ -32,7 +32,7 @@
 .ENT cmpr_setup
 cmpr_setup:
 
-LI $t0, 0 | 0xA | (0 << 4) | (0 << 5) | (1 << 6)
+LI $t0, 0 | 0xA | (0 << 4) | (0 << 5) | (0 << 6)
 SW $t0, CVRCON
 
 LI $t0, 0 | 0b00 | (1 << 4) | (0b01 << 6)
@@ -58,13 +58,13 @@ SW $t0, IEC1SET
 # Modify to switch polarity of comparator
 # Set for low to high signal
 # Comment for high to low signal
-# LI $t0, (1 << 13)
-# SW $t0, CM1CONSET
-# SW $t0, CM2CONSET
-# SW $t0, CM3CONSET
+ LI $t0, (1 << 13)
+ SW $t0, CM1CONSET
+ SW $t0, CM2CONSET
+ SW $t0, CM3CONSET
 
 # Modify to adjust the reference voltage
-LI $t0, 0xD
+LI $t0, 0x5
 SW $t0, CVRCONSET
 # ##############################
 
