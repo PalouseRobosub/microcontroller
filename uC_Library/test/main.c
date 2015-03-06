@@ -80,6 +80,7 @@ void initialize_pins() {
     RPB15R = 0b0001; //set the output pin to RPB15 U1TX queue
 }
 uint8 buffer[10];
+uint8 data[10];
 
 int main(void) {
 
@@ -99,6 +100,7 @@ int main(void) {
     initialize_UART(9600, 15000000, UART1, buffer_rx_u, 100, buffer_tx_u, 100, config, NULL, NULL);
 
     initialize_I2C(15000000, I2C1, buffer_rx, 100, buffer_tx, 100, NULL);
+    initialize_packetizer(UART1, 0xA, NULL);
     config_acl();
     //uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
                           // uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
@@ -122,7 +124,7 @@ int main(void) {
     buffer[0] = 0x8;
     //data for initializing ACL 0
     temp.device_id = 1;
-    temp.device_address = 0x1D;
+    temp.device_address = 0x53;
     temp.sub_address = 0x2D;
     temp.mode = WRITE;
     temp.data_size = 1;
@@ -134,17 +136,23 @@ int main(void) {
 
 void routine1() {
     //read the I2C data
-    char data[10] = "UART";
-    send_I2C(I2C1, 1, 0x1D, 0x2D, buffer, 10, READ, &routine2);
-    send_UART(UART1, 10, data);
+    //char data[10] = "UART";
+    send_I2C(I2C1, 1, 0x53, 0x32, buffer, 6, READ, &routine2);
+    //send_UART(UART1, 10, data);
 
     return;
 }
 void routine2(I2C_Node Node) {
-    //pop data off the queue
-    char data[10] = "abcdef";
-    send_UART(UART1, 10, Node.data_buffer);
-    send_UART(UART1, 10, data);
+    //this is the callback routine for I2C. In this routine, the data needs to be interpretted
+    //data is sent in I2C 2's complement 16 bits
+
+    //first interpret the information
+
+    data[0] = 0xA;
+    //send_UART(UART1, 1, data);
+    send_packet(UART1, Node.data_buffer, 6);
+    //send_UART(UART1, 6, Node.data_buffer);
+    //send_UART(UART1, 10, data);
     return;
 }
 void routine3() {
