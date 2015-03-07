@@ -69,7 +69,6 @@ def get_lock():
 				packet_array[7] == stop_byte:
 
 				#throw away rest of last packet
-				s.read(6)
 
 				#say we are in sync so we can break out of the loop
 				in_sync = True
@@ -111,7 +110,8 @@ def get_packet():
 
 def main(args):
 	#initialize the serial port
-	s.port = args.port #this may change, depending on what port the OS gives the microcontroller
+	#s.port = args.port #this may change, depending on what port the OS gives the microcontroller
+	s.port = args.port
 	s.baudrate = args.baudrate		#the baudrate may change in the future
 	s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
@@ -120,10 +120,10 @@ def main(args):
 	signal.signal(signal.SIGTERM, exit_handler)
 	
 	#speed of sound in water (meters/second)
-	Cs = 1500.0
+	Cs = 1200.0 
 	#x distance of hydrophones (meters)
-	py = 0.33
-	px = 0.146
+	px = 0.33
+	py = 0.146
 	
 	#distance between the hydrophones
 	
@@ -132,8 +132,8 @@ def main(args):
 	counter = 0
 	while(1):
 		packet = get_packet() #get a new packet from the serial interface (this is a blocking call)
-		for x in packet:
-			print hex(ord(x))
+		#for x in packet:
+			#print hex(ord(x))
 		t_h0 = ord(packet[2]) | (ord(packet[1]) << 8)
 		t_hx = ord(packet[6]) | (ord(packet[5]) << 8)
 		t_hy = ord(packet[4]) | (ord(packet[3]) << 8)
@@ -144,9 +144,22 @@ def main(args):
 		tx = t_hx - t_h0
 		ty = t_hy - t_h0
 		
+		
+		
+		
+		
+		
+		txSec = tx * Cs / 15045000
+		tySec = ty * Cs / 15045000
+		
+		print "tx: {}, txSec: {}".format(tx, txSec)
+		print "ty: {}, tySec: {}".format(ty, tySec)
+		
+		
+		
 		#converting time to distance
-		dx = tx*Cs
-		dy = ty*Cs
+		dx = txSec
+		dy = tySec
 		
 		#algorithm
 		xa = pow((dx/px), 2)
@@ -162,9 +175,9 @@ def main(args):
 		#rb = xb + yb
 		#rc = xc + yc
 		
-		ra = xa-1
-		rb = xb
-		rc = xc + pow(py, 2)
+		ra = xa + ya - 1
+		rb = xb + yb
+		rc = xc + yc #pow(py, 2)
 		
 		
 		
@@ -187,7 +200,14 @@ def main(args):
 		
 		counter = counter + 1
 		
-		os.system("cls")
+		print "rx1: = {}, ry1: = {}, r1: = {}".format(rx1, ry1, r1)
+		print "rx2: = {}, ry2: = {}, r2: = {}".format(rx2, ry2, r2)
+		
+		raw_input()
+		s.flushInput()
+		
+		
+		'''os.system("cls")
 		print "theta 1: %f" % (theta1)
 		print "theta 2: %f" % (theta2)
 		print "r1: %f" % (r1)
@@ -196,13 +216,13 @@ def main(args):
 		print t_hx
 		print t_hy
 		print counter
-		sleep(.1)
+		sleep(.1) '''
 		
 	
 	
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-p", "--port", type=str, default="/dev/ttyUSB0", help="Serial port")
+	parser.add_argument("-p", "--port", type=int, help="Serial port")
 	parser.add_argument('-b', '--baudrate', type=int, default=9600, help="Serial interface baudrate.")
 	args = parser.parse_args()
 	
