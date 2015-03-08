@@ -1,8 +1,8 @@
 /*
  * File:   LEDmain.c
- * Author: Admin
+ * Author: Nicholas Yeung
  *
- * Created on 2015?02?21? ???, ??12:18
+ * Created on 2015-03-07 
  */
 //insert configuration for new microcontrollers
 #include <xc.h>
@@ -62,12 +62,14 @@ void initialize_pins() {
     PORTBbits.RB14;*/
 }
 int main(int argc, char** argv) {
-    uint8 tx_buffer_ptr[100];
-    initialize_pins();
-    initialize_SPI(10000,15000000,SPI_CH_1,0,0,tx_buffer_ptr,100,1,0,0,0);
-    INTEnableSystemMultiVectoredInt();
-    uint8 pixbuf[(32 * 3)+(63/32)];
-    pixels=pixbuf;
+    uint8 tx_buffer_ptr[200];
+    numLEDs=64; //set number of leds that need to light up
+    initialize_pins();//initialize pins on microcontroller
+    initialize_SPI(295000,15000000,SPI_CH_1,0,0,0,tx_buffer_ptr,200,1,0,0,0);//initialize SPI chennel
+    INTEnableSystemMultiVectoredInt();//enable interrupt
+    uint8 pixbuf[(numLEDs*3)+1];//size is number of LEDs *3 + 1 latch byte
+    pixbuf[(numLEDs+3)]=0; //set the last byte to 0
+    pixels=pixbuf;//set pixels point at the pixbuf
     asm volatile ("ei"); //reenable interrupts
     
     /*  Color(127, 127, 127); // White
@@ -79,29 +81,29 @@ int main(int argc, char** argv) {
         Color(127,   0, 127); // Violet*/
     while(1)
     {
-     colorWipe(Color(0,   0,   0), 0);  // off
-    //colorWipe(Color(0,   0,   0), 50);  // off
-//    colorWipe(Color(  0, 127,   0), 0);  // Green
-//    colorWipe(Color(  0, 127,   0), 50);  // Green
-//    colorWipe(Color(0,   0,   0), 0);  // off
-//    colorWipe(Color(0,   0,   0), 50);  // off
-//    colorWipe(Color(  0, 127,   0), 0);  // Green
-//    colorWipe(Color(  0, 127,   0), 50);  // Green
-//    colorWipe(Color(0,   0,   0), 0);  // off
-//    colorWipe(Color(0,   0,   0), 50);  // off
-//    colorWipe(Color(  0, 127,   0), 0);  // Green
-//    colorWipe(Color(  0, 127,   0), 100);  // Green
-//    colorWipe(Color(0,   0,   0), 0);  // off
-//    colorWipe(Color(0,   0,   0), 50);  // off
-//    colorWipe(Color(  0, 127,   0), 0);  // Green
-//    colorWipe(Color(  0, 127,   0), 100);  // Green
-//    colorWipe(Color(0,   0,   0), 0);  // off
-//    colorWipe(Color(0,   0,   0), 50);  // off
-//    colorWipe(Color(  0, 127,   0), 0);  // Green
-//    colorWipe(Color(  0, 127,   0), 100);  // Green
-//    colorWipe(Color(0,   0,   0), 0);  // off
-//    colorWipe(Color(0,   0,   0), 50);  // off
-//    delay(10);
+     colorWipe(Color(0,   0,   0), 0);  // Green
+    colorWipe(Color(0,   0,   0), 50);  // off
+    colorWipe(Color(  0, 127,   0), 0);  // Green
+    colorWipe(Color(  0, 127,   0), 50);  // Green
+    colorWipe(Color(0,   0,   0), 0);  // off
+    colorWipe(Color(0,   0,   0), 50);  // off
+    colorWipe(Color(  0, 127,   0), 0);  // Green
+    colorWipe(Color(  0, 127,   0), 50);  // Green
+    colorWipe(Color(0,   0,   0), 0);  // off
+    colorWipe(Color(0,   0,   0), 50);  // off
+    colorWipe(Color(  0, 127,   0), 0);  // Green
+    colorWipe(Color(  0, 127,   0), 100);  // Green
+    colorWipe(Color(0,   0,   0), 0);  // off
+    colorWipe(Color(0,   0,   0), 50);  // off
+    colorWipe(Color(  0, 127,   0), 0);  // Green
+    colorWipe(Color(  0, 127,   0), 100);  // Green
+    colorWipe(Color(0,   0,   0), 0);  // off
+    colorWipe(Color(0,   0,   0), 50);  // off
+    colorWipe(Color(  0, 127,   0), 0);  // Green
+    colorWipe(Color(  0, 127,   0), 100);  // Green
+    colorWipe(Color(0,   0,   0), 0);  // off
+    colorWipe(Color(0,   0,   0), 50);  // off
+    delay(10);
     }
     return (EXIT_SUCCESS);
 }
@@ -113,9 +115,9 @@ void delay(uint wait)
     }
 }
 void colorWipe(uint c, uint8 wait) {
-  uint16 i;
+  int i;
 
-  for (i=0; i < 32; i++) {
+  for (i=0; i < numLEDs; i++) {
       setPixelColor(i, c);
       show();
   }

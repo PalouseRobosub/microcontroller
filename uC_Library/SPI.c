@@ -12,7 +12,7 @@ void (*spi_2_rx_callback) (void);
 SPI_Data spi_1;
 SPI_Data spi_2;
 
-SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,
+SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,uint8 clk_edge,
                          uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
                          uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
                          void* rx_callback, void* tx_callback) {
@@ -51,7 +51,7 @@ SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,
             SPI1CONbits.ENHBUF = 1; //enable enhanced buffer mode
             SPI1STATbits.SPIROV = 0; //clear the receive overflow flag
             SPI1CONbits.CKP = 1;
-            SPI1CONbits.CKE = 1;
+            SPI1CONbits.CKE = clk_edge;
 
             SPI1CONbits.ON = 1; //enable the SPI module
 
@@ -80,7 +80,7 @@ SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,
             SPI2CONbits.ENHBUF = 1; //enable enhanced buffer mode
             SPI2STATbits.SPIROV = 0; //clear the receive overflow flag
             SPI2CONbits.CKP = 1;
-            SPI2CONbits.CKE = 1;
+            SPI2CONbits.CKE = clk_edge;
 
             SPI2CONbits.ON = 1; //enable the SPI module
 
@@ -104,6 +104,7 @@ int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size) {
         case SPI_CH_1:
             status = enqueue(&(spi_1.Tx_queue), data_ptr, data_size);
             if (spi_1.is_idle) { //if the tx is idle, force-start it
+                IEC1bits.SPI1TXIE = 1;
                 IFS1bits.SPI1TXIF = 1;
                 IEC1bits.SPI1TXIE = 1;
             }
@@ -111,6 +112,7 @@ int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size) {
         case SPI_CH_2:
             status = enqueue(&(spi_2.Tx_queue), data_ptr, data_size);
             if (spi_2.is_idle) { ////if the tx is idle, force-start it
+                IEC1bits.SPI2TXIE = 1;
                 IFS1bits.SPI2TXIF = 1;
                 IEC1bits.SPI2TXIE = 1;
             }
@@ -158,7 +160,7 @@ void __ISR(_SPI_1_VECTOR, IPL7AUTO) SPI_1_Handler(void) {
             //we have data to transmit - pop that data off the queue
             //store popped data into the transmit registry
             //while there is data in queue AND the transmit buffer is not full
-            while (!dequeue(&(spi_1.Tx_queue), &transmit, 1) && !SPI1STATbits.SPITBF) { 
+            while (!dequeue(&(spi_1.Tx_queue), &transmit, 1) && !(SPI1STATbits.SPITBF)) {
                 //write the data to the buffer
                 SPI1BUF = transmit;
             } //write data until the queue is empty or the registry is full

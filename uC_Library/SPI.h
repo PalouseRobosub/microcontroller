@@ -35,11 +35,9 @@ extern "C" {
         //idle information
         boolean is_idle;
     }
+
     SPI_Data;
-
-
-
-    SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,
+    SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi, uint8 clk_edge,
             uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
             uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
             void* rx_callback, void* tx_callback);

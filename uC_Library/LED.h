@@ -1,6 +1,6 @@
 /* 
  * File:   LED.h
- * Author: Admin
+ * Author: Nicholas Yeung
  *
  * Created on 2015?03?03? ???, ??3:27
  */
@@ -23,6 +23,7 @@ extern "C" {
   void
     setPixelColor(uint16 n, uint c),
     show(void);
+
   uint
     Color(sint8, sint8, sint8);
 
