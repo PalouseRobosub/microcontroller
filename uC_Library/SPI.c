@@ -105,12 +105,14 @@ int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size) {
             status = enqueue(&(spi_1.Tx_queue), data_ptr, data_size);
             if (spi_1.is_idle) { //if the tx is idle, force-start it
                 IFS1bits.SPI1TXIF = 1;
+                IEC1bits.SPI1TXIE = 1;
             }
             break;
         case SPI_CH_2:
             status = enqueue(&(spi_2.Tx_queue), data_ptr, data_size);
             if (spi_2.is_idle) { ////if the tx is idle, force-start it
                 IFS1bits.SPI2TXIF = 1;
+                IEC1bits.SPI2TXIE = 1;
             }
             break;
         default:
