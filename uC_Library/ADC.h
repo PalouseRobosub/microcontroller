@@ -61,6 +61,10 @@ extern "C" {
     //set up an ADC read
     int read_ADC(ADC_Channel channel, uint8 device_id, void* callback);
 
+    //run this background process in the main while loop to
+    //process the results of ADC samples
+    int bg_process_ADC(void);
+
     //configures the necessary pins as analog pins
     void setup_ADC_pins(uint16 channels);
 

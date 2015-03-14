@@ -72,6 +72,10 @@ int read_ADC(ADC_Channel channel, uint8 device_id, void* callback) {
     ADC_Node new_node;
     int status;
 
+    new_node.channel = channel;
+    new_node.device_id = device_id;
+    new_node.callback = callback;
+
     status = enqueue(&(adc_data.Work_queue), (uint8*) & new_node, sizeof (new_node));
 
     //if the bus is idling, force-start it
@@ -83,13 +87,22 @@ int read_ADC(ADC_Channel channel, uint8 device_id, void* callback) {
     return status;
 }
 
+int bg_process_ADC(void) {
+    static ADC_Node current_node; //static to improve speed
+
+    while(!dequeue(&(adc_data.Work_queue), (uint8*) & current_node, sizeof(current_node)))
+    {
+        if(current_node.callback != NULL){
+            current_node.callback(current_node);
+        }
+
+    }
+}
+
 void __ISR(_ADC_VECTOR, IPL7AUTO) ADC_Handler(void) {
-
-    asm volatile ("di"); //disable interrupts
-
     static ADC_Node current_node;
 
-    INTDisableInterrupts();
+    asm volatile ("di"); //disable interrupts
 
 
     if (ADC_startup == FALSE) { //if there is data in the ADC buffer
