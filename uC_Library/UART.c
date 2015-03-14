@@ -156,7 +156,7 @@ void __ISR(_UART_1_VECTOR, IPL7AUTO) Uart_1_Handler(void) {
         } else {
             //we have data to transmit - pop that data off the queue
             //store popped data into the transmit registry
-            while (!dequeue(&(u1.Tx_queue), &transmit, 1) && !U1STAbits.UTXBF) { //while we are dequeuing data AND the transmit buffer is not full
+            while (!U1STAbits.UTXBF && !dequeue(&(u1.Tx_queue), &transmit, 1)) { //while we are dequeuing data AND the transmit buffer is not full
                 //write the data to the buffer
                 U1TXREG = transmit;
             } //write data until the queue is empty or the registry is full
@@ -205,7 +205,7 @@ void __ISR(_UART_2_VECTOR, IPL7AUTO) Uart_2_Handler(void) {
         } else {
             //we have data to transmit - pop that data off the queue
             //store popped data into the transmit registry
-            while (!dequeue(&(u2.Tx_queue), &transmit, 1) && !U2STAbits.UTXBF) { //while we are dequeuing data AND the transmit buffer is not full
+            while (!U2STAbits.UTXBF && !dequeue(&(u2.Tx_queue), &transmit, 1)) { //while we are dequeuing data AND the transmit buffer is not full
                 //write the data to the buffer
                 U2TXREG = transmit;
             } //write data until the queue is empty or the registry is full
