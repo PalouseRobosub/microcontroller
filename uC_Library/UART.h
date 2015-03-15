@@ -18,6 +18,9 @@ extern "C" {
 
     /*Enum Defintions*/
 
+    /*Constants*/
+    #define UART_FIFO_SIZE 8
+
     /*Object Defintions*/
 
     typedef struct UART_DATA {
