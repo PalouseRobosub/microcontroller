@@ -33,6 +33,16 @@ extern "C" {
         Timer_5
     } Timer_Type;
 
+    typedef struct TIMER_CONFIG {
+        Timer_Type which_timer;
+        Clock_Divider divide;
+        uint16 period;
+        //uint pb_clk;  //for future work
+        //uint frequency;
+        void (*callback);
+        boolean enabled;
+    }Timer_Config;
+
 
     /* #Define Functions / Inline Functions*/
     //This function is the ISR #define function template
@@ -48,7 +58,11 @@ extern "C" {
 
     /* Function Prototypes*/
     //setup
-    void initialize_TIMER(Clock_Divider divide, uint16 period, Timer_Type timer, void *function_ptr, boolean enable);
+    void initialize_TIMER(Timer_Config config);
+
+    void enable_TIMER(Timer_Type which_timer);
+    void disable_TIMER(Timer_Type which_timer);
+
 
 
 
