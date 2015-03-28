@@ -8,15 +8,15 @@ void (*uart_1_rx_callback) (void);
 void (*uart_2_tx_callback) (void);
 void (*uart_2_rx_callback) (void);
 
-Uart_Data u1;
-Uart_Data u2;
+UART_Data u1;
+UART_Data u2;
 
-Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
+UART_Data* initialize_UART(uint speed, uint pb_clk, UART_Channel which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
                            uint8 *tx_buffer_ptr, uint8 tx_buffer_size, UARTConfig configuration,
                            void* rx_callback, void* tx_callback) {
 
     switch (which_uart) {
-        case UART1:
+        case UART1_CH:
             U1BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
 
             U1MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
@@ -45,7 +45,7 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
             return &u1;
             break;
 
-        case UART2:
+        case UART2_CH:
             U2BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
 
             U2MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
@@ -81,18 +81,18 @@ Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_b
     return NULL;
 }
 
-Error send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
-    Error status = 0;
+Error send_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr) {
+    Error status = ERR_NO_ERR;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
-        case UART1:
+        case UART1_CH:
             status = enqueue(&(u1.Tx_queue), data_ptr, data_size);
             if (u1.Tx_is_idle) { //if the tx is idle, force-start it
                 IEC1bits.U1TXIE = 1;
                 IFS1bits.U1TXIF = 1;
             }
             break;
-        case UART2:
+        case UART2_CH:
             status = enqueue(&(u2.Tx_queue), data_ptr, data_size);
             if (u2.Tx_is_idle) { ////if the tx is idle, force-start it
                 IEC1bits.U1TXIE = 1;
@@ -107,18 +107,18 @@ Error send_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
     return status;
 }
 
-Error receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr) {
+Error receive_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr) {
     int status;
     //we need to read the specified data from the rx queue
     switch (channel) {
-        case UART1:
+        case UART1_CH:
             status = dequeue(&(u1.Rx_queue), data_ptr, data_size);
             break;
-        case UART2:
+        case UART2_CH:
             status = dequeue(&(u2.Rx_queue), data_ptr, data_size);
             break;
         default:
-            status = 1; //return failure
+            status = ERR_INVALID_CHANNEL; //return failure
             break;
     }
     return status; //return success

@@ -30,12 +30,12 @@ extern "C" {
         Queue Tx_queue;
         //idle information
         boolean Tx_is_idle;
-    } Uart_Data;
+    } UART_Data;
 
     typedef enum {
-        UART1,
-        UART2
-    } Uart;
+        UART1_CH,
+        UART2_CH
+    } UART_Channel;
 
     typedef enum {
         TX_EN = 1<<0,
@@ -43,11 +43,11 @@ extern "C" {
     } UARTConfig;
 
     /*Function Prototypes*/
-    Uart_Data* initialize_UART(uint speed, uint pb_clk, Uart which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
+    UART_Data* initialize_UART(uint speed, uint pb_clk, UART_Channel which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
             uint8 *tx_buffer_ptr, uint8 tx_buffer_size, UARTConfig configuration,
             void* rx_callback, void* tx_callback);
-    Error send_UART(Uart channel, uint8 data_size, uint8 *data_ptr);
-    Error receive_UART(Uart channel, uint8 data_size, uint8 *data_ptr);
+    Error send_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr);
+    Error receive_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr);
 #ifdef	__cplusplus
 }
 #endif

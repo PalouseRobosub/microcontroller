@@ -28,10 +28,11 @@ extern "C" {
         TRUE
     } boolean;
     typedef enum {
-        //UART errors
+        ERR_NO_ERR, //not an error
         ERR_INVALID_SEND,
-        ERR_QUEUE_FULL,
-        ERR_QUEUE_INVALID_READ
+        ERR_QUEUE_FULL, //queue is full
+        ERR_QUEUE_INVALID_READ,
+        ERR_INVALID_CHANNEL //invalid channel
     }Error;
 
 
