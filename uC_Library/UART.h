@@ -37,15 +37,22 @@ extern "C" {
         UART2_CH
     } UART_Channel;
 
-    typedef enum {
-        TX_EN = 1<<0,
-        RX_EN = 1<<1
-    } UARTConfig;
+    typedef struct UART_CONFIG {
+        uint speed;
+        uint pb_clk;
+        UART_Channel which_uart;
+        uint8 *rx_buffer_ptr;
+        uint8 rx_buffer_size;
+        uint8 *tx_buffer_ptr;
+        uint8 tx_buffer_size;
+        void (*rx_callback);
+        void (*tx_callback);
+        boolean tx_en;
+        boolean rx_en;
+    } UART_Config;
 
     /*Function Prototypes*/
-    UART_Data* initialize_UART(uint speed, uint pb_clk, UART_Channel which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-            uint8 *tx_buffer_ptr, uint8 tx_buffer_size, UARTConfig configuration,
-            void* rx_callback, void* tx_callback);
+    UART_Data* initialize_UART(UART_Config config);
     Error send_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr);
     Error receive_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr);
 #ifdef	__cplusplus

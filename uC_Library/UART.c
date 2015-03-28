@@ -11,34 +11,32 @@ void (*uart_2_rx_callback) (void);
 UART_Data u1;
 UART_Data u2;
 
-UART_Data* initialize_UART(uint speed, uint pb_clk, UART_Channel which_uart, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-                           uint8 *tx_buffer_ptr, uint8 tx_buffer_size, UARTConfig configuration,
-                           void* rx_callback, void* tx_callback) {
+UART_Data* initialize_UART(UART_Config config) {
 
-    switch (which_uart) {
+    switch (config.which_uart) {
         case UART1_CH:
-            U1BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
+            U1BRG = config.pb_clk / (16 * config.speed) - 1; //calculate the proper baud rate
 
             U1MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
 
             //setup the rx and tx buffers
-            u1.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            u1.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            u1.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            u1.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            IEC1bits.U1TXIE = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx interrupts
-            IEC1bits.U1RXIE = ((configuration & RX_EN) ? 1 : 0);
+            IEC1bits.U1TXIE = ((config.tx_en) ? 1 : 0); //enable or disable the rx/tx interrupts
+            IEC1bits.U1RXIE = ((config.rx_en) ? 1 : 0);
             IPC8bits.U1IP = 7; //set interrupt priority to 7
 
             U1STAbits.UTXISEL = 2; //set tx interrupt to fire when the tx buffer is empty
             U1STAbits.URXISEL = 0; //set rx interrupt to fire whenever a new byte is received
 
-            U1STAbits.UTXEN = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx modules
-            U1STAbits.URXEN = ((configuration & RX_EN) ? 1 : 0); //enable or disable the rx/tx modules
+            U1STAbits.UTXEN = ((config.tx_en) ? 1 : 0); //enable or disable the rx/tx modules
+            U1STAbits.URXEN = ((config.rx_en) ? 1 : 0); //enable or disable the rx/tx modules
 
             U1MODEbits.ON = 1; //enable the UART
 
-            uart_1_tx_callback = tx_callback; //link the callback functions
-            uart_1_rx_callback = rx_callback;
+            uart_1_tx_callback = config.tx_callback; //link the callback functions
+            uart_1_rx_callback = config.rx_callback;
 
             u1.Tx_is_idle = TRUE;
 
@@ -46,28 +44,28 @@ UART_Data* initialize_UART(uint speed, uint pb_clk, UART_Channel which_uart, uin
             break;
 
         case UART2_CH:
-            U2BRG = pb_clk / (16 * speed) - 1; //calculate the proper baud rate
+            U2BRG = config.pb_clk / (16 * config.speed) - 1; //calculate the proper baud rate
 
             U2MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
 
             //setup the rx and tx buffers
-            u2.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            u2.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            u2.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            u2.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            IEC1bits.U2TXIE = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx interrupts
-            IEC1bits.U2RXIE = ((configuration & RX_EN) ? 1 : 0);
+            IEC1bits.U2TXIE = ((config.tx_en) ? 1 : 0); //enable or disable the rx/tx interrupts
+            IEC1bits.U2RXIE = ((config.rx_en) ? 1 : 0);
             IPC9bits.U2IP = 7; //set interrupt priority to 7
 
             U2STAbits.UTXISEL = 2; //set tx interrupt to fire when the tx buffer is empty
             U2STAbits.URXISEL = 0; //set rx interrupt to fire whenever a new byte is received
 
-            U2STAbits.UTXEN = ((configuration & TX_EN) ? 1 : 0); //enable or disable the rx/tx modules
-            U2STAbits.URXEN = ((configuration & RX_EN) ? 1 : 0); //enable or disable the rx/tx modules
+            U2STAbits.UTXEN = ((config.tx_en) ? 1 : 0); //enable or disable the rx/tx modules
+            U2STAbits.URXEN = ((config.rx_en) ? 1 : 0); //enable or disable the rx/tx modules
 
             U2MODEbits.ON = 1; //enable the UART
 
-            uart_2_tx_callback = tx_callback; //link the callback functions
-            uart_2_rx_callback = rx_callback;
+            uart_2_tx_callback = config.tx_callback; //link the callback functions
+            uart_2_rx_callback = config.rx_callback;
 
             u2.Tx_is_idle = TRUE;
             return &u2;
