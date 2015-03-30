@@ -97,7 +97,7 @@ extern "C" {
      * \see Error
      * \see I2C_NODE
      */
-    int send_I2C(I2C_Channel channel, I2C_Node node);
+    Error send_I2C(I2C_Channel channel, I2C_Node node);
 
     //run this background process in the main while loop to
     //process the results of I2C transactions

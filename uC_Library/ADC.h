@@ -32,8 +32,8 @@ extern "C" {
     /*Object Defintions*/
     typedef struct ADC_DATA {
         Queue Results_queue;/**< Queue of resulting ADC reads */
-        Queue Work_queue;/**< queued ADC reads to be done */
-        boolean is_idle;/**< idle information */
+        Queue Work_queue;/**< Queued ADC reads to be done */
+        boolean is_idle;/**< Idle information */
     }ADC_Data; /**< Object for references to the data queues */
 
     typedef struct ADC_NODE {
@@ -55,15 +55,15 @@ extern "C" {
     /*Function Prototypes*/
     /**
      * Initializes the ADC
-     * \param config configuration information for the ADC
-     * \See ADC_CONFIG
+     * \param config Configuration information for the ADC
      * \return A pointer to the results and the work queue for the ADC
+     * \See ADC_CONFIG
      */
     ADC_Data* initialize_ADC(ADC_Config config);
 
     /**
      * Sets up the ADC to read
-     * \param node specifies parameters required for an ADC read
+     * \param node Specifies parameters required for an ADC read
      * \return An Error type
      * \see Error
      * \see ADC_NODE
