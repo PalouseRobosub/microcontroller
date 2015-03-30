@@ -9,14 +9,13 @@ ADC_Data adc_data;
 
 boolean ADC_startup;
 
-ADC_Data* initialize_ADC(uint16 channels, uint8 *work_buffer_ptr, uint8 work_buffer_size,
-                         uint8 *result_buffer_ptr, uint8 result_buffer_size, void* callback) {
+ADC_Data* initialize_ADC(ADC_Config config) {
 
     //setup the rx and tx buffers
-    adc_data.Results_queue = create_queue(result_buffer_ptr, result_buffer_size);
-    adc_data.Work_queue = create_queue(work_buffer_ptr, work_buffer_size);
+    adc_data.Results_queue = create_queue(config.result_buffer_ptr, config.result_buffer_size);
+    adc_data.Work_queue = create_queue(config.work_buffer_ptr, config.work_buffer_size);
 
-    ADC_callback = callback; //link the callback function
+    ADC_callback = config.callback; //link the callback function
 
     adc_data.is_idle = TRUE; //set the ADC module to idling
 
@@ -25,7 +24,7 @@ ADC_Data* initialize_ADC(uint16 channels, uint8 *work_buffer_ptr, uint8 work_buf
 
 
     //set up pins for analog function
-    setup_ADC_pins(channels);
+    setup_ADC_pins(config.channels);
     
     //Select the data format with FORM<2:0> (AD1CON1)
     AD1CON1bits.FORM = 0; //set the format to be simple 16 bit unsigned integer

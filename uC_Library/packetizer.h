@@ -14,6 +14,7 @@ extern "C" {
 
     /*Include Statements*/
 #include "System.h"
+#include "UART.h"
 
     typedef enum {
         PACKET_UART1,
@@ -30,7 +31,16 @@ extern "C" {
        uint8 packet_length;
     } Packetizer_Data;
 
-
+    typedef struct PACKETIZER_CONFIG {
+        Data_Channel which_channel;
+        uint8 control_byte;
+        void (*callback);
+        UART_Config uart_config;
+    }Packetizer_Config;
+    
+    void initialize_packetizer(Packetizer_Config config);
+    void send_packet(Data_Channel which_channel, uint8* data, uint8 data_size);
+    void packetizer_background_process(Data_Channel which_channel);
 #ifdef	__cplusplus
 }
 #endif

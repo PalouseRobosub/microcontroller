@@ -36,17 +36,29 @@ extern "C" {
         boolean is_idle;
     } SPI_Data;
 
+    typedef struct SPI_CONFIG {
+        uint speed;
+        uint pb_clk;
+        SPI_Channel which_spi;
+        uint8 clk_edge;
+        uint8 *tx_buffer_ptr;
+        uint tx_buffer_size;
+        void (*tx_callback);
+        boolean tx_en;
+        uint8 *rx_buffer_ptr;
+        uint rx_buffer_size;
+        void (*rx_callback);
+        boolean rx_en;
+    }SPI_Config;
+
 
 
     
-    SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi, uint8 clk_edge,
-            uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-            uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
-            void* rx_callback, void* tx_callback);
+    SPI_Data* initialize_SPI(SPI_Config config);
 
-    int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size);
+    int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size);
 
-    int receive_SPI(SPI_Channel channel, uint8 data_size, uint8 *data_ptr);
+    //int receive_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size);
 
 
 

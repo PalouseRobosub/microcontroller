@@ -14,7 +14,7 @@ UART_Data u2;
 UART_Data* initialize_UART(UART_Config config) {
 
     switch (config.which_uart) {
-        case UART1_CH:
+        case UART_CH_1:
             U1BRG = config.pb_clk / (16 * config.speed) - 1; //calculate the proper baud rate
 
             U1MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
@@ -43,7 +43,7 @@ UART_Data* initialize_UART(UART_Config config) {
             return &u1;
             break;
 
-        case UART2_CH:
+        case UART_CH_2:
             U2BRG = config.pb_clk / (16 * config.speed) - 1; //calculate the proper baud rate
 
             U2MODEbits.PDSEL = 0; //parity and data size selection bits (no parity, 8bit)
@@ -79,18 +79,18 @@ UART_Data* initialize_UART(UART_Config config) {
     return NULL;
 }
 
-Error send_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr) {
+Error send_UART(UART_Channel channel, uint8 *data_ptr, uint data_size) {
     Error status = ERR_NO_ERR;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
-        case UART1_CH:
+        case UART_CH_1:
             status = enqueue(&(u1.Tx_queue), data_ptr, data_size);
             if (u1.Tx_is_idle) { //if the tx is idle, force-start it
                 IEC1bits.U1TXIE = 1;
                 IFS1bits.U1TXIF = 1;
             }
             break;
-        case UART2_CH:
+        case UART_CH_2:
             status = enqueue(&(u2.Tx_queue), data_ptr, data_size);
             if (u2.Tx_is_idle) { ////if the tx is idle, force-start it
                 IEC1bits.U1TXIE = 1;
@@ -105,14 +105,14 @@ Error send_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr) {
     return status;
 }
 
-Error receive_UART(UART_Channel channel, uint8 data_size, uint8 *data_ptr) {
+Error receive_UART(UART_Channel channel, uint8 *data_ptr, uint data_size) {
     int status;
     //we need to read the specified data from the rx queue
     switch (channel) {
-        case UART1_CH:
+        case UART_CH_1:
             status = dequeue(&(u1.Rx_queue), data_ptr, data_size);
             break;
-        case UART2_CH:
+        case UART_CH_2:
             status = dequeue(&(u2.Rx_queue), data_ptr, data_size);
             break;
         default:

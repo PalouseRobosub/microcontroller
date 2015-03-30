@@ -53,10 +53,18 @@ extern "C" {
         void (*callback) (struct ADC_NODE); //callback function
     } ADC_Node;
 
+    typedef struct ADC_CONFIG {
+        uint16 channels;
+        uint8 *work_buffer_ptr;
+        uint work_buffer_size;
+        uint8 *result_buffer_ptr;
+        uint result_buffer_size;
+        void* callback;
+    }ADC_Config;
+
 
     /*Function Prototypes*/
-    ADC_Data* initialize_ADC(uint16 channels, uint8 *work_buffer_ptr, uint8 work_buffer_size,
-                         uint8 *result_buffer_ptr, uint8 result_buffer_size, void* callback);
+    ADC_Data* initialize_ADC(ADC_Config config);
 
     //set up an ADC read
     int read_ADC(ADC_Channel channel, uint8 device_id, void* callback);

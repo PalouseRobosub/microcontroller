@@ -77,16 +77,23 @@ extern "C" {
         void (*callback) (struct I2C_NODE); //callback function
     } I2C_Node;
 
+    typedef struct I2C_CONFIG {
+        uint pb_clk;
+        I2C_Channel channel;
+        uint8 *rx_buffer_ptr;
+        uint rx_buffer_size;
+        uint8 *tx_buffer_ptr;
+        uint tx_buffer_size;
+        void* callback;
+    }I2C_Config;
+
 
 
     /*Function Prototypes*/
-    I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-            uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback);
+    I2C_Data* initialize_I2C(I2C_Config config);
 
     //set up an I2C transaction
-    int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
-            uint8 sub_address, uint8* data_buffer, uint8 data_size,
-            I2C_MODE read_write, void* callback);
+    int send_I2C(I2C_Channel channel, I2C_Node node);
 
     //run this background process in the main while loop to
     //process the results of I2C transactions

@@ -12,10 +12,7 @@ void (*spi_2_rx_callback) (void);
 SPI_Data spi_1;
 SPI_Data spi_2;
 
-SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,uint8 clk_edge,
-                         uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-                         uint8 *tx_buffer_ptr, uint8 tx_buffer_size, boolean tx_en, boolean rx_en,
-                         void* rx_callback, void* tx_callback) {
+SPI_Data* initialize_SPI(SPI_Config config) {
 
     /*
     1. If using interrupts:
@@ -30,28 +27,28 @@ SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,uint8 cl
     6. Write the data to be transmitted to the SPIxBUF register. The transmission (and reception) starts as soon as data is written to the SPIxBUF register.
      */
 
-    switch (which_spi) {
+    switch (config.which_spi) {
         case SPI_CH_1:
 
             //setup the rx and tx buffers
-            spi_1.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            spi_1.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            spi_1.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            spi_1.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            spi_1_tx_callback = tx_callback;
-            spi_1_rx_callback = rx_callback;
+            spi_1_tx_callback = config.tx_callback;
+            spi_1_rx_callback = config.rx_callback;
 
-            SPI1BRG = pb_clk / (2 * speed) - 1; //set divisor to match desired speed
+            SPI1BRG = config.pb_clk / (2 * config.speed) - 1; //set divisor to match desired speed
 
             IFS1bits.SPI1TXIF = 0; // clear the Tx interrupt flag
             SPI1CONbits.STXISEL = 0x01; //interrupt when the Tx buffer is empty
-            IEC1bits.SPI1TXIE = (tx_en & 0b1); //enable the Tx interrupt
+            IEC1bits.SPI1TXIE = (config.tx_en & 0b1); //enable the Tx interrupt
             IPC7bits.SPI1IP = 7; //set the interrupt priority
 
             SPI1CONbits.MSTEN = 1; //enable master mode
             SPI1CONbits.ENHBUF = 1; //enable enhanced buffer mode
             SPI1STATbits.SPIROV = 0; //clear the receive overflow flag
             SPI1CONbits.CKP = 1;
-            SPI1CONbits.CKE = clk_edge;
+            SPI1CONbits.CKE = config.clk_edge;
 
             SPI1CONbits.ON = 1; //enable the SPI module
 
@@ -63,24 +60,24 @@ SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,uint8 cl
         case SPI_CH_2:
 
             //setup the rx and tx buffers
-            spi_2.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            spi_2.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            spi_2.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            spi_2.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            spi_2_tx_callback = tx_callback;
-            spi_2_rx_callback = rx_callback;
+            spi_2_tx_callback = config.tx_callback;
+            spi_2_rx_callback = config.rx_callback;
 
-            SPI2BRG = pb_clk / (2 * speed) - 1; //set divisor to match desired speed
+            SPI2BRG = config.pb_clk / (2 * config.speed) - 1; //set divisor to match desired speed
 
             IFS1bits.SPI2TXIF = 0; // clear the Tx interrupt flag
             SPI2CONbits.STXISEL = 0x01; //interrupt when the Tx buffer is empty
-            IEC1bits.SPI2TXIE = (tx_en & 0b1); //enable the Tx interrupt
+            IEC1bits.SPI2TXIE = (config.tx_en & 0b1); //enable the Tx interrupt
             IPC9bits.SPI2IP = 7; //set the interrupt priority
 
             SPI2CONbits.MSTEN = 1; //enable master mode
             SPI2CONbits.ENHBUF = 1; //enable enhanced buffer mode
             SPI2STATbits.SPIROV = 0; //clear the receive overflow flag
             SPI2CONbits.CKP = 1;
-            SPI2CONbits.CKE = clk_edge;
+            SPI2CONbits.CKE = config.clk_edge;
 
             SPI2CONbits.ON = 1; //enable the SPI module
 
@@ -97,7 +94,7 @@ SPI_Data* initialize_SPI(uint speed, uint pb_clk, SPI_Channel which_spi,uint8 cl
     return NULL;
 }
 
-int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size) {
+int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size) {
     int status;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
@@ -123,22 +120,22 @@ int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint8 data_size) {
     return status;
 }
 
-int receive_SPI(SPI_Channel channel, uint8 data_size, uint8 *data_ptr) {
-    int status;
-    //we need to read the specified data from the rx queue
-    switch (channel) {
-        case SPI_CH_1:
-            status = dequeue(&(spi_1.Rx_queue), data_ptr, data_size);
-            break;
-        case SPI_CH_2:
-            status = dequeue(&(spi_2.Rx_queue), data_ptr, data_size);
-            break;
-        default:
-            status = 1; //return failure
-            break;
-    }
-    return status; //return success
-}
+//int receive_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size) {
+//    int status;
+//    //we need to read the specified data from the rx queue
+//    switch (channel) {
+//        case SPI_CH_1:
+//            status = dequeue(&(spi_1.Rx_queue), data_ptr, data_size);
+//            break;
+//        case SPI_CH_2:
+//            status = dequeue(&(spi_2.Rx_queue), data_ptr, data_size);
+//            break;
+//        default:
+//            status = 1; //return failure
+//            break;
+//    }
+//    return status; //return success
+//}
 
 void __ISR(_SPI_1_VECTOR, IPL7AUTO) SPI_1_Handler(void) {
     uint8 received, transmit;

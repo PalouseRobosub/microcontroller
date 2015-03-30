@@ -13,18 +13,17 @@ I2C_Data i2c2;
 I2C_STATE i2c_1_state;
 I2C_STATE i2c_2_state;
 
-I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr, uint8 rx_buffer_size,
-                         uint8 *tx_buffer_ptr, uint8 tx_buffer_size, void* callback) {
+I2C_Data* initialize_I2C(I2C_Config config) {
                          //comment
-    switch (channel) {
+    switch (config.channel) {
         case I2C1:
-            I2C1BRG = 1 / (2 * I2C_SPEED) * pb_clk - 2; //calculate the proper divider
+            I2C1BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
-            i2c1.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            i2c1.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            i2c1.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            i2c1.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            I2C_1_callback = callback; //link the callback function
+            I2C_1_callback = config.callback; //link the callback function
 
             i2c1.Tx_is_idle = TRUE; //set the I2C state machine to idling
             i2c_1_state = STOPPED;
@@ -39,13 +38,13 @@ I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr,
             break;
 
         case I2C2:
-            I2C2BRG = 1 / (2 * I2C_SPEED) * pb_clk - 2; //calculate the proper divider
+            I2C2BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
-            i2c2.Rx_queue = create_queue(rx_buffer_ptr, rx_buffer_size);
-            i2c2.Tx_queue = create_queue(tx_buffer_ptr, tx_buffer_size);
+            i2c2.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
+            i2c2.Tx_queue = create_queue(config.tx_buffer_ptr, config.tx_buffer_size);
 
-            I2C_2_callback = callback; //link the callback function
+            I2C_2_callback = config.callback; //link the callback function
 
             i2c2.Tx_is_idle = TRUE; //set the I2C state machine to idling
             i2c_2_state = STOPPED;
@@ -67,24 +66,13 @@ I2C_Data* initialize_I2C(uint pb_clk, I2C_Channel channel, uint8 *rx_buffer_ptr,
     return NULL;
 }
 
-int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
-             uint8 sub_address, uint8* data_buffer, uint8 data_size,
-             I2C_MODE read_write, void* callback) {
-    I2C_Node new_node;
+int send_I2C(I2C_Channel channel, I2C_Node node) {
     int status;
-
-    new_node.device_id = device_id;
-    new_node.device_address = device_address;
-    new_node.sub_address = sub_address;
-    new_node.data_buffer = data_buffer;
-    new_node.data_size = data_size;
-    new_node.mode = read_write;
-    new_node.callback = callback;
 
     switch (channel) {
         case I2C1:
             //load the new node
-            status = enqueue(&(i2c1.Tx_queue), (uint8*) & new_node, sizeof (new_node));
+            status = enqueue(&(i2c1.Tx_queue), (uint8*) & node, sizeof (node));
 
             //if the bus is idling, force-start it
             if (i2c1.Tx_is_idle) {
@@ -94,7 +82,7 @@ int send_I2C(I2C_Channel channel, uint8 device_id, uint8 device_address,
 
         case I2C2:
             //load the new node
-            status = enqueue(&(i2c2.Tx_queue), (uint8*) & new_node, sizeof (new_node));
+            status = enqueue(&(i2c2.Tx_queue), (uint8*) & node, sizeof (node));
 
             //if the bus is idling, force-start it
             if (i2c2.Tx_is_idle) {
