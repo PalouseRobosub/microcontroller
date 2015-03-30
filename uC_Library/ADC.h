@@ -1,7 +1,5 @@
-/* 
- * File:   ADC.h
- *
- * Created on December 24, 2014, 5:16 PM
+/*! \file ADC.h
+ * Defines the data structures and methods for using the ADC
  */
 
 #ifndef ADC_H
@@ -17,7 +15,7 @@ extern "C" {
 
 
     /* Enums */
-    /** Set of all possible ADC channels */
+    /** \enum ADC_Channel Set of all possible ADC channels */
     typedef enum {
         ADC_CH_0,
         ADC_CH_1,
@@ -33,55 +31,42 @@ extern "C" {
 
     /*Object Defintions*/
     typedef struct ADC_DATA {
-        /** Queue of resulting ADC reads */
-        Queue Results_queue;
-        /** queued ADC reads to be done */
-        Queue Work_queue;
-        /** idle information */
-        boolean is_idle;
-    } /** object for references to the data queues */ ADC_Data;
+        Queue Results_queue;/**< Queue of resulting ADC reads */
+        Queue Work_queue;/**< queued ADC reads to be done */
+        boolean is_idle;/**< idle information */
+    }ADC_Data; /**< Object for references to the data queues */
 
     typedef struct ADC_NODE {
-        /** a unique identifier for the device */
-        uint8 device_id;
-        /** ADC channel */
-        ADC_Channel channel;
-        /** location to store data */
-        uint16 data;
-        /** callback function */
-        void (*callback) (struct ADC_NODE);
+        uint8 device_id;/**< a unique identifier for the device */
+        ADC_Channel channel;/**< ADC channel */
+        uint16 data;/**< location to store data */
+        void (*callback) (struct ADC_NODE);/**< callback function */
     } /** ADC data node */ADC_Node;
 
     typedef struct ADC_CONFIG {
-        /** The bit field of the channels to configure */
-        uint16 channels;
-        /** Pointer to the ADC's work buffer */
-        uint8 *work_buffer_ptr;
-        /** The size of the ADC's work buffer */
-        uint work_buffer_size;
-        /** Pointer to the ADC's result buffer */
-        uint8 *result_buffer_ptr;
-        /** The size of the ADC's result buffer */
-        uint result_buffer_size;
-        /** The function to call when done sampling <br/> <strong>default:</strong> NULL*/
-        void* callback;
-    }/** The configuration struct for the ADC */ ADC_Config;
+        uint16 channels;/**< The bit field of the channels to configure */
+        uint8 *work_buffer_ptr;/**< Pointer to the ADC's work buffer */
+        uint work_buffer_size;/**< The size of the ADC's work buffer */
+        uint8 *result_buffer_ptr;/**< Pointer to the ADC's result buffer */
+        uint result_buffer_size;/**< The size of the ADC's result buffer */
+        void* callback;/**< The function to call when done sampling \note <strong>default:</strong> NULL*/
+    } ADC_Config;/**< The configuration struct for the ADC */
 
     /*Function Prototypes*/
     /**
      * Initializes the ADC
-     * @param config configuration information for the ADC
-     * @see ADC_Config
-     * @return A pointer to the results and the work queue for the ADC
+     * \param config configuration information for the ADC
+     * \See ADC_CONFIG
+     * \return A pointer to the results and the work queue for the ADC
      */
     ADC_Data* initialize_ADC(ADC_Config config);
 
     /**
      * Sets up the ADC to read
-     * @param node specifies parameters required for an ADC read
-     * @return An Error type
-     * @see Error in "System.h"
-     * @see ADC_Node
+     * \param node specifies parameters required for an ADC read
+     * \return An Error type
+     * \see Error in "System.h"
+     * \see ADC_NODE
      */
     int read_ADC(ADC_Node node);
     
@@ -93,8 +78,8 @@ extern "C" {
 
     /**
      * Configures the necessary pins as analog pins
-     * @param channels Bit mask to define which ADC channels to setup
-     *                 i.e. channels = (1 << ADC_CH_1) | (1 << ADC_CH_4);
+     * \param channels Bit mask to define which ADC channels to setup
+     * \note channels = (1 << ADC_CH_1) | (1 << ADC_CH_4);
      */
     void setup_ADC_pins(uint16 channels);
 
