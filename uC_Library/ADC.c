@@ -86,7 +86,7 @@ int read_ADC(ADC_Channel channel, uint8 device_id, void* callback) {
     return status;
 }
 
-int bg_process_ADC(void) {
+void bg_process_ADC(void) {
     static ADC_Node current_node; //static to improve speed
 
     while(!dequeue(&(adc_data.Work_queue), (uint8*) & current_node, sizeof(current_node)))
