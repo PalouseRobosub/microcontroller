@@ -67,15 +67,10 @@ ADC_Data* initialize_ADC(ADC_Config config) {
     return &adc_data;
 }
 
-int read_ADC(ADC_Channel channel, uint8 device_id, void* callback) {
-    ADC_Node new_node;
+int read_ADC(ADC_Node node) {
     int status;
-
-    new_node.channel = channel;
-    new_node.device_id = device_id;
-    new_node.callback = callback;
-
-    status = enqueue(&(adc_data.Work_queue), (uint8*) & new_node, sizeof (new_node));
+    
+    status = enqueue(&(adc_data.Work_queue), (uint8*) & node, sizeof (node));
 
     //if the bus is idling, force-start it
     if (adc_data.is_idle) {
@@ -89,7 +84,7 @@ int read_ADC(ADC_Channel channel, uint8 device_id, void* callback) {
 void bg_process_ADC(void) {
     static ADC_Node current_node; //static to improve speed
 
-    while(!dequeue(&(adc_data.Work_queue), (uint8*) & current_node, sizeof(current_node)))
+    while(!dequeue(&(adc_data.Results_queue), (uint8*) & current_node, sizeof(current_node)))
     {
         if(current_node.callback != NULL){
             current_node.callback(current_node);

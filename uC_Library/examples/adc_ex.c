@@ -120,11 +120,12 @@ int main(void) {
 
 void timer_callback(void)
 {
-    read_ADC(ADC_CH_0, 0x01, &adc_callback);
-    read_ADC(ADC_CH_1, 0x02, &adc_callback);
-    read_ADC(ADC_CH_2, 0x03, &adc_callback);
-    read_ADC(ADC_CH_3, 0x04, &adc_callback);
+    ADC_Node node;
+    node.device_id = 0x01;
+    node.channel = ADC_CH_0;
+    node.callback = &adc_callback;
 
+    read_ADC(node);
 }
 
 void adc_callback(ADC_Node node)

@@ -78,13 +78,12 @@ extern "C" {
 
     /**
      * Sets up the ADC to read
-     * @param channel The ADC channel to read from
-     * @param device_id ID that describes the device/channel
-     * @param callback Function to execute when the data is ready
+     * @param node specifies parameters required for an ADC read
      * @return An Error type
      * @see Error in "System.h"
+     * @see ADC_Node
      */
-    int read_ADC(ADC_Channel channel, uint8 device_id, void* callback);
+    int read_ADC(ADC_Node node);
     
     /**
      * Run this background process in the main while loop to
