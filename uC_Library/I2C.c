@@ -102,7 +102,7 @@ int send_I2C(I2C_Channel channel, I2C_Node node) {
 //run this background process in the main while loop to
 //process the results of I2C transactions
 
-int bg_process_I2C(void) {
+void bg_process_I2C(void) {
     I2C_Node current_node;
 
     //process channel 1

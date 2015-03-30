@@ -41,7 +41,7 @@ extern "C" {
         ADC_Channel channel;/**< ADC channel */
         uint16 data;/**< location to store data */
         void (*callback) (struct ADC_NODE);/**< callback function */
-    } /** ADC data node */ADC_Node;
+    } ADC_Node;/**< ADC data node */
 
     typedef struct ADC_CONFIG {
         uint16 channels;/**< The bit field of the channels to configure */
@@ -65,7 +65,7 @@ extern "C" {
      * Sets up the ADC to read
      * \param node specifies parameters required for an ADC read
      * \return An Error type
-     * \see Error in "System.h"
+     * \see Error
      * \see ADC_NODE
      */
     int read_ADC(ADC_Node node);
