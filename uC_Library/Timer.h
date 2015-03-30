@@ -1,8 +1,7 @@
-/* 
- * File:   Timer.h
- * Author: Ryan Summers
+/*!
+ * \file Timer.h
  *
- * Created on December 17, 2014, 12:36 PM
+ * A Timer pseudo-class
  */
 
 #ifndef TIMER_H
@@ -14,6 +13,7 @@ extern "C" {
 
 #include "System.h"
 
+    ///\enum Clock_Divider All possible clock dividers for a timer
     typedef enum {
         Div_1,
         Div_2,
@@ -25,6 +25,7 @@ extern "C" {
         Div_256
     } Clock_Divider;
 
+    ///\enum Timer_Type All possible timers
     typedef enum {
         Timer_1,
         Timer_2,
@@ -34,14 +35,14 @@ extern "C" {
     } Timer_Type;
 
     typedef struct TIMER_CONFIG {
-        Timer_Type which_timer;
-        Clock_Divider divide;
-        uint16 period;
+        Timer_Type which_timer; ///< The timer to configure
+        Clock_Divider divide; ///< The divider to use
+        uint16 period; ///< The period to store in the PRx register
         //uint pb_clk;  //for future work
         //uint frequency;
-        void (*callback);
-        boolean enabled;
-    }Timer_Config;
+        void (*callback); ///< The function to call when the timer is triggered
+        boolean enabled; ///< Tells if the timer is enabled
+    }Timer_Config; ///< Configuration struct for any timer
 
 
     /* #Define Functions / Inline Functions*/
@@ -57,10 +58,24 @@ extern "C" {
 
 
     /* Function Prototypes*/
-    //setup
+
+    /**
+     * Initialize a timer
+     * \param config Configuration struct for the desired timer
+     * \see TIMER_CONFIG
+     */
     void initialize_timer(Timer_Config config);
 
+    /**
+     * Enables a timer
+     * \param which_timer The timer to enable
+     */
     void enable_timer(Timer_Type which_timer);
+
+    /**
+     * Disables a timer
+     * \param which_timer The timer to disable
+     */
     void disable_timer(Timer_Type which_timer);
 
 
