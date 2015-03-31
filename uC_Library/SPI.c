@@ -94,8 +94,8 @@ SPI_Data* initialize_SPI(SPI_Config config) {
     return NULL;
 }
 
-int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size) {
-    int status;
+Error send_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size) {
+    Error status;
     //we need to place the provided data onto the Tx queue
     switch (channel) {
         case SPI_CH_1:
@@ -113,7 +113,7 @@ int send_SPI(SPI_Channel channel, uint8 *data_ptr, uint data_size) {
             }
             break;
         default:
-            status = 1; //return failure
+            status = ERR_INVALID_CHANNEL; //return failure
             break;
 
     }

@@ -1,6 +1,6 @@
 /*!
  * \file I2C.h
- * Defines the data structures and methods for using the I2C busses
+ * Defines the data structures and methods for using the I2C channels
  */
 
 #ifndef I2C_H

@@ -67,7 +67,7 @@ I2C_Data* initialize_I2C(I2C_Config config) {
 }
 
 Error send_I2C(I2C_Channel channel, I2C_Node node) {
-    int status = ERR_NO_ERR;
+    Error status = ERR_NO_ERR;
 
     switch (channel) {
         case I2C_CH_1:
