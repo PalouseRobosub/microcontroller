@@ -16,51 +16,29 @@ uint16 numPixels(void) {
 }
 
 void show(void) {
-  uint8  *ptr = pixels;
+  uint8  *ptr = pixbuf;
   uint16 i    = (numLEDs*3)+1;
   int j=0;
   ptr[(numLEDs*3)]=0;
-//    uint8 *ptr = pixels;
-//    uint16 i;
-//    uint8 toggle = 0;
-//    if(toggle) {
-//        for(i=0; i < 32*3; i++)
-//        {
-//            ptr[i] = 0x80;
-//        }
-//        toggle = 0;
-//    }
-//    else {
-//        for(i=0; i < 32*3; i++)
-//        {
-//            ptr[i] = 0x00;
-//        }
-//        toggle = 1;
-//    }
-  // This doesn't need to distinguish among individual pixel color
-  // bytes vs. latch data, etc.  Everything is laid out in one big
-  // flat buffer and issued the same regardless of purpose.
-        //send_SPI(SPI_CH_1,ptr,i);
-        while(i--){
-            send_SPI(SPI_CH_1,ptr,1);
-            ptr++;
-            for(j=0;j<5;j++)
-            {
-                asm volatile ("nop");
-                asm volatile ("nop");
-                asm volatile ("nop");
-                asm volatile ("nop");
-            }
-        }
+  while(i--)
+  {
+    send_SPI(SPI_CH_1,ptr,1);
+    ptr++;
+    for(j=0;j<5;j++)
+    {
+        asm volatile ("nop");
+        asm volatile ("nop");
+        asm volatile ("nop");
+        asm volatile ("nop");
+    }
+  }
 }
-
 // Convert separate R,G,B into combined 32-bit GRB color:
 uint Color(sint8 r, sint8 g, sint8 b) {
   return ((uint)(g | 0x80) << 16) |
          ((uint)(r | 0x80) <<  8) |
                      b | 0x80 ;
 }
-
 // Set pixel color from 'packed' 32-bit GRB (not RGB) value:
 void setPixelColor(uint16 n, uint c) {
   if(n < numLEDs) { // Arrays are 0-indexed, thus NOT '<='

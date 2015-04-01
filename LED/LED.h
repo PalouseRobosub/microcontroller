@@ -11,23 +11,22 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-#include "System.h"
-#include "SPI.h"
+#include "../uC_Library/System.h"
+#include "../uC_Library/SPI.h"
+#include "../uC_Library/packetizer.h"
+
     uint16
-        numLEDs,    // Number of RGB LEDs in strip
+        numLEDs=64,    // Number of RGB LEDs in strip
         numBytes;   // Size of 'pixels' buffer below
     uint8
-        *pixels,    // Holds LED color values (3 bytes each) + latch bytes
-        clkpin, 
+        clkpin,
+        pixbuf[(numLEDs*3)+1],//size is number of LEDs *3 + 1 latch byte
         datapin;     // Clock & data pin numbers
   void
     setPixelColor(uint16 n, uint c),
     show(void);
-
   uint
     Color(sint8, sint8, sint8);
-
-
 #ifdef	__cplusplus
 }
 #endif

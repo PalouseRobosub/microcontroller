@@ -46,7 +46,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../LED.h"
+#include "LED.h"
 /*
  * 
  */
@@ -54,22 +54,46 @@ void delay(uint wait);
 void colorWipe(uint c, uint8 wait) ;
 void initialize_pins() {
     RPA2R = 0b0011; //set the RPA2R to SDO1
-
+    U1RXR = 0b0011; // Set the pin to RPB13
     TRISAbits.TRISA2=0;//set SDO1 as output
     TRISBbits.TRISB14=0;//set SCK1 as output
-   /* PORTAbits.RA0;
-    PORTAbits.RA2;
-    PORTBbits.RB14;*/
+    TRISBbits.TRISB13=0;//set RPB13 as output
 }
 int main(int argc, char** argv) {
-    uint8 tx_buffer_ptr[200];
-    numLEDs=64; //set number of leds that need to light up
+    uint8 spi_tx_buffer[200];
+    uint8 uart_rx_buffer[200];
+    //structures for configuring peripherals
+    SPI_Config spi_config;
+    UART_Config uart_config;
+    Packetizer_Config packet_config;
+    //setup peripherals
+
+    spi_config.which_spi = SPI_CH_1;
+    spi_config.pb_clk = 15000000;
+    spi_config.speed = 295000;
+    spi_config.tx_en = 1;
+    spi_config.clk_edge = 0;
+    spi_config.tx_buffer_ptr = spi_tx_buffer;
+    spi_config.tx_buffer_size = sizeof(spi_tx_buffer);
+    initialize_SPI(spi_config);
+
+    uart_config.which_uart = UART_CH_1;
+    uart_config.pb_clk = 15000000;
+    uart_config.speed = 115200;
+    uart_config.rx_buffer_ptr = uart_rx_buffer;
+    uart_config.rx_buffer_size = sizeof(uart_rx_buffer);
+    uart_config.rx_en = 1;
+
+    packet_config.which_channel = PACKET_UART1;
+    packet_config.control_byte = 0x0A;
+    packet_config.callback = &process_recieve;
+    packet_config.uart_config = uart_config;
+    initialize_packetizer(packet_config);
+
+    
     initialize_pins();//initialize pins on microcontroller
-    initialize_SPI(295000,15000000,SPI_CH_1,0,0,0,tx_buffer_ptr,200,1,0,0,0);//initialize SPI chennel
     INTEnableSystemMultiVectoredInt();//enable interrupt
-    uint8 pixbuf[(numLEDs*3)+1];//size is number of LEDs *3 + 1 latch byte
-    pixbuf[(numLEDs+3)]=0; //set the last byte to 0
-    pixels=pixbuf;//set pixels point at the pixbuf
+    
     asm volatile ("ei"); //reenable interrupts
     
     /*  Color(127, 127, 127); // White
@@ -81,29 +105,7 @@ int main(int argc, char** argv) {
         Color(127,   0, 127); // Violet*/
     while(1)
     {
-     colorWipe(Color(0,   0,   0), 0);  // Green
-    colorWipe(Color(0,   0,   0), 50);  // off
-    colorWipe(Color(  0, 127,   0), 0);  // Green
-    colorWipe(Color(  0, 127,   0), 50);  // Green
-    colorWipe(Color(0,   0,   0), 0);  // off
-    colorWipe(Color(0,   0,   0), 50);  // off
-    colorWipe(Color(  0, 127,   0), 0);  // Green
-    colorWipe(Color(  0, 127,   0), 50);  // Green
-    colorWipe(Color(0,   0,   0), 0);  // off
-    colorWipe(Color(0,   0,   0), 50);  // off
-    colorWipe(Color(  0, 127,   0), 0);  // Green
-    colorWipe(Color(  0, 127,   0), 100);  // Green
-    colorWipe(Color(0,   0,   0), 0);  // off
-    colorWipe(Color(0,   0,   0), 50);  // off
-    colorWipe(Color(  0, 127,   0), 0);  // Green
-    colorWipe(Color(  0, 127,   0), 100);  // Green
-    colorWipe(Color(0,   0,   0), 0);  // off
-    colorWipe(Color(0,   0,   0), 50);  // off
-    colorWipe(Color(  0, 127,   0), 0);  // Green
-    colorWipe(Color(  0, 127,   0), 100);  // Green
-    colorWipe(Color(0,   0,   0), 0);  // off
-    colorWipe(Color(0,   0,   0), 50);  // off
-    delay(10);
+        packetizer_background_process(PACKET_UART1);
     }
     return (EXIT_SUCCESS);
 }
@@ -122,4 +124,9 @@ void colorWipe(uint c, uint8 wait) {
       show();
   }
   delay(wait);
+}
+void process_recieve(uint8 *data, uint8 data_size)
+{
+    memcpy(pixbuf,data,data_size);
+    show();
 }
