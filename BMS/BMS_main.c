@@ -11,11 +11,11 @@
 /*************************************************************************
  System Includes
  ************************************************************************/
-#include "../System.h"
-#include "../Timer.h"
-#include "../UART.h"
-#include "../ADC.h"
-#include "../packetizer.h"
+#include "../uC_Library/System.h"
+#include "../uC_Library/Timer.h"
+#include "../uC_Library/UART.h"
+#include "../uC_Library/ADC.h"
+#include "../uC_Library/packetizer.h"
 
 /*************************************************************************
  System Includes
@@ -84,6 +84,10 @@ int main(void) {
     Timer_Config timer_config;
     ADC_Config adc_config;
 
+    memset(&uart_config, 0, sizeof(uart_config));
+    memset(&timer_config, 0, sizeof(timer_config));
+    memset(&adc_config, 0, sizeof(adc_config));
+
     //setup peripherals
     timer_config.divide = Div_256;
     timer_config.period = 50000;
@@ -100,7 +104,10 @@ int main(void) {
     uart_config.tx_en = 1;
     initialize_UART(uart_config);
 
-    adc_config.channels = (1 << ADC_CH_0) | (1 << ADC_CH_1);
+    adc_config.channels = (1 << ADC_CH_0) | (1 << ADC_CH_1) | (1 << ADC_CH_2)| (1 << ADC_CH_3)| (1 << ADC_CH_4)| (1 << ADC_CH_5)| (1 << ADC_CH_10);
+
+
+
     adc_config.work_buffer_ptr = adc_work_queue;
     adc_config.work_buffer_size = sizeof(adc_work_queue);
     adc_config.result_buffer_ptr = adc_results_queue;
@@ -114,12 +121,6 @@ int main(void) {
     while (1) {
         bg_process_ADC();
     }
-
-
-
-
-
-
     return 0;
 }
 
@@ -128,24 +129,57 @@ int main(void) {
 void timer_callback(void)
 {
     ADC_Node node;
+
     node.device_id = 0x01;
     node.channel = ADC_CH_0;
     node.callback = &adc_callback;
 
     read_ADC(node);
 
+//    node.device_id = 0x02;
+//    node.channel = ADC_CH_1;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
+//
+//    node.device_id = 0x03;
+//    node.channel = ADC_CH_2;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
+//
+//    node.device_id = 0x04;
+//    node.channel = ADC_CH_3;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
+//
+//    node.device_id = 0x05;
+//    node.channel = ADC_CH_4;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
+//
+//    node.device_id = 0x06;
+//    node.channel = ADC_CH_5;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
+//    node.device_id = 0x07;
+//    node.channel = ADC_CH_10;
+//    node.callback = &adc_callback;
+//
+//    read_ADC(node);
 
-	node.device_id = 0x02;
-	node.channel = ADC_CH_1;
-	node.callback = &adc_callback;
-
-	read_ADC(node);
 }
 
 void adc_callback(ADC_Node node)
 {
     uint8 send_data[3];
     uint8 data_LB, data_HB;
+    float value;
+
+    value = node.data * 3.3/1024;
 
     data_LB = node.data & 0xFF;
     data_HB = node.data >> 8;

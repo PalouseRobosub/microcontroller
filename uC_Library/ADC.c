@@ -74,7 +74,7 @@ int read_ADC(ADC_Node node) {
 
     //if the bus is idling, force-start it
     if (adc_data.is_idle) {
-        IFS1bits.I2C1MIF = 1;
+        IFS0bits.AD1IF = 1;
     }
 
 
