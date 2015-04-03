@@ -15,28 +15,28 @@ extern "C" {
 #include "System.h"
 #include "UART.h"
 
-    /** \enum Data_Channel Set of all packetizable channels */
+    /// \enum Data_Channel Set of all packetizable channels
     typedef enum {
         PACKET_UART1,
         PACKET_UART2
     } Data_Channel;
 
     typedef struct PACKETIZER_DATA {
-       void (*receive_callback) (uint8* data, uint8 data_size); /**< Receive callback function for the channel */
-       uint8 control_byte; /**< Control byte for the channel */
-       boolean sync_lock; /**< Tells if the transmission line synced with the incoming packets */
-       boolean packet_received; /**< Tells if a packet has been received for further processing */
-       uint8 received_bytes[255]; /**< Array of the received bytes */
-       uint16 received_index; /**< ???????? */
-       uint8 packet_length; /**< The size of the packet */
-    } Packetizer_Data; /**< Contains the data for incoming packets */
+       void (*receive_callback) (uint8* data, uint8 data_size); ///< Receive callback function for the channel
+       uint8 control_byte; ///< Control byte for the channel
+       boolean sync_lock; ///< Tells if the transmission line synced with the incoming packets
+       boolean packet_received; ///< Tells if a packet has been received for further processing
+       uint8 received_bytes[255]; ///< Array of the received bytes
+       uint16 received_index; ///< ????????
+       uint8 packet_length; ///< The size of the packet
+    } Packetizer_Data; ///< Contains the data for incoming packets
 
     typedef struct PACKETIZER_CONFIG {
-        Data_Channel which_channel; /**< The data channel to packetize for */
-        uint8 control_byte; /**< The control byte to use for the packet */
-        void (*callback); /**< ???????? */
-        UART_Config uart_config; /**< Configuration for a UART channel */
-    }Packetizer_Config; /**< The configuration struct for the Packetizer */
+        Data_Channel which_channel; ///< The data channel to packetize for
+        uint8 control_byte; ///< The control byte to use for the packet
+        void (*callback); ///< ????????
+        UART_Config uart_config; ///< Configuration for a UART channel
+    }Packetizer_Config; ///< The configuration struct for the Packetizer
 
     /**
      * Initializes the Data_Channel and the packetizer

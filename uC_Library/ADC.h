@@ -31,33 +31,36 @@ extern "C" {
 
     /*Object Defintions*/
     typedef struct ADC_DATA {
-        Queue Results_queue;/**< Queue of resulting ADC reads */
-        Queue Work_queue;/**< Queued ADC reads to be done */
-        boolean is_idle;/**< Idle information */
-    }ADC_Data; /**< Object for references to the data queues */
+        Queue Results_queue;///< Queue of resulting ADC reads
+        Queue Work_queue;///< Queued ADC reads to be done
+        boolean is_idle;///< Idle information
+    }ADC_Data; ///< Object for references to the data queues
+
 
     typedef struct ADC_NODE {
-        uint8 device_id;/**< a unique identifier for the device */
-        ADC_Channel channel;/**< ADC channel */
-        uint16 data;/**< location to store data */
-        void (*callback) (struct ADC_NODE);/**< callback function */
-    } ADC_Node;/**< ADC data node */
+        uint8 device_id;///< a unique identifier for the device
+        ADC_Channel channel;///< ADC channel
+        uint16 data;///< location to store data
+        void (*callback) (struct ADC_NODE);///< callback function
+    } ADC_Node;///< ADC data node
+
 
     typedef struct ADC_CONFIG {
-        uint16 channels;/**< The bit field of the channels to configure */
-        uint8 *work_buffer_ptr;/**< Pointer to the ADC's work buffer */
-        uint work_buffer_size;/**< The size of the ADC's work buffer */
-        uint8 *result_buffer_ptr;/**< Pointer to the ADC's result buffer */
-        uint result_buffer_size;/**< The size of the ADC's result buffer */
-        void* callback;/**< The function to call when done sampling \note <strong>default:</strong> NULL*/
-    } ADC_Config;/**< The configuration struct for the ADC */
+        uint16 channels;///< The bit field of the channels to configure
+        uint8 *work_buffer_ptr;///< Pointer to the ADC's work buffer
+        uint work_buffer_size;///< The size of the ADC's work buffer
+        uint8 *result_buffer_ptr;///< Pointer to the ADC's result buffer
+        uint result_buffer_size;///< The size of the ADC's result buffer
+        void* callback;///< The function to call when done sampling \note <strong>default:</strong> NULL
+    } ADC_Config;///< The configuration struct for the ADC
+
 
     /*Function Prototypes*/
     /**
      * Initializes the ADC
      * \param config Configuration information for the ADC
      * \return A pointer to the results and the work queue for the ADC
-     * \See ADC_CONFIG
+     * \see ADC_CONFIG
      */
     ADC_Data* initialize_ADC(ADC_Config config);
 
@@ -69,13 +72,13 @@ extern "C" {
      * \see ADC_NODE
      */
     int read_ADC(ADC_Node node);
-    
+
     /**
      * Run this background process in the main while loop to
      * process the results of ADC samples
      */
     void bg_process_ADC(void);
-
+    
     /**
      * Configures the necessary pins as analog pins
      * \param channels Bit mask to define which ADC channels to setup

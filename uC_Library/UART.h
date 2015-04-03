@@ -16,7 +16,7 @@ extern "C" {
 #include "Queue.h"
 
     /*Enum Defintions*/
-    /** \enum UART_Channel The possible UART channels */
+    /// \enum UART_Channel The possible UART channels
     typedef enum {
         UART_CH_1,
         UART_CH_2
@@ -27,24 +27,24 @@ extern "C" {
 
     /*Object Defintions*/
     typedef struct UART_DATA {
-        Queue Rx_queue; /**< Rx queue */
-        Queue Tx_queue; /**< Tx queue */
-        boolean Tx_is_idle; /**< Idle information */
-    } UART_Data; /**< Stores the references to the receive and transmit queues */
+        Queue Rx_queue; ///< Rx queue
+        Queue Tx_queue; ///< Tx queue
+        boolean Tx_is_idle; ///< Idle information
+    } UART_Data; ///< Stores the references to the receive and transmit queues
 
     typedef struct UART_CONFIG {
-        uint speed; /**< The baud rate to run UART at */
-        uint pb_clk; /**< The peripheral bus clock speed */
-        UART_Channel which_uart; /**< The UART to configure */
-        uint8 *rx_buffer_ptr; /**< Pointer to the receive buffer queue */
-        uint rx_buffer_size; /**< The size of the receive buffer */
-        uint8 *tx_buffer_ptr; /**< Pointer to the transmit buffer queue */
-        uint tx_buffer_size; /**< The size of the transmit buffer */
-        void (*rx_callback); /**< Callback function for a received byte */
-        void (*tx_callback); /**< Callback function for a transmitted byte */
-        boolean tx_en; /**< Enable the transmit line */
-        boolean rx_en; /**< Enable the receive line */
-    } UART_Config; /**< The configuration struct for the UART channels */
+        uint speed; ///< The baud rate to run UART at
+        uint pb_clk; ///< The peripheral bus clock speed
+        UART_Channel which_uart; ///< The UART to configure
+        uint8 *rx_buffer_ptr; ///< Pointer to the receive buffer queue
+        uint rx_buffer_size; ///< The size of the receive buffer
+        uint8 *tx_buffer_ptr; ///< Pointer to the transmit buffer queue
+        uint tx_buffer_size; ///< The size of the transmit buffer
+        void (*rx_callback); ///< Callback function for a received byte
+        void (*tx_callback); ///< Callback function for a transmitted byte
+        boolean tx_en; ///< Enable the transmit line
+        boolean rx_en; ///< Enable the receive line
+    } UART_Config; ///< The configuration struct for the UART channels
 
     /*Function Prototypes*/
     /**

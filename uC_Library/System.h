@@ -16,18 +16,18 @@ extern "C" {
 #include <peripheral/ports.h>
 
 /* Type Defintions*/
-    typedef unsigned int uint; /**< An unsigned 32-bit integer */
-    typedef unsigned short int uint16; /**< An unsigned 16-bit integer */
-    typedef unsigned char uint8; /**< An unsigned 8-bit integer */
-    typedef signed char sint8; /**< A signed 8-bit integer*/
+    typedef unsigned int uint; ///< An unsigned 32-bit integer
+    typedef unsigned short int uint16; ///< An unsigned 16-bit integer
+    typedef unsigned char uint8; ///< An unsigned 8-bit integer
+    typedef signed char sint8; ///< A signed 8-bit integer
 
-    /** \enum boolean A simple boolean typedef */
+    /// \enum boolean A simple boolean typedef
     typedef enum {
         FALSE,
         TRUE
     } boolean;
 
-    /** \enum Error Defines the possible communcation errors */
+    /// \enum Error Defines the possible communcation errors
     typedef enum {
         ERR_NO_ERR, //not an error
         ERR_INVALID_SEND,
