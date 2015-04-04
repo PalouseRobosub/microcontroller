@@ -16,7 +16,7 @@ def main(args, num_args):
 	global s
 
 	if num_args < 2:
-		port = '/dev/pts/2'
+		port = '/dev/pts/3'
 	else:
 		port = args[1]
 	
@@ -27,9 +27,9 @@ def main(args, num_args):
 	s.open()
 
 	while(True):
-		byte = s.read(1)
-		sys.stdout.write(byte)
-		sys.stdout.flush()
+		data = raw_input()
+		data += '\n'
+		s.write(data)
 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, exit_handler)
