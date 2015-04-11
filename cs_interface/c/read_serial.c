@@ -10,8 +10,6 @@ int main(int argc, char**argv)
 {
 	int ser;
 	int n,i;
-	char str[128];
-	int strlen;
 	char port[64] = "/dev/ttyUSB0";
 
 
@@ -21,8 +19,6 @@ int main(int argc, char**argv)
 	}
 
 
-	strcpy(str, "blah\nyay\n");
-	for (strlen=0; (str[strlen] != 0) &&  (strlen < sizeof(str)); ++strlen);
 
 	ser = s_open(port);
 
@@ -37,17 +33,15 @@ int main(int argc, char**argv)
 	}
 
 
+	printf ("reading bytes...\n");
 	for (i=0; i < 256; ++i)
 	{
-		write(ser, &i, 1);
+		read(ser, &n, 1);
+		printf("%x\n", n);
 	}
-/*	
-	n = write(ser, str, strlen);
-	if (n < 0)
-		  fputs("write() of 4 bytes failed!\n", stderr);
-	else
-		printf("write succeeded, wrote %d bytes out of %d bytes\n", n, strlen);	
-*/	
+	printf("done!\n");
+
+
 	return 0;
 }
 

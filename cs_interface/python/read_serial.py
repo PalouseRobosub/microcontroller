@@ -28,8 +28,8 @@ def main(args, num_args):
 
 	while(True):
 		byte = s.read(1)
-		sys.stdout.write(byte)
-		sys.stdout.flush()
+		byte = ord(byte)
+		print hex(byte)
 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, exit_handler)

@@ -32,6 +32,7 @@ int s_open(char *port)
 void s_configure(int fd) 
 {
 	struct termios options;
+	printf("configuring port...");
 
 	tcgetattr(fd, &options);
 
@@ -41,5 +42,8 @@ void s_configure(int fd)
 	options.c_cflag |= (CLOCAL | CREAD);
 
 	tcsetattr(fd, TCSANOW, &options);	
+	fcntl(fd, F_SETFL, 0);
+
+	printf("done!\n");
 }
 
