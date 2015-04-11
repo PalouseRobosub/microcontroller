@@ -1,3 +1,8 @@
+#!/usr/bin/python
+
+
+		
+
 import serial
 import os
 import time
@@ -5,7 +10,7 @@ from time import sleep
 import signal
 import sys
 from math import pow
-from math import atan
+from math import atan2
 from math import pi
 from math import sqrt
 import argparse
@@ -97,7 +102,6 @@ def get_packet():
 		if packet[0] != start_byte and \
 		   packet[7] != stop_byte: #if we are not in sync
 			print "Error: lost sync. Press the [Enter] key to attempt to re-sync"
-			raw_input() #waits for the user to press the enter key
 			s.flushInput() #flushes the serial rx buffer
 			get_lock() #get back into sync
 		else : #if we are in sync, break out of loop
@@ -115,18 +119,19 @@ def main(args):
 	s.baudrate = args.baudrate		#the baudrate may change in the future
 	s.open()		#attempt to open the serial port (there is no guard code, I'm assuming this does not fail)
 
+	fileobject = open(args.file, 'w')
+
 	#setup exit signal handlers	
 	signal.signal(signal.SIGINT, exit_handler)
 	signal.signal(signal.SIGTERM, exit_handler)
 	
 	#speed of sound in water (meters/second)
-	Cs = 1200.0 
+	Cs = 1250.00
 	#x distance of hydrophones (meters)
 	px = 0.33
 	py = 0.146
 	
 	#distance between the hydrophones
-	
 	
 	get_lock() #get in sync with the stream
 	counter = 0
@@ -137,25 +142,21 @@ def main(args):
 		t_h0 = ord(packet[2]) | (ord(packet[1]) << 8)
 		t_hx = ord(packet[6]) | (ord(packet[5]) << 8)
 		t_hy = ord(packet[4]) | (ord(packet[3]) << 8)
-		
-		
-		
+	
+		print "{} {} {}" .format(t_h0, t_hx, t_hy)
+	
 		#
-		tx = t_hx - t_h0
-		ty = t_hy - t_h0
-		
-		
-		
-		
+		tx = t_h0 - t_hx
+		ty = t_h0 - t_hy
 		
 		
 		txSec = tx * Cs / 15045000
 		tySec = ty * Cs / 15045000
 		
 		print "tx: {}, txSec: {}".format(tx, txSec)
-		print "ty: {}, tySec: {}".format(ty, tySec)
-		
-		
+		print "ty: {}, tySec: {}\n".format(ty, tySec)
+	
+		fileobject.write("{},{},{}\n".format(t_h0, t_hx, t_hy))	
 		
 		#converting time to distance
 		dx = txSec
@@ -178,8 +179,9 @@ def main(args):
 		ra = xa + ya - 1
 		rb = xb + yb
 		rc = xc + yc #pow(py, 2)
-		
-		
+	
+		output = pow(rb,2) - 4*ra*rc;
+		print "output = {}, ra = {}, rb = {}, rc = {}\n".format(output, ra, rb, rc)	
 		
 		try:
 			r1 = ( -rb + sqrt(pow(rb,2) - 4*ra*rc) ) / (2*ra)
@@ -195,17 +197,16 @@ def main(args):
 		ry2 = (-pow(dy, 2) + 2*r2*dy + pow(py,2)) / (2*py)
 		
 		
-		theta1 = 180/pi * atan(ry1/rx1)
-		theta2 = 180/pi * atan(ry2/rx2)
+		theta1 = 180/pi * atan2(ry1,rx1)
+		theta2 = 180/pi * atan2(ry2,rx2)
 		
 		counter = counter + 1
 		
-		print "rx1: = {}, ry1: = {}, r1: = {}".format(rx1, ry1, r1)
-		print "rx2: = {}, ry2: = {}, r2: = {}".format(rx2, ry2, r2)
+		print "rx1: = {}, ry1: = {}, r1: = {}, theta1: = {}".format(rx1, ry1, r1, theta1)
+		print "rx2: = {}, ry2: = {}, r2: = {}, theta2: = {}".format(rx2, ry2, r2, theta2)
 		
-		raw_input()
-		s.flushInput()
-		
+		'''raw_input()
+		s.flushInput() #flushes the serial rx buffer'''
 		
 		'''os.system("cls")
 		print "theta 1: %f" % (theta1)
@@ -216,16 +217,17 @@ def main(args):
 		print t_hx
 		print t_hy
 		print counter
-		sleep(.1) '''
+		sleep(.1)'''
 		
 	
 	
 if __name__ == '__main__':
+
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-p", "--port", type=int, help="Serial port")
+	parser.add_argument("-p", "--port", type=str, help="Serial port", default='/dev/ttyUSB0')
 	parser.add_argument('-b', '--baudrate', type=int, default=9600, help="Serial interface baudrate.")
+	parser.add_argument('-f', '--file', type=str, default='/dev/null')
 	args = parser.parse_args()
 	
 	s = serial.Serial()	   #get instance of serial class
-	
 	main(args)
