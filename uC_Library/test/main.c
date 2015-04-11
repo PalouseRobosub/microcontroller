@@ -94,17 +94,17 @@ int main(void) {
     Packetizer_Config p_con;
 
     //Configure the timer
-    t_con.callback = NULL;//&routine1;
+    t_con.callback = &routine1;
     t_con.divide = Div_256;
     t_con.enabled = TRUE;
-    t_con.period = 5000;
+    t_con.period = 50000;
     t_con.which_timer = Timer_1;
 
     //Configure the UART
     u_con.pb_clk = 15000000;
     u_con.rx_buffer_ptr = buffer_rx;
     u_con.rx_buffer_size = 100;
-    u_con.rx_callback = &routine1;
+    u_con.rx_callback = &routine3;
     u_con.rx_en = TRUE;
     u_con.speed = 9600;
     u_con.tx_buffer_ptr = buffer_rx;
@@ -156,6 +156,8 @@ void routine2(I2C_Node Node) {
     return;
 }
 void routine3() {
+    int foo;
+    foo++;
 }
 void routine4() {
 }
