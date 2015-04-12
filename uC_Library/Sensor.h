@@ -17,8 +17,6 @@ extern "C" {
 #include "I2C.h"
 
 
-
-
     typedef struct SENSOR_DATA{
         I2C_Channel channel;
         I2C_Node *config_nodes;
