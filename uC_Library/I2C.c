@@ -16,7 +16,7 @@ I2C_STATE i2c_2_state;
 I2C_Data* initialize_I2C(I2C_Config config) {
                          //comment
     switch (config.channel) {
-        case I2C1:
+        case I2C_CH_1:
             I2C1BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
@@ -37,7 +37,7 @@ I2C_Data* initialize_I2C(I2C_Config config) {
             return &i2c1;
             break;
 
-        case I2C2:
+        case I2C_CH_2:
             I2C2BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
@@ -70,7 +70,7 @@ int send_I2C(I2C_Channel channel, I2C_Node node) {
     int status;
 
     switch (channel) {
-        case I2C1:
+        case I2C_CH_1:
             //load the new node
             status = enqueue(&(i2c1.Tx_queue), (uint8*) & node, sizeof (node));
 
@@ -80,7 +80,7 @@ int send_I2C(I2C_Channel channel, I2C_Node node) {
             }
             break;
 
-        case I2C2:
+        case I2C_CH_2:
             //load the new node
             status = enqueue(&(i2c2.Tx_queue), (uint8*) & node, sizeof (node));
 

@@ -58,10 +58,10 @@ extern "C" {
 
     /* Function Prototypes*/
     //setup
-    void initialize_TIMER(Timer_Config config);
+    void initialize_timer(Timer_Config config);
 
-    void enable_TIMER(Timer_Type which_timer);
-    void disable_TIMER(Timer_Type which_timer);
+    void enable_timer(Timer_Type which_timer);
+    void disable_timer(Timer_Type which_timer);
 
 
 

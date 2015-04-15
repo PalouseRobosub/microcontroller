@@ -13,7 +13,7 @@ void (*timer_5_callback) (void);
 //function_ptr is the ISR function pointer
 //enable specifies whether to enable the interrupt or not
 
-void initialize_TIMER(Timer_Config config) {
+void initialize_timer(Timer_Config config) {
 
     //switch case to determine which timer we are working with
     switch (config.which_timer) {
@@ -83,7 +83,7 @@ void initialize_TIMER(Timer_Config config) {
     }
 }
 
-void enable_TIMER(Timer_Type which_timer)
+void enable_timer(Timer_Type which_timer)
 {
     switch(which_timer)
     {
@@ -105,7 +105,7 @@ void enable_TIMER(Timer_Type which_timer)
     }
 }
 
-void disable_TIMER(Timer_Type which_timer)
+void disable_timer(Timer_Type which_timer)
 {
     switch(which_timer)
     {

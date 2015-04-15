@@ -43,8 +43,8 @@ extern "C" {
     } I2C_STATE;
 
     typedef enum {
-        I2C1,
-        I2C2
+        I2C_CH_1,
+        I2C_CH_2
     } I2C_Channel;
 
 
