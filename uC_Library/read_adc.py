@@ -9,6 +9,7 @@ s = None
 
 def exit_handler(signum, frame):
 	global s
+	print "exiting!"
 	s.close()
 	
 def convert(char1, char2):
@@ -33,16 +34,12 @@ def main():
 		byte = ord(s.read(1))
 		if (byte == 0xA):
 			os.system('cls')
-			s.read(1)
+			size = s.read(1)
+			ID = s.read(1)
 			x1 = s.read(1)
 			x2 = s.read(1)
+			print ord(size),ord(ID)
 			print convert(x2, x1)
-			y1 = s.read(1)
-			y2 = s.read(1)
-			print convert(y2, y1)
-			z1 = s.read(1)
-			z2 = s.read(1)
-			print convert(z2, z1)
 		else:
 			print "out of sync"
 			
