@@ -66,35 +66,34 @@
 #include "../Queue.h"
 #include "../UART.h"
 #include "../I2C.h"
+#include "../Sensor.h"
 #include "../packetizer.h"
 
 
-void routine1();
-void routine2(I2C_Node node);
-void routine3();
-void routine4();
-void routine5();
+void send_UART_packet();
+void timer_callback();
 void config_acl();
+void node_callback(I2C_Node node);
 
 void initialize_pins() {
     TRISB |= 1<<13;
     U1RXR = 0b0011; // Set the pin to RPB13
     RPB15R = 0b0001; //set the output pin to RPB15 U1TX queue
 }
-uint8 buffer[10];
-uint8 data[10] = "UART";
 
 int main(void) {
     uint8 buffer_tx[100];
     uint8 buffer_rx[100];
     uint8 buffer_tx_u[100];
     uint8 buffer_rx_u[100];
+
     Timer_Config t_con;
     UART_Config u_con;
     Packetizer_Config p_con;
+    I2C_Config i_con;
 
     //Configure the timer
-    t_con.callback = &routine1;
+    t_con.callback = &timer_callback;
     t_con.divide = Div_256;
     t_con.enabled = TRUE;
     t_con.period = 50000;
@@ -104,7 +103,7 @@ int main(void) {
     u_con.pb_clk = 15000000;
     u_con.rx_buffer_ptr = buffer_rx;
     u_con.rx_buffer_size = 100;
-    u_con.rx_callback = &routine3;
+    u_con.rx_callback = NULL;
     u_con.rx_en = TRUE;
     u_con.speed = 9600;
     u_con.tx_buffer_ptr = buffer_rx;
@@ -119,48 +118,83 @@ int main(void) {
     p_con.uart_config = u_con;
     p_con.which_channel = UART_CH_1;
 
+    //Configure I2C
+    i_con.callback = NULL;
+    i_con.pb_clk = 15000000;
+    i_con.channel = I2C_CH_1;
+    i_con.rx_buffer_ptr = buffer_rx_u;
+    i_con.tx_buffer_ptr = buffer_tx_u;
+    i_con.tx_buffer_size = sizeof(buffer_tx_u);
+    i_con.rx_buffer_size = sizeof(buffer_rx_u);
+
     initialize_pins();
 
-    initialize_TIMER(t_con);
+    initialize_timer(t_con);
     initialize_UART(u_con);
+    initialize_packetizer(p_con);
+    initialize_I2C(i_con);
 
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     asm volatile ("ei"); //reenable interrupts
 
     while (1) {
+        bg_process_I2C();
     }
 
     return 0;
 }
 
- void config_acl(void)
- {
-
-    //add the node to the queue
- }
-
-void routine1() {
+uint8 data[10] = "UART";
+void send_UART_packet() {
     send_packet(UART_CH_1, data, 4);
 }
-void routine2(I2C_Node Node) {
-    //this is the callback routine for I2C. In this routine, the data needs to be interpretted
-    //data is sent in I2C 2's complement 16 bits
 
-    //first interpret the information
+//I2C Testing
+I2C_Node config, read;
+Sensor_Data acl;
+uint8 buffer_config[10], buffer[10];
 
-    data[0] = 0xA;
-    //send_UART(UART1, 1, data);
-    //send_UART(UART1, 6, Node.data_buffer);
-    //send_UART(UART1, 10, data);
-    return;
-}
-void routine3() {
-    int foo;
-    foo++;
-}
-void routine4() {
-}
-void routine5() {
+void config_acl() {
+    config.callback = NULL;
+    config.data_buffer = buffer_config;
+    config.data_size = sizeof(buffer_config);
+    config.device_address = 0x53;
+    config.device_id = 0x1;
+    config.mode = WRITE;
+    config.sub_address = 0x2D;
+
+    buffer_config[0] = 1<<3;
+    
+    read.callback = &node_callback;
+    read.data_buffer = buffer;
+    read.data_size = 6;
+    read.device_address = 0x53;
+    read.device_id = 0x1;
+    read.mode = READ;
+    read.sub_address = 0x32;
+
+    acl.callback = NULL;
+    acl.channel = I2C_CH_1;
+    acl.config_nodes = &config;
+    acl.config_nodes_size = 1;
+    acl.read_nodes = &read;
+    acl.read_nodes_size = 1;
+
+    initialize_sensor(acl);
 }
 
+void timer_callback() {
+    read_sensor(acl);
+}
+
+uint8 transmission[10];
+void node_callback(I2C_Node node) {
+    //send the data up the UART
+    int i = 0;
+    for (i = 0; i < 10; i++) {
+        transmission[i] = node.data_buffer[i];
+    }
+    send_packet(UART_CH_1, transmission, 6);
+
+}
