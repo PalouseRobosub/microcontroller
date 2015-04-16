@@ -36,7 +36,7 @@ void initialize_accel(void *callback)
     accel_read_node.mode = READ;
     accel_read_node.device_id = SID_ACCELEROMETER_0;
 
-    accel_data.channel = I2C1;
+    accel_data.channel = I2C_CH_1;
     accel_data.config_nodes = &accel_config_node;
     accel_data.config_nodes_size = 1;
     accel_data.read_nodes = &accel_read_node;

@@ -92,7 +92,7 @@ int main(void) {
     timer_config.which_timer = Timer_1;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
-    initialize_TIMER(timer_config);
+    initialize_timer(timer_config);
 
     uart_config.which_uart = UART_CH_1;
     uart_config.pb_clk = PB_CLK;
