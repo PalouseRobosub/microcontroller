@@ -42,8 +42,8 @@ extern "C" {
         STOPPED
     } I2C_STATE;
 
-    /// \enum I2C_Channel The channel to use
-    typedef enum {
+    typedef enum //I2C_Channel
+    {
         I2C_CH_1,
         I2C_CH_2
     } I2C_Channel;
