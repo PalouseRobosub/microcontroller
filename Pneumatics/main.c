@@ -104,6 +104,7 @@ int main(void) {
     initialize_packetizer(packet_config);
 
     //PPS setup
+    ANSELA = ANSELB = 0;
     U1RXR = 0; //RPA2
     RPB4R = 1; //U1TX
 

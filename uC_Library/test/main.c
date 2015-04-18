@@ -66,48 +66,29 @@
 #include "../Queue.h"
 #include "../UART.h"
 #include "../I2C.h"
-#include "../Sensor.h"
 #include "../packetizer.h"
-#include "../ADC.h"
 
 
-void send_UART_packet();
-void timer_callback();
+void routine1();
+void routine2(I2C_Node node);
+void routine3();
 void config_acl();
-void node_callback(I2C_Node node);
-void config_adc();
-void adc_callback();
+void packetizer_callback(uint8 *data, uint8 data_size);
 
 void initialize_pins() {
-    ANSELA = ANSELB = 1<<1;
+    ANSELA = ANSELB = 0;
     TRISB |= 1<<13;
-    TRISBCLR = 1<<15;
     U1RXR = 0b0011; // Set the pin to RPB13
     RPB15R = 0b0001; //set the output pin to RPB15 U1TX queue
-    TRISACLR = 1<<2;
-    LATACLR= 1<<2;
 }
+uint8 buffer[10];
+uint8 data[10] = "UART";
 
 int main(void) {
     uint8 buffer_tx[100];
     uint8 buffer_rx[100];
-    uint8 buffer_tx_u[100];
-    uint8 buffer_rx_u[100];
-    uint8 results[100];
-    uint8 work[100];
-
-    Timer_Config t_con;
     UART_Config u_con;
     Packetizer_Config p_con;
-    I2C_Config i_con;
-    ADC_Config a_con;
-
-    //Configure the timer
-    t_con.callback = &timer_callback;
-    t_con.divide = Div_256;
-    t_con.enabled = TRUE;
-    t_con.period = 5000;
-    t_con.which_timer = Timer_1;
 
     //Configure the UART
     u_con.pb_clk = 15000000;
@@ -115,123 +96,63 @@ int main(void) {
     u_con.rx_buffer_size = 100;
     u_con.rx_callback = NULL;
     u_con.rx_en = TRUE;
-    u_con.speed = 9600;
-    u_con.tx_buffer_ptr = buffer_rx;
+    u_con.speed = 115200;
+    u_con.tx_buffer_ptr = buffer_tx;
     u_con.tx_buffer_size = 100;
     u_con.tx_callback = NULL;
     u_con.tx_en = TRUE;
     u_con.which_uart = UART_CH_1;
 
     //Configure the Packetizer
-    p_con.callback = NULL;
+    p_con.callback = &packetizer_callback;
     p_con.control_byte = 0xA;
     p_con.uart_config = u_con;
     p_con.which_channel = UART_CH_1;
-
-    //Configure I2C
-    i_con.callback = NULL;
-    i_con.pb_clk = 15000000;
-    i_con.channel = I2C_CH_2;
-    i_con.rx_buffer_ptr = buffer_rx_u;
-    i_con.tx_buffer_ptr = buffer_tx_u;
-    i_con.tx_buffer_size = sizeof(buffer_tx_u);
-    i_con.rx_buffer_size = sizeof(buffer_rx_u);
-
-    //Configure ADC
-    a_con.callback = NULL;
-    a_con.channels = ADC_CH_1;
-    a_con.result_buffer_ptr = results;
-    a_con.result_buffer_size = sizeof(results);
-    a_con.work_buffer_ptr = work;
-    a_con.work_buffer_size = sizeof(work);
-
+    
     initialize_pins();
-
-    initialize_timer(t_con);
-    initialize_UART(u_con);
+    
     initialize_packetizer(p_con);
-    //initialize_I2C(i_con);
-    //config_acl();
-    initialize_ADC(a_con);
-    config_adc();
+
 
     //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     asm volatile ("ei"); //reenable interrupts
 
     while (1) {
-        //bg_process_I2C();
-        bg_process_ADC();
+        packetizer_background_process(PACKET_UART1);
     }
 
     return 0;
 }
 
-uint8 data[10] = "UART";
-void send_UART_packet() {
+ void config_acl(void)
+ {
+
+    //add the node to the queue
+ }
+
+void routine1() {
     send_packet(UART_CH_1, data, 4);
 }
+void routine2(I2C_Node Node) {
+    //this is the callback routine for I2C. In this routine, the data needs to be interpretted
+    //data is sent in I2C 2's complement 16 bits
 
-//I2C Testing
-I2C_Node config, read;
-Sensor_Data acl;
-uint8 buffer_config[10], buffer[10];
+    //first interpret the information
 
-void config_acl() {
-    config.callback = NULL;
-    config.data_buffer = buffer_config;
-    config.data_size = 1;
-    config.device_address = 0x53;
-    config.device_id = 0x1;
-    config.mode = WRITE;
-    config.sub_address = 0x2D;
-
-    buffer_config[0] = 1<<3;
-    
-    read.callback = &node_callback;
-    read.data_buffer = buffer;
-    read.data_size = 6;
-    read.device_address = 0x53;
-    read.device_id = 0x1;
-    read.mode = READ;
-    read.sub_address = 0x32;
-
-    acl.callback = NULL;
-    acl.channel = I2C_CH_2;
-    acl.config_nodes = &config;
-    acl.config_nodes_size = 1;
-    acl.read_nodes = &read;
-    acl.read_nodes_size = 1;
-
-    initialize_sensor(acl);
+    data[0] = 0xA;
+    //send_UART(UART1, 1, data);
+    //send_UART(UART1, 6, Node.data_buffer);
+    //send_UART(UART1, 10, data);
+    return;
 }
-ADC_Node adc;
-
-void config_adc() {
-    adc.callback = &adc_callback;
-    adc.channel = ADC_CH_1;
-    adc.device_id = 0x2;
-
+void routine3() {
+    int foo;
+    foo++;
 }
-void timer_callback() {
-    read_sensor(acl);
-    read_ADC(adc);
-}
-
-uint8 transmission[10];
-void node_callback(I2C_Node node) {
-    //send the data up the UART
-    int i = 0;
-    for (i = 0; i < 10; i++) {
-        transmission[i] = node.data_buffer[i];
-    }
-    send_packet(UART_CH_1, transmission, 6);
-
-}
-uint8 transmission_adc[3];
-void adc_callback(ADC_Node node) {
-    transmission_adc[0] = node.device_id;
-    transmission_adc[1] = node.data & 0xFF;
-    transmission_adc[2] = node.data >> 8;
-    send_packet(UART_CH_1, transmission_adc, 3);
+void packetizer_callback(uint8 *data, uint8 data_size) {
+    //decode the packet
+    uint8 foo1, foo2;
+    foo1 = data[0];
+    foo2 = data[1];
 }

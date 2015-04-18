@@ -112,7 +112,7 @@ void packetizer_background_process(Data_Channel which_channel) {
                 default: //any other bytes are data bytes
                     received_bytes[(*received_index) - 2] = current_byte; //store the received data
                     ++(*received_index);
-                    if (*received_index == *packet_length) //we've received the entire packet
+                    if ((*received_index)-2 == *packet_length) //we've received the entire packet
                     {
                         *packet_received = TRUE;
                         *received_index = 0;
@@ -136,7 +136,7 @@ void packetizer_background_process(Data_Channel which_channel) {
                     //receive one more, check for control byte
                     //if control byte, then say we are in sync and prep to receive rest of packet
                     ++(*received_index);
-                    if (*received_index == *packet_length+2) //maybe length+3?
+                    if (*received_index == *packet_length+3) //maybe length+3?
                     {
                         if (current_byte == *control_byte) //we appear to be in sync
                         {
