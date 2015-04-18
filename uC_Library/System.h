@@ -21,9 +21,9 @@ extern "C" {
     typedef unsigned char uint8; ///< An unsigned 8-bit integer
     typedef signed char sint8; ///< A signed 8-bit integer
 
-    typedef unsigned int u32;
-    typedef unsigned short u16;
-    typedef unsigned char u8;
+    typedef uint u32;
+    typedef uint16 u16;
+    typedef uint8 u8;
 
     typedef enum {
         FALSE,

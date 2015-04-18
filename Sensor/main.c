@@ -1,16 +1,13 @@
-
-/********************************************************
- *   File Name: main.c
+// <editor-fold defaultstate="collapsed" desc="main.c">
+/*   File Name: main.c
  *
  *   Description:
  *              Main file
  *
- *
- *********************************************************/
+ */
+// </editor-fold>
 
-/*************************************************************************
- System Includes
- ************************************************************************/
+// <editor-fold defaultstate="collapsed" desc="System Includes">
 #include "System.h"
 #include "Timer.h"
 #include "UART.h"
@@ -18,15 +15,13 @@
 #include "Sensor.h"
 #include "packetizer.h"
 #include "sensor_setup.h"
+// </editor-fold>
 
-/*************************************************************************
- System Includes
- ************************************************************************/
+// <editor-fold defaultstate="collapsed" desc="System Defines">
 #define PB_CLK 15000000 //15 MHz
+// </editor-fold>
 
-/*************************************************************************
- Processor Configuration
- ************************************************************************/
+// <editor-fold defaultstate="collapsed" desc="Processor Configuration">
 //insert configuration for new microcontrollers
 #include <xc.h>
 
@@ -66,7 +61,7 @@
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
-
+// </editor-fold>
 
 //forward declarations
 void timer_callback(void);
@@ -80,19 +75,31 @@ int main(void) {
 
     //buffer for uart ISRs
     uint8 uart_tx_buffer[128], uart_rx_buffer[128];
+    u8 i2c_rx_buf[10*sizeof(I2C_Node)], i2c_tx_buf[10*sizeof(I2C_Node)];
 
     //structures for configuring peripherals
     UART_Config uart_config;
     Timer_Config timer_config;
     Packetizer_Config packet_config;
+    I2C_Config i2c_config;
+
+    TRISBbits.TRISB7 = 0;
+    LATBbits.LATB7 = 0;
 
     //setup peripherals
     timer_config.divide = Div_256;
-    timer_config.period = 50000;
+    timer_config.period = 5859;
     timer_config.which_timer = Timer_1;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
     initialize_timer(timer_config);
+
+    i2c_config.pb_clk = PB_CLK;
+    i2c_config.channel = I2C_CH_1;
+    i2c_config.tx_buffer_ptr = i2c_tx_buf;
+    i2c_config.tx_buffer_size = sizeof(i2c_tx_buf);
+    i2c_config.rx_buffer_ptr = i2c_rx_buf;
+    i2c_config.rx_buffer_size = sizeof(i2c_rx_buf);
 
     uart_config.which_uart = UART_CH_1;
     uart_config.pb_clk = PB_CLK;
@@ -108,8 +115,10 @@ int main(void) {
     packet_config.which_channel = PACKET_UART1;
     packet_config.uart_config = uart_config;
 
-    initialize_accel(&sensor_send_uart);
+    sensor_setup(&sensor_send_uart);
     config_accel();
+    config_gyro();
+    config_mag();
     
  
     //Global interrupt enable. Do this last!
@@ -128,6 +137,8 @@ void timer_callback(void)
 {
     //read all the sensors
     read_accel();
+    read_gyro();
+    read_mag();
     
 }
 
