@@ -6,10 +6,7 @@
 
 int main(int argc, char**argv)
 {
-	int ser;
-	int n,i;
-	char str[128];
-	int strlen;
+	int i;
 	char port[64] = "/dev/ttyUSB0";
 
 	if(argc >= 2)
@@ -24,7 +21,7 @@ int main(int argc, char**argv)
 
 	for (i=0; i < 256; ++i)
 	{
-		s.swrite(&i, 1);
+		s.swrite((char*)&i, 1);
 	}
 
 

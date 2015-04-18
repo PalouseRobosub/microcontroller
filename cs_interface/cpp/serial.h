@@ -16,15 +16,13 @@ class Serial
 	public:
 		Serial(char *port_name);
 		~Serial(void);
-		int swrite(void *buf, int size);
-		int sread(void *buf, int size);
+		int swrite(char *buf, int num);
+		int sread(char *buf, int num);
 
 	private:
 		//private methods
 		void configure(void);	
 		
-		
-
 		//private members
 		int port_fd;
 		char *port_name;

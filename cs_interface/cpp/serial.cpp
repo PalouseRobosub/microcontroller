@@ -31,14 +31,14 @@ Serial::~Serial()
 }
 
 
-int Serial::swrite(void *buf, int size)
+int Serial::swrite(char *buf, int num)
 {
-	return write(this->port_fd, buf, size);	
+	return write(this->port_fd, buf, num);	
 }
 
-int Serial::sread(void *buf, int size)
+int Serial::sread(char *buf, int num)
 {
-	return read(this->port_fd, buf, size);
+	return read(this->port_fd, buf, num);
 }
 
 void Serial::configure()

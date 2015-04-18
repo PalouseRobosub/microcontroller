@@ -23,7 +23,7 @@ int main(int argc, char**argv)
 	printf ("reading bytes...\n");
 	for (i=0; i < 256; ++i)
 	{
-		s.sread(&n, 1);
+		s.sread((char*)&n, 1);
 		printf("%hhx\n", n);
 	}
 	printf("done!\n");
