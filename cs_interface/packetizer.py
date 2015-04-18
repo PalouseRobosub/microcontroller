@@ -56,7 +56,7 @@ class Packetizer():
 	#end get_lock()
 
 	def get_packet(self):
-		success == False:
+		success = False
 
 		while success == False:
 			#receive the first two bytes
@@ -86,13 +86,14 @@ class Packetizer():
 
 		packet.append(chr(self.start_byte)) #add the start byte
 		packet.append(chr(len(data)))	   #add the size
-
 		#convert all the data byte into chars
 		for byte in data:
 			packet.append(chr(byte))
 
+		str_packet = ''.join(packet)
+
 		#send the packet
-		self.ser.write(packet)
+		self.ser.write(str_packet)
 	#end send_packet()
 
 		
