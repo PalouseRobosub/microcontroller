@@ -19,14 +19,6 @@ def main():
 			time.sleep(.1)
 			if pneumatic == 8:
 				break
-		
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
 	main()
