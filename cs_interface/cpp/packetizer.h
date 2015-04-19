@@ -3,19 +3,22 @@
 
 #include "serial.h"
 
+//defines
+#define MAX_PACKET_SIZE 255
+
 class Packetizer
 {
 	public:
-		Packetizer(char *port_name, char start_byte = 0x0A);
+		Packetizer(char *port_name, char control_byte);
 		~Packetizer(void);
-		int get(char *buf, char *num);
-		int send(char *buf, char num);
+		int get(char buf[MAX_PACKET_SIZE], char *num);
+		int send(char buf[MAX_PACKET_SIZE], char num);
 
 	private:
 		void get_lock(void);
 		
 		Serial serial;
-		char start_byte;
+		char control_byte;
 };
 
 #endif 

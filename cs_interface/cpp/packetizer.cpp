@@ -11,16 +11,13 @@ extern "C" {
 #include "packetizer.h"
 
 
-//defines
-#define MAX_PACKET_SIZE 255
 
 /*******************************
- * Serial Class
+ * Packetizer Class
  *******************************/
-Packetizer::Packetizer(char *port_name, char start_byte)
+Packetizer::Packetizer(char *port_name, char control_byte) : serial(port_name)
 {
-	this->start_byte = start_byte;
-	serial = Serial(port_name);
+	this->control_byte = control_byte;
 }
 
 
@@ -49,7 +46,7 @@ int Packetizer::get(char buf[MAX_PACKET_SIZE], char *num)
 
 
 		*num = header[1]; //extract the packet size
-		serial.sread(tmp_buf, header[1]); //read the data into the buffer
+		serial.sread(buf, header[1]); //read the data into the buffer
 		success = true;
 	}
 
@@ -73,7 +70,7 @@ int Packetizer::send(char buf[MAX_PACKET_SIZE], char num)
 	return 0;
 }
 
-void Packtizer::get_lock(void)
+void Packetizer::get_lock(void)
 {
 	char buf[MAX_PACKET_SIZE+2];
 	char tmp_byte;
@@ -87,7 +84,7 @@ void Packtizer::get_lock(void)
 
 		//if current byte is control byte,
 		//assume we're in sync
-		if(tmp_byte == this->start_byte)
+		if(tmp_byte == this->control_byte)
 		{
 			//read what should be the size byte
 			serial.sread(&tmp_byte, 1);
@@ -99,7 +96,7 @@ void Packtizer::get_lock(void)
 			//check again for new start byte. If it's right,
 			//then we can say with a high degree of certainty we
 			//are in sync
-			if(buf[tmp_byte] == this->start_byte)
+			if(buf[tmp_byte] == this->control_byte)
 			{
 				in_sync = true;
 				//read and throw away the rest of the packet
