@@ -86,12 +86,12 @@ void accel_setup(void *callback)
 
 void gyro_setup(void *callback)
 {
-    u8 address = 0x34;
+    u8 address = 0b1101000; //Last bit of ID is 0
     
     //gyroscope struct setups
     gyro_config.callback = 0;
     gyro_config.data_buffer = gyro_config_buffer;
-    gyro_config.data_size = 1;
+    gyro_config.data_size = 2;
     gyro_config.device_address = address;
     gyro_config.sub_address = 0x15;
     gyro_config.mode = WRITE;
@@ -103,7 +103,7 @@ void gyro_setup(void *callback)
     gyro_read.data_buffer = gyro_read_buffer;
     gyro_read.data_size = 6;
     gyro_read.device_address = address;
-    gyro_read.sub_address = 0x1B;
+    gyro_read.sub_address = 0x1D;
     gyro_read.mode = READ;
     gyro_read.device_id = SID_GYROSCOPE_0;
 

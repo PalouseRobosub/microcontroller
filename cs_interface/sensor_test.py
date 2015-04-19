@@ -13,7 +13,7 @@ pressure = 4
 p = Packetizer('/dev/ttyUSB2')
 
 # This function will convert two bits into a single value
-def convert(char2, char1):
+def convert(char1, char2):
         bits = 16
         char1 = char1 << 8
         char1 = char1 | char2
@@ -39,9 +39,9 @@ def main():
     while(1):
         data = p.get_packet()
         if (data[0] == accel): # Accelerometer Data
-            accel_x = convert(data[1], data[2])
-            accel_y = convert(data[3], data[4])
-            accel_z = convert(data[5], data[6])
+            accel_x = convert(data[2], data[1])
+            accel_y = convert(data[4], data[3])
+            accel_z = convert(data[6], data[5])
         elif (data[0] == gyro): # Gyroscope Data
             gyro_x = convert(data[1], data[2])
             gyro_y = convert(data[3], data[4])
