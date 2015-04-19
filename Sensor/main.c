@@ -78,13 +78,15 @@ int main(void) {
     u8 i2c_rx_buf[10*sizeof(I2C_Node)], i2c_tx_buf[10*sizeof(I2C_Node)];
 
     //structures for configuring peripherals
-    UART_Config uart_config;
-    Timer_Config timer_config;
-    Packetizer_Config packet_config;
-    I2C_Config i2c_config;
+    UART_Config uart_config = {0};
+    Timer_Config timer_config = {0};
+    Packetizer_Config packet_config = {0};
+    I2C_Config i2c_config = {0};
 
     TRISBbits.TRISB7 = 0;
     LATBbits.LATB7 = 0;
+    ANSELBbits.ANSB15 = 0;
+    RPB15R = 0x1;
 
     //setup peripherals
     timer_config.divide = Div_256;
@@ -100,6 +102,7 @@ int main(void) {
     i2c_config.tx_buffer_size = sizeof(i2c_tx_buf);
     i2c_config.rx_buffer_ptr = i2c_rx_buf;
     i2c_config.rx_buffer_size = sizeof(i2c_rx_buf);
+    initialize_I2C(i2c_config);
 
     uart_config.which_uart = UART_CH_1;
     uart_config.pb_clk = PB_CLK;
@@ -114,6 +117,8 @@ int main(void) {
     packet_config.control_byte = 0x0A;
     packet_config.which_channel = PACKET_UART1;
     packet_config.uart_config = uart_config;
+    packet_config.callback = NULL;
+    initialize_packetizer(packet_config);
 
     sensor_setup(&sensor_send_uart);
     config_accel();
@@ -139,7 +144,6 @@ void timer_callback(void)
     read_accel();
     read_gyro();
     read_mag();
-    
 }
 
 void sensor_send_uart(I2C_Node node)
