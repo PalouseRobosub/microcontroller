@@ -11,7 +11,7 @@ class Packetizer
 	public:
 		Packetizer(char *port_name, char control_byte = 0x0A);
 		~Packetizer(void);
-		int get(char buf[MAX_PACKET_SIZE], char *num);
+		int get(char buf[MAX_PACKET_SIZE]);
 		int send(char buf[MAX_PACKET_SIZE], char num);
 
 	private:

@@ -26,10 +26,11 @@ Packetizer::~Packetizer(void)
 }
 
 
-int Packetizer::get(char buf[MAX_PACKET_SIZE], char *num)
+int Packetizer::get(char buf[MAX_PACKET_SIZE])
 {
 	char header[2];
 	bool success = false;
+	int size = -1;
 
 	while (!success)
 	{
@@ -45,12 +46,12 @@ int Packetizer::get(char buf[MAX_PACKET_SIZE], char *num)
 		}//else, we are in sync, read the data in the packet
 
 
-		*num = header[1]; //extract the packet size
+		size = header[1]; //extract the packet size
 		serial.sread(buf, header[1]); //read the data into the buffer
 		success = true;
 	}
 
-	return 0;
+	return size;
 }
 
 int Packetizer::send(char buf[MAX_PACKET_SIZE], char num)
