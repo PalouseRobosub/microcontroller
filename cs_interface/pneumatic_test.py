@@ -3,7 +3,7 @@ from packetizer import Packetizer
 import time
 
 def main():
-	p = Packetizer('/dev/ttyUSB2')
+	p = Packetizer('/dev/ttyUSB1')
 	pneumatic = 0
 	packet = [0 , 1]
 	while (1):
