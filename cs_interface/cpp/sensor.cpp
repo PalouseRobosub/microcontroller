@@ -50,13 +50,13 @@ int main(int argc, char**argv)
 
 			case GYRO:
 				gyro.x = msg[1]<<8 | msg[2];
-				gyro.y = msg[4]<<8 | msg[3];
-				gyro.z = msg[6]<<8 | msg[5];
+				gyro.y = msg[3]<<8 | msg[4];
+				gyro.z = msg[5]<<8 | msg[6];
 				break;
 			case MAGNETO:
-				magneto.x = msg[1]<<8 | msg[2];
-				magneto.y = msg[4]<<8 | msg[3];
-				magneto.z = msg[6]<<8 | msg[5];
+				magneto.x = msg[1]<<8 | msg[2]; //Y value comes after Z value
+				magneto.y = msg[5]<<8 | msg[6];
+				magneto.z = msg[3]<<8 | msg[4];
 				break;
 			case TEMP:
 				break;

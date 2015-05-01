@@ -48,8 +48,8 @@ def main():
 			gyro_z = convert(data[5], data[6])
 		elif (data[0] == magnometer): # Magnometer Data
 			magno_x = convert(data[1], data[2])
-			magno_y = convert(data[3], data[4])
-			magno_z = convert(data[5], data[6])
+			magno_y = convert(data[5], data[6]) #Y value comes after Z value
+			magno_z = convert(data[3], data[4])
 
 		os.system('clear')
 
