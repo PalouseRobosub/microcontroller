@@ -218,7 +218,20 @@ void config_gyro(void)
 
 void read_gyro(void)
 {
+    uint8 temp;
     read_sensor(gyro_data);
+    temp = gyro_read.data_buffer[0];
+    gyro_read.data_buffer[0] = gyro_read.data_buffer[1];
+    gyro_read.data_buffer[1] = temp;
+
+    temp = gyro_read.data_buffer[2];
+    gyro_read.data_buffer[2] = gyro_read.data_buffer[3];
+    gyro_read.data_buffer[3] = temp;
+
+    temp = gyro_read.data_buffer[4];
+    gyro_read.data_buffer[4] = gyro_read.data_buffer[5];
+    gyro_read.data_buffer[5] = temp;
+
 }
 
 void config_mag(void)
@@ -229,6 +242,20 @@ void config_mag(void)
 void read_mag(void)
 {
     read_sensor(mag_data);
+
+    uint8 temp;
+    read_sensor(mag_data);
+    temp = mag_read.data_buffer[0];
+    mag_read.data_buffer[0] = mag_read.data_buffer[1];
+    mag_read.data_buffer[1] = temp;
+
+    temp = mag_read.data_buffer[2];
+    mag_read.data_buffer[2] = mag_read.data_buffer[5];
+    mag_read.data_buffer[5] = temp;
+
+    temp = mag_read.data_buffer[4];
+    mag_read.data_buffer[4] = mag_read.data_buffer[3];
+    mag_read.data_buffer[3] = temp;
 }
 
 
