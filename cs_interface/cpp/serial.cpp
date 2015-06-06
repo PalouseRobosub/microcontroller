@@ -33,12 +33,28 @@ Serial::~Serial()
 
 int Serial::swrite(char *buf, int num)
 {
-	return write(this->port_fd, buf, num);	
+	int i;
+
+	i = write(this->port_fd, buf, num);
+	if (i != num)
+		fprintf(stderr, "serial write error, tried to write %d bytes, actually wrote %d\n", num, i);
+	return i;	
 }
 
 int Serial::sread(char *buf, int num)
 {
-	return read(this->port_fd, buf, num);
+	int got, i;
+	got = 0;
+	printf("getting %d bytes\n", num);
+	while (got < num)
+	{
+		i = read(this->port_fd, buf+got, num - got);
+		printf("%d read,", i);
+		got += i;
+		printf("%d of %d bytes\n", got, num);
+	}
+
+	return got;
 }
 
 void Serial::configure()
@@ -47,14 +63,14 @@ void Serial::configure()
 	int fd = this->port_fd;
 
 	printf("configuring port...");
-
-	tcgetattr(fd, &options);
+	
+	memset(&options, sizeof(options), 0); //clear out old configuration
 
 	cfsetispeed(&options, BAUD_RATE);
 	cfsetospeed(&options, BAUD_RATE);
 
-	options.c_cflag |= (CLOCAL | CREAD);
-
+	cfmakeraw(&options);
+	
 	tcsetattr(fd, TCSANOW, &options);	
 	fcntl(fd, F_SETFL, 0);
 

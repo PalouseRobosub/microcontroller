@@ -23,10 +23,11 @@ def main(args, num_args):
 	print 'opening port:', port
 	s = serial.Serial()
 	s.port = port 
-	s.baudrate = 9600
+	s.baudrate = 115200
 	s.open()
 
-	while(True):
+	i = 0
+	while(i < 10):
 		data = raw_input()
 		data += '\n'
 		s.write(data)

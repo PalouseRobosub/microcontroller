@@ -19,7 +19,7 @@ int main(int argc, char**argv)
 	printf("serial port opened: %s\n", port);
 
 
-	for (i=0; i < 256; ++i)
+	for (i=0; i < 3; ++i)
 	{
 		s.swrite((char*)&i, 1);
 	}

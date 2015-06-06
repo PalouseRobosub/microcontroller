@@ -47,7 +47,7 @@ int Packetizer::get(char buf[MAX_PACKET_SIZE])
 
 
 		size = header[1]; //extract the packet size
-		serial.sread(buf, header[1]); //read the data into the buffer
+		serial.sread(buf, size); //read the data into the buffer
 		success = true;
 	}
 
@@ -78,6 +78,7 @@ void Packetizer::get_lock(void)
 	bool in_sync = false;
 
 	printf("Aquiring stream sync...");
+	fflush(stdout);
 	while(!in_sync)
 	{
 		//get a single byte

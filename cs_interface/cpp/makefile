@@ -1,15 +1,13 @@
-OPTIONS=-Wall
+OPTIONS=-Wall -Wno-char-subscripts -g
 CC=g++
-OBJECTS=serial.o packetizer.o send_packet.o receive_packet.o
+#OBJECTS=serial.o packetizer.o send_packet.o receive_packet.o
 
+all: test
 
 lib: serial.o packetizer.o
 
 test: write_serial.exe read_serial.exe receive_packet.exe send_packet.exe
 
-#build all source files
-%.o : %.cpp %.c
-	$(CC) $(OPTIONS) -c $<
 clean:
 	rm -rf *.o *.exe
 
@@ -26,8 +24,12 @@ receive_packet.exe: packetizer.o receive_packet.o
 send_packet.exe: packetizer.o send_packet.o	
 	$(CC) $(OPTIONS) serial.o packetizer.o send_packet.o -o send_packet.exe
 
-serial.o: serial.h
-packetizer.o: serial.o packetizer.h 
-send_packet.o: packetizer.o 
-receive_packet.o: packetizer.o 
+serial.o: serial.h serial.cpp
+	$(CC) $(OPTIONS) -c serial.cpp 
+packetizer.o: serial.o packetizer.h packetizer.cpp 
+	$(CC) $(OPTIONS) -c packetizer.cpp
+send_packet.o: packetizer.o send_packet.cpp 
+	$(CC) $(OPTIONS) -c send_packet.cpp
+receive_packet.o: packetizer.o receive_packet.cpp 
+	$(CC) $(OPTIONS) -c receive_packet.cpp
 

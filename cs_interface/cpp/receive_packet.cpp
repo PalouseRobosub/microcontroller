@@ -6,9 +6,10 @@
 
 int main(int argc, char**argv)
 {
-	int i;
+	int i, j;
 	char port[64] = "/dev/ttyUSB0";
 	char msg[64];
+	int tmp;
 
 	if(argc >= 2)
 	{
@@ -22,8 +23,17 @@ int main(int argc, char**argv)
 	
 	while (1)
 	{
-		p.get(msg, (char*)&i);
-		printf("received: %s\n", msg);
+		printf ("getting packet...\n");
+		i = p.get(msg);
+		if (i > 0)
+		{
+			printf("received: %d bytes\n", i);
+			for(j=0; j < i; ++j)
+			{
+				tmp = msg[j];
+				printf("%2x: '%c'\n", tmp, tmp);
+			}
+		}
 	}
 
 	printf("done receiving!\n");
