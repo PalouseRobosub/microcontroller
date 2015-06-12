@@ -53,20 +53,21 @@
 void delay(uint wait);
 void colorWipe(uint c, uint8 wait) ;
 void initialize_pins() {
-    RPA2R = 0b0011; //set the RPA2R to SDO1
+    ANSELBbits.ANSB13 = 0;
+    RPA1R = 0b0011; //set the RPA2R to SDO1
     U1RXR = 0b0011; // Set the pin to RPB13
-    TRISAbits.TRISA2=0;//set SDO1 as output
-    TRISBbits.TRISB14=0;//set SCK1 as output
-    TRISBbits.TRISB13=0;//set RPB13 as output
 }
-int main(int argc, char** argv) {
-    uint8 spi_tx_buffer[200];
+
+int main(void) {
+    uint8 spi_tx_buf[(NUMLEDS*3 + NUMLEDS/32 + 1)*3];
     uint8 uart_rx_buffer[200];
     //structures for configuring peripherals
-    SPI_Config spi_config;
-    UART_Config uart_config;
-    Packetizer_Config packet_config;
+    SPI_Config spi_config = {0};
+    UART_Config uart_config = {0};
+    Packetizer_Config packet_config = {0};
     //setup peripherals
+
+    initialize_pins();//initialize pins on microcontroller
 
     spi_config.which_spi = SPI_CH_1;
     spi_config.pb_clk = 15000000;
@@ -91,7 +92,7 @@ int main(int argc, char** argv) {
     initialize_packetizer(packet_config);
 
     
-    initialize_pins();//initialize pins on microcontroller
+
     INTEnableSystemMultiVectoredInt();//enable interrupt
     
     asm volatile ("ei"); //reenable interrupts
@@ -109,24 +110,64 @@ int main(int argc, char** argv) {
     }
     return (EXIT_SUCCESS);
 }
-void delay(uint wait)
-{
-    int i=0;
-    for (i=0;i<(wait*3000);i++)
-    {
-    }
-}
-void colorWipe(uint c, uint8 wait) {
-  int i;
 
-  for (i=0; i < numLEDs; i++) {
-      setPixelColor(i, c);
-      show();
-  }
-  delay(wait);
-}
-void process_recieve(uint8 *data, uint8 data_size)
+void packet_receive(uint8 *buffer, uint8 size)
 {
-    memcpy(pixbuf,data,data_size);
-    show();
+    static PIXEL led_buffer[NUMLEDS] = {0};
+    static uint8 zero_buf[NUMLEDS/32 + 1] = {0};
+    int i;
+
+    for(i = 0; i < NUMLEDS; i++)
+            {
+                led_buffer[i].green = buffer[1];
+                led_buffer[i].red = buffer[2];
+                led_buffer[i].blue = buffer[3];
+            }
+    send_SPI(SPI_CH_1, (uint8*) led_buffer, sizeof(led_buffer) + sizeof(zero_buf));
+   
+    /*switch(*buffer)
+    {
+        case manual:
+            if((buffer[1]*32 + (size-2)/3) > NUMLEDS)
+                break;
+            memcpy(buffer+2, led_buffer+32*buffer[1], size-2);
+            break;
+        case all:
+            for(i = 0; i < NUMLEDS; i++)
+            {
+                led_buffer[i].green = buffer[1];
+                led_buffer[i].red = buffer[2];
+                led_buffer[i].blue = buffer[3];
+            }
+            send_SPI(SPI_CH_1, (uint8*) led_buffer, sizeof(led_buffer) + sizeof(zero_buf));
+            break;
+            
+        /*case strip:
+            if(size < 5)
+                break;
+            for(i = 0; i < 32 && i < NUMLEDS-(buffer[1]*32); i++)
+            {
+                led_buffer[i] = buffer[2];
+                led_buffer[i+1] = buffer[3];
+                led_buffer[i+2] = buffer[4];
+            }
+            break;
+        case dual:
+            if(size < 8)
+                break;
+            for(i = 0; i < 16 && i < (NUMLEDS-(buffer[1]*32))/2; i++)
+            {
+                memcpy(led_buffer + i, buffer + 2, 6);
+            }
+            break;
+         
+        case set:
+            send_SPI(SPI_CH_1, (uint8*) led_buffer, sizeof(led_buffer) + sizeof(zero_buf));
+            break;
+        default:
+            break;
+         
+    }*/
+                    
+    
 }
