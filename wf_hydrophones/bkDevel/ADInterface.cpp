@@ -154,5 +154,5 @@ void analogRecordData(HDWF handle, int channel, int sampleSize, vector<double> *
 {
     double* rgdSamples
     FDwfAnalogInStatusRecord(handle, &cAvailable, &cLost, &cCorrupted);
-    FDwfAnalogInStatusData(handle, channel, &rgdSamples, cAvailable);
+    FDwfAnalogInStatusData(handle, channel, &rgdSamples[cSamples], cAvailable);
 }
