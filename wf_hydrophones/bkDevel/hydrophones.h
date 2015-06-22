@@ -24,7 +24,7 @@ using namespace std;
 //Define our functions
 vector<int> enumDevs();
 void openDevs(int dev1, int dev2, vector<HDWF> *handles);
-double analogReadDev(HDWF handle, int channel);
+double analogReadSingleDataDev(HDWF handle, int channel);
 void setupAnalogRead(HDWF handle, int channel, double range, double offset);
 
 #endif

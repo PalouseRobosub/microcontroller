@@ -63,14 +63,14 @@ void openDevs(int dev1, int dev2, vector<HDWF> *handles)
     } else cout << "AD2 is not connected!" << endl;
 }
 
-/* Function: analogReadDev ()
+/* Function: analogReadSingleDataDev ()
  * Description: Reads the analog voltage on the given channel on the given device
  * Input Params: The device handle (HDWF) and the channel (int) on the given device to read from
  * Returns: The analog voltage (double)
  * Preconditions: Devices opened via openDevs and device setup to read analog via setupAnalogRead
  * Postconditions: None
  */
-double analogReadDev(HDWF handle, int channel)
+double analogReadSingleDataDev(HDWF handle, int channel)
 {
     double voltage;
     FDwfAnalogInStatus(handle, false, NULL);
@@ -109,5 +109,50 @@ void setupAnalogRead(HDWF handle, int channel, double range, double offset)
     cout << "Range set to: " << actualRange << endl;
     // start signal generation
     //Do we want to reset the auto trigger timeout? y = set p3 to true
-    FDwfAnalogInConfigure(handle, channel, false);
+    FDwfAnalogInConfigure(handle, false, false);
+}
+
+/* Function: setupRecordAnalogRead ()
+ * Description: Sets up the analog channels on a given device for reading
+ * Input Params: The device handle (HDWF), the channel (int) on the given device to set up, the range (double) of voltage that will be input both positive and negative (i.e. 5 will set up a range from -2.5V to 2.5V) and the offset (double) of voltage for the channel from zero.
+ * Returns: Nothing
+ * Preconditions: Devices opened via openDevs
+ * Postconditions: Given device can now be read from
+ */
+void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset, double freq, int sample_size)
+{
+    FDwfAnalogInReset(handle);
+    FDwfAnalogInFrequencySet(handle, 1000000);
+    FDwfAnalogInChannelOffsetSet(handle, channel, offset);
+
+    double actualOffset;
+
+    FDwfAnalogInChannelOffsetGet(handle, channel, &actualOffset);
+
+    cout << "Offset set to: " << actualOffset << endl;
+
+    // set 5V pk2pk input range, -2.5V to 2.5V
+    FDwfAnalogInChannelRangeSet(handle, channel, range);
+
+    double actualRange;
+
+    FDwfAnalogInChannelRangeGet(handle, channel, &actualRange);
+
+    cout << "Range set to: " << actualRange << endl;
+    // start signal generation
+    //Do we want to reset the auto trigger timeout? y = set p3 to true
+
+    FDwfAnalogInAcquisitionModeSet(handle, acqmodeRecord);
+    FDwfAnalogInFrequencySet(handle, freq);
+    FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size/freq);
+
+
+    FDwfAnalogInConfigure(handle, false, true);
+}
+
+void analogRecordData(HDWF handle, int channel, int sampleSize, vector<double> *data)
+{
+    double* rgdSamples
+    FDwfAnalogInStatusRecord(handle, &cAvailable, &cLost, &cCorrupted);
+    FDwfAnalogInStatusData(handle, channel, &rgdSamples, cAvailable);
 }

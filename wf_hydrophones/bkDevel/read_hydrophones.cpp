@@ -48,10 +48,10 @@ int main(int carg, char **szarg){
     start = time(NULL);
     for(int i = 0; i < 50000; i++){
         // fetch analog input information from the device
-        v11 = analogReadDev(hdwfs[0], 0);
-        v12 = analogReadDev(hdwfs[0], 1);
-        v21 = analogReadDev(hdwfs[1], 0);
-        v22 = analogReadDev(hdwfs[1], 1);
+        v11 = analogReadSingleDataDev(hdwfs[0], 0);
+        v12 = analogReadSingleDataDev(hdwfs[0], 1);
+        v21 = analogReadSingleDataDev(hdwfs[1], 0);
+        v22 = analogReadSingleDataDev(hdwfs[1], 1);
 
         /*printf("AD1:\n");
         printf("\tCH1: %.3lf V\n", v11);
