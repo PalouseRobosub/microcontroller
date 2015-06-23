@@ -34,35 +34,50 @@ int main(int carg, char **szarg){
     cDevice = enumDevs();
     cout << "enumDevs() returned [" << cDevice[0] << ", " << cDevice[1] << "]" << endl;
 
-    openDevs(cDevice[0], cDevice[1], &hdwfs);
+    openDevs(cDevice[0], &(hdwfs[0]));
+    openDevs(cDevice[1], &(hdwfs[1]));
     cout << hdwfs.size() << endl;
     cout << "openDevs() returned [" << (hdwfs)[0] << ", " << (hdwfs)[1] << "]" << endl;
 
-    setupAnalogRead(hdwfs[0], 0, 5, 0);
-    setupAnalogRead(hdwfs[0], 1, 5, 0);
-    setupAnalogRead(hdwfs[1], 0, 5, 0);
-    setupAnalogRead(hdwfs[0], 1, 5, 0);
+
+    if (hdwfs[0] != -1)
+    {
+        setupAnalogRead(hdwfs[0], 0, 5, 0);
+        setupAnalogRead(hdwfs[0], 1, 5, 0);
+    }
+    if (hdwfs[1] != -1)
+    {
+        setupAnalogRead(hdwfs[1], 0, 5, 0);
+        setupAnalogRead(hdwfs[1], 1, 5, 0);
+    }
     // wait at least 2 seconds with Analog Discovery for the offset to stabilize, before the first reading after device open or offset/range change
     Wait(2);
     time_t start, end;
     start = time(NULL);
     for(int i = 0; i < 50000; i++){
         // fetch analog input information from the device
-        v11 = analogReadSingleDataDev(hdwfs[0], 0);
-        v12 = analogReadSingleDataDev(hdwfs[0], 1);
-        v21 = analogReadSingleDataDev(hdwfs[1], 0);
-        v22 = analogReadSingleDataDev(hdwfs[1], 1);
+        if (hdwfs[0] != -1)
+        {
+            v11 = analogReadSingleDataDev(hdwfs[0], 0);
+            v12 = analogReadSingleDataDev(hdwfs[0], 1);        
+            //printf("AD1:\n");
+            //printf("\tCH1: %.3lf V\n", v11);
+            //datas1.push_back(v11);
+            //printf("\tCH2: %.3lf V\n", v12);
+            //datas2.push_back(v12);
+        }
+        if (hdwfs[1] != -1)
+        {
+            v21 = analogReadSingleDataDev(hdwfs[1], 0);
+            v22 = analogReadSingleDataDev(hdwfs[1], 1);
+            //printf("AD2:\n");
+            //printf("\tCH1: %.3lf V\n", v21);
+            //datas3.push_back(v21);
+            //printf("\tCH2: %.3lf V\n", v22);
+            //datas4.push_back(v22);
+        }
 
-        /*printf("AD1:\n");
-        printf("\tCH1: %.3lf V\n", v11);
-        datas1.push_back(v11);
-        printf("\tCH2: %.3lf V\n", v12);
-        datas2.push_back(v12);
-        printf("AD2:\n");
-        printf("\tCH1: %.3lf V\n", v21);
-        datas3.push_back(v21);
-        printf("\tCH2: %.3lf V\n", v22);
-        datas4.push_back(v22);*/
+
     }
     end = time(NULL);
     // before application exit make sure to close all opened devices by this process
@@ -82,6 +97,9 @@ int main(int carg, char **szarg){
         {
             errs.push_back(datas2[i]);
         }
+    }
+    for (unsigned int i = 0; i < datas3.size(); ++i)
+    {
         if (datas3[i] < 2.45 || datas3[i] > 2.55)
         {
             errs.push_back(datas3[i]);

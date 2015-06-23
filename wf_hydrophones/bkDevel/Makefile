@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -O3
 LDFLAGS=
 LIBS=-ldwf -lstdc++
 SOURCES=read_hydrophones.cpp ADInterface.cpp
@@ -13,3 +13,6 @@ $(EXECUTABLE): $(OBJECTS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf *.o *.out

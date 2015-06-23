@@ -51,16 +51,12 @@ vector<int> enumDevs()
  * Preconditions: Program started
  * Postconditions: Devices can be setup for specific tasks and used
  */
-void openDevs(int dev1, int dev2, vector<HDWF> *handles)
+void openDevs(int dev, HDWF * handle)
 {
-    if (dev1 != -1)
+    if (dev != -1)
     {
-        !FDwfDeviceOpen(dev1, &((*handles)[0])) ? cout << "AD1 could not be opened!" << endl : cout << "AD1 opened" << endl;
-    } else cout << "AD1 is not connected!" << endl;
-    if (dev2 != -1)
-    {
-        !FDwfDeviceOpen(dev2, &((*handles)[1])) ? cout << "AD2 could not be opened!" << endl : cout << "AD2 opened" << endl;
-    } else cout << "AD2 is not connected!" << endl;
+        !FDwfDeviceOpen(dev, handle) ? cout << "Device could not be opened!" << endl : cout << "Device opened" << endl;
+    } else cout << "Device could not be connected!" << endl;
 }
 
 /* Function: analogReadSingleDataDev ()
@@ -148,11 +144,4 @@ void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset
 
 
     FDwfAnalogInConfigure(handle, false, true);
-}
-
-void analogRecordData(HDWF handle, int channel, int sampleSize, vector<double> *data)
-{
-    double* rgdSamples
-    FDwfAnalogInStatusRecord(handle, &cAvailable, &cLost, &cCorrupted);
-    FDwfAnalogInStatusData(handle, channel, &rgdSamples[cSamples], cAvailable);
 }
