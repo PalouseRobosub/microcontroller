@@ -1,4 +1,4 @@
-OPTIONS=-Wall -g 
+OPTIONS=-Wall #-O3 
 CC=gcc
 
 all: cont_aq.exe
