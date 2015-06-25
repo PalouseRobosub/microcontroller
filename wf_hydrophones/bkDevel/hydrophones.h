@@ -26,5 +26,7 @@ vector<int> enumDevs();
 void openDevs(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
 void setupAnalogRead(HDWF handle, int channel, double range, double offset);
+void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset, double freq, int sample_size);
+void *readDevice(void * arg);
 
 #endif

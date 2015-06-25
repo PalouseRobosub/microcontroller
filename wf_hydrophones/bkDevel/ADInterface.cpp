@@ -135,13 +135,22 @@ void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset
     FDwfAnalogInChannelRangeGet(handle, channel, &actualRange);
 
     cout << "Range set to: " << actualRange << endl;
-    // start signal generation
-    //Do we want to reset the auto trigger timeout? y = set p3 to true
 
     FDwfAnalogInAcquisitionModeSet(handle, acqmodeRecord);
     FDwfAnalogInFrequencySet(handle, freq);
     FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size/freq);
 
-
     FDwfAnalogInConfigure(handle, false, true);
+}
+
+//Pass the device hardware definition as an argument
+//This is the thread that will read data from a device
+void *readDevice(void * arg)
+{
+    if (arg == NULL) return -1;
+
+    while (True)
+    {
+        //update a buffer with the latest set of data
+    }
 }
