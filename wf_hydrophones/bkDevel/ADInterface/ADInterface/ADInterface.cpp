@@ -1,6 +1,6 @@
 #include "hydrophones.h"
 
-/* Function: enumDevices () 
+/* Function: enumDevices ()
  * Description: Finds the two devices specified by AD1 and AD2
  * Input Params: None
  * Returns: A vector<int> in the form [AD1_loc, AD2_loc]
@@ -10,7 +10,7 @@
 vector<int> enumDevs()
 {
     int num_devs = 0;
-    vector<int> devs(2,-1);
+    vector<int> devs(2, -1);
     char enum_SN[5][32];
 
     //Get the number of connected devices
@@ -21,13 +21,13 @@ vector<int> enumDevs()
     printf("Found %d Analog Discoveries.\n", num_devs);
 
     //find the SN for each device
-    for(int i = 0; i < num_devs; ++i)
+    for (int i = 0; i < num_devs; ++i)
     {
         FDwfEnumSN(i, enum_SN[i]);
     }
 
     //print the SNs
-    for(int i = 0; i < num_devs; ++i)
+    for (int i = 0; i < num_devs; ++i)
     {
         if (strcmp(enum_SN[i], AD1) == 0)
         {
@@ -56,7 +56,8 @@ void openDevs(int dev, HDWF * handle)
     if (dev != -1)
     {
         !FDwfDeviceOpen(dev, handle) ? cout << "Device could not be opened!" << endl : cout << "Device opened" << endl;
-    } else cout << "Device could not be connected!" << endl;
+    }
+    else cout << "Device could not be connected!" << endl;
 }
 
 /* Function: analogReadSingleDataDev ()
@@ -108,38 +109,86 @@ void setupAnalogRead(HDWF handle, int channel, double range, double offset)
     FDwfAnalogInConfigure(handle, false, false);
 }
 
+//TODO: Add more guard code
 /* Function: setupRecordAnalogRead ()
  * Description: Sets up the analog channels on a given device for reading
  * Input Params: The device handle (HDWF), the channel (int) on the given device to set up, the range (double) of voltage that will be input both positive and negative (i.e. 5 will set up a range from -2.5V to 2.5V) and the offset (double) of voltage for the channel from zero.
  * Returns: Nothing
  * Preconditions: Devices opened via openDevs
  * Postconditions: Given device can now be read from
+ * If wanting to acquire continuous results pass in -1 for the sample size
  */
-void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset, double freq, int sample_size)
+void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size)
 {
     FDwfAnalogInReset(handle);
     FDwfAnalogInFrequencySet(handle, 1000000);
-    FDwfAnalogInChannelOffsetSet(handle, channel, offset);
 
-    double actualOffset;
+    //Set offset for channel 1
+    if (ch1)
+    {
+        FDwfAnalogInChannelOffsetSet(handle, 0, offset);
 
-    FDwfAnalogInChannelOffsetGet(handle, channel, &actualOffset);
+        double actualOffset;
 
-    cout << "Offset set to: " << actualOffset << endl;
+        FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
 
-    // set 5V pk2pk input range, -2.5V to 2.5V
-    FDwfAnalogInChannelRangeSet(handle, channel, range);
+        cout << "CH1 offset set to: " << actualOffset << endl;
+    }
 
-    double actualRange;
+    //Set offset for channel 2
+    if (ch2)
+    {
+        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
 
-    FDwfAnalogInChannelRangeGet(handle, channel, &actualRange);
+        double actualOffset;
 
-    cout << "Range set to: " << actualRange << endl;
+        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
 
+        cout << "CH2 offset set to: " << actualOffset << endl;
+    }
+
+    //Set range for channel 1
+    if (ch1)
+    {
+        FDwfAnalogInChannelRangeSet(handle, 0, range);
+
+        double actualRange;
+
+        FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
+
+        cout << "CH1 range set to: " << actualRange << endl;
+    }
+
+    //Set range for channel 2
+    if (ch2)
+    {
+        FDwfAnalogInChannelRangeSet(handle, 1, range);
+
+        double actualRange;
+
+        FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
+
+        cout << "CH2 range set to: " << actualRange << endl;
+    }
+
+    //Set the acquisition mode to record
     FDwfAnalogInAcquisitionModeSet(handle, acqmodeRecord);
-    FDwfAnalogInFrequencySet(handle, freq);
-    FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size/freq);
 
+    //Set Frequency as desired
+    FDwfAnalogInFrequencySet(handle, freq);
+
+    //If continuous record is not wanted
+    if (sample_size != -1)
+    {
+        FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size / freq);
+    }
+    //otherwise
+    else
+    {
+        FDwfAnalogInRecordLengthSet(handle, -1.0);
+    }
+
+    //Begin recording
     FDwfAnalogInConfigure(handle, false, true);
 }
 
@@ -147,9 +196,9 @@ void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset
 //This is the thread that will read data from a device
 void *readDevice(void * arg)
 {
-    if (arg == NULL) return -1;
+    if (arg == NULL) return (void*)-1; //TODO: Is this right?
 
-    while (True)
+    while (true)
     {
         //update a buffer with the latest set of data
     }
