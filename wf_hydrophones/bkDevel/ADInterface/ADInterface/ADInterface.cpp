@@ -77,6 +77,7 @@ double analogReadSingleDataDev(HDWF handle, int channel)
     return voltage;
 }
 
+//TODO: Add more guard code
 /* Function: setupAnalogRead ()
  * Description: Sets up the analog channels on a given device for reading
  * Input Params: The device handle (HDWF), the channel (int) on the given device to set up, the range (double) of voltage that will be input both positive and negative (i.e. 5 will set up a range from -2.5V to 2.5V) and the offset (double) of voltage for the channel from zero.
@@ -84,26 +85,52 @@ double analogReadSingleDataDev(HDWF handle, int channel)
  * Preconditions: Devices opened via openDevs
  * Postconditions: Given device can now be read from
  */
-void setupAnalogRead(HDWF handle, int channel, double range, double offset)
+void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset)
 {
     FDwfAnalogInReset(handle);
     FDwfAnalogInFrequencySet(handle, 1000000);
-    FDwfAnalogInChannelOffsetSet(handle, channel, offset);
 
-    double actualOffset;
+    //Set the offset for the desired channels
+    if (ch1)
+    {
+        FDwfAnalogInChannelOffsetSet(handle, 0, offset);
 
-    FDwfAnalogInChannelOffsetGet(handle, channel, &actualOffset);
+        double actualOffset;
 
-    cout << "Offset set to: " << actualOffset << endl;
+        FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
+        cout << "CH1 offset set to: " << actualOffset << endl;
+    }
+    if (ch2)
+    {
+        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
+        double actualOffset;
 
-    // set 5V pk2pk input range, -2.5V to 2.5V
-    FDwfAnalogInChannelRangeSet(handle, channel, range);
+        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
+        cout << "CH2 offset set to: " << actualOffset << endl;
+    }
 
-    double actualRange;
+    //Set the range for the desired channels
+    if (ch1)
+    {
+        FDwfAnalogInChannelRangeSet(handle, 0, range);
 
-    FDwfAnalogInChannelRangeGet(handle, channel, &actualRange);
+        double actualRange;
 
-    cout << "Range set to: " << actualRange << endl;
+        FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
+
+        cout << "CH1 range set to: " << actualRange << endl;
+    }
+    if (ch2)
+    {
+        FDwfAnalogInChannelRangeSet(handle, 1, range);
+
+        double actualRange;
+
+        FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
+
+        cout << "CH2 range set to: " << actualRange << endl;
+    }
+
     // start signal generation
     //Do we want to reset the auto trigger timeout? y = set p3 to true
     FDwfAnalogInConfigure(handle, false, false);
@@ -194,6 +221,7 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
 
 //Pass the device hardware definition as an argument
 //This is the thread that will read data from a device
+//TODO: Determine best way to read the devices in parallel
 void *readDevice(void * arg)
 {
     if (arg == NULL) return (void*)-1; //TODO: Is this right?
@@ -203,3 +231,7 @@ void *readDevice(void * arg)
         //update a buffer with the latest set of data
     }
 }
+
+//TODO: Add cross correlation threading
+
+//TODO: Develop a main that manages the data passing

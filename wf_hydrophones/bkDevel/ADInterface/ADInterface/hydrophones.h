@@ -35,7 +35,8 @@ vector<int> enumDevs();
 void openDevs(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
 void setupAnalogRead(HDWF handle, int channel, double range, double offset);
-void setupRecordAnalogRead(HDWF handle, int channel, double range, double offset, double freq, int sample_size);
+void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size);
 void *readDevice(void * arg);
+void *crossCorrelation(void * arg);
 
 #endif
