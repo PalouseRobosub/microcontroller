@@ -14,11 +14,6 @@
 
 int main(int carg, char **szarg){
     vector<int> cDevice;
-    //int cChannel;
-    //double hzFreq;
-    //char szDeviceName[32];
-    //char szSN[32];
-    //BOOL fIsInUse;
     vector<HDWF> hdwfs(2,-1);
     double v11 = -10;
     double v12 = -10;
@@ -30,9 +25,11 @@ int main(int carg, char **szarg){
     vector<double> datas3;
     vector<double> datas4;
     vector<double> errs;
-    
+
+    //Enumerate the Devices
     cDevice = enumDevs();
-    cout << "enumDevs() returned [" << cDevice[0] << ", " << cDevice[1] << "]" << endl;
+    cout << "AD1 is at: " << cDevice[0] << endl;
+    cout << "AD2 is at: " << cDevice[1] << endl;
 
     openDevs(cDevice[0], &(hdwfs[0]));
     openDevs(cDevice[1], &(hdwfs[1]));
@@ -59,7 +56,7 @@ int main(int carg, char **szarg){
         if (hdwfs[0] != -1)
         {
             v11 = analogReadSingleDataDev(hdwfs[0], 0);
-            v12 = analogReadSingleDataDev(hdwfs[0], 1);        
+            v12 = analogReadSingleDataDev(hdwfs[0], 1);
             //printf("AD1:\n");
             //printf("\tCH1: %.3lf V\n", v11);
             //datas1.push_back(v11);

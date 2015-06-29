@@ -10,14 +10,14 @@
 using namespace std;
 
 //Include the DWF library
-#ifdef WIN32
+#ifdef WIN32 //Just here so VS doesn't complain
 #include "dwf.h"
 #else
 #include <digilent/waveforms/dwf.h>
 #endif
 
 //Define the Wait macro
-#ifdef WIN32
+#ifdef WIN32 //Just here so VS doesn't complain
 #include <windows.h>
 #define Wait(ts) Sleep(1000*ts)
 #else
@@ -34,7 +34,7 @@ using namespace std;
 vector<int> enumDevs();
 void openDevs(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
-void setupAnalogRead(HDWF handle, int channel, double range, double offset);
+void setupAnalogRead(HDWF handle, int channel, double range, double offset, double freq);
 void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size);
 void *readDevice(void * arg);
 void *crossCorrelation(void * arg);

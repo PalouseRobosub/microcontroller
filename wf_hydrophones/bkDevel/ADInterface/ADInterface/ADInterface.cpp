@@ -1,11 +1,15 @@
 #include "hydrophones.h"
 
+//TODO: Add ability to pass in array/vector of SNs to find and return their locations
+//      This will lead to a slight, one time performance hit due to more looping being needed
 /* Function: enumDevices ()
  * Description: Finds the two devices specified by AD1 and AD2
  * Input Params: None
  * Returns: A vector<int> in the form [AD1_loc, AD2_loc]
  * Preconditions: Program started
  * Postconditions: If a device is not found -1 will be returned as the device location
+ * Currently only supports up to 5 analog discovery devices connected
+ * Will not find Electronics Explorer boards!!!
  */
 vector<int> enumDevs()
 {
@@ -38,6 +42,10 @@ vector<int> enumDevs()
         {
             cout << "Found AD2" << endl;
             devs[1] = i;
+        }
+        else
+        {
+            cout << "Found device: " << enum_SN[i] << endl;
         }
     }
 
@@ -85,10 +93,10 @@ double analogReadSingleDataDev(HDWF handle, int channel)
  * Preconditions: Devices opened via openDevs
  * Postconditions: Given device can now be read from
  */
-void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset)
+void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq)
 {
     FDwfAnalogInReset(handle);
-    FDwfAnalogInFrequencySet(handle, 1000000);
+    FDwfAnalogInFrequencySet(handle, freq);
 
     //Set the offset for the desired channels
     if (ch1)
@@ -132,7 +140,7 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
     }
 
     // start signal generation
-    //Do we want to reset the auto trigger timeout? y = set p3 to true
+    //Do we want to reset the auto trigger timeout? if y = set p3 to true
     FDwfAnalogInConfigure(handle, false, false);
 }
 
@@ -148,7 +156,7 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
 void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size)
 {
     FDwfAnalogInReset(handle);
-    FDwfAnalogInFrequencySet(handle, 1000000);
+    FDwfAnalogInFrequencySet(handle, freq);
 
     //Set offset for channel 1
     if (ch1)
