@@ -30,9 +30,12 @@ using namespace std;
 #define AD1 "SN:210244659676"//Insert SN here
 #define AD2 "SN:210244449426"//Insert SN here
 
+#define CENTER 2.5
+#define DEVIATION 0.05
+
 //Define our functions
 vector<int> enumDevs();
-void openDevs(int dev, HDWF * handle);
+void openDev(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
 void setupAnalogRead(HDWF handle, int channel, double range, double offset, double freq);
 void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size);

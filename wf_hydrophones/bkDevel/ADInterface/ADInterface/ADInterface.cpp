@@ -52,14 +52,14 @@ vector<int> enumDevs()
     return devs;
 }
 
-/* Function: openDevs ()
- * Description: Opens two devices so they can be used
- * Input Params: The two devices to open through their enumerated index (int)
- * Return Params: The handles (vector<HDWF> *) for the devices
+/* Function: openDev ()
+ * Description: Open a device so they can be used
+ * Input Params: The device to open through its enumerated index (int)
+ * Return Params: The handle (HDWF *) for the device
  * Preconditions: Program started
  * Postconditions: Devices can be setup for specific tasks and used
  */
-void openDevs(int dev, HDWF * handle)
+void openDev(int dev, HDWF * handle)
 {
     if (dev != -1)
     {
@@ -241,5 +241,9 @@ void *readDevice(void * arg)
 }
 
 //TODO: Add cross correlation threading
+void *crossCorrelation(void * arg)
+{
+
+}
 
 //TODO: Develop a main that manages the data passing

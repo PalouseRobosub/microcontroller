@@ -31,8 +31,8 @@ int main(int carg, char **szarg){
     cout << "AD1 is at: " << cDevice[0] << endl;
     cout << "AD2 is at: " << cDevice[1] << endl;
 
-    openDevs(cDevice[0], &(hdwfs[0]));
-    openDevs(cDevice[1], &(hdwfs[1]));
+    openDev(cDevice[0], &(hdwfs[0]));
+    openDev(cDevice[1], &(hdwfs[1]));
     cout << hdwfs.size() << endl;
     cout << "openDevs() returned [" << (hdwfs)[0] << ", " << (hdwfs)[1] << "]" << endl;
 
@@ -49,34 +49,17 @@ int main(int carg, char **szarg){
     }
     // wait at least 2 seconds with Analog Discovery for the offset to stabilize, before the first reading after device open or offset/range change
     Wait(2);
-    time_t start, end;
-    start = time(NULL);
-    for(int i = 0; i < 50000; i++){
-        // fetch analog input information from the device
-        if (hdwfs[0] != -1)
-        {
-            v11 = analogReadSingleDataDev(hdwfs[0], 0);
-            v12 = analogReadSingleDataDev(hdwfs[0], 1);
-            //printf("AD1:\n");
-            //printf("\tCH1: %.3lf V\n", v11);
-            //datas1.push_back(v11);
-            //printf("\tCH2: %.3lf V\n", v12);
-            //datas2.push_back(v12);
-        }
-        if (hdwfs[1] != -1)
-        {
-            v21 = analogReadSingleDataDev(hdwfs[1], 0);
-            v22 = analogReadSingleDataDev(hdwfs[1], 1);
-            //printf("AD2:\n");
-            //printf("\tCH1: %.3lf V\n", v21);
-            //datas3.push_back(v21);
-            //printf("\tCH2: %.3lf V\n", v22);
-            //datas4.push_back(v22);
-        }
 
+    while(true)
+    {
+
+    //TODO: Add thread inits here
+
+    //TODO: Join the data collection threads to wait for next set of data
+
+    //TODO: Start Cross Correlation Thread after other threads have finished
 
     }
-    end = time(NULL);
     // before application exit make sure to close all opened devices by this process
     FDwfDeviceCloseAll();
 
@@ -86,22 +69,22 @@ int main(int carg, char **szarg){
 
     for(unsigned int i = 0; i < datas1.size(); ++i)
     {
-        if (datas1[i] < 2.45 || datas1[i] > 2.55)
+        if (datas1[i] < CENTER - DEVIATION || datas1[i] > CENTER + DEVIATION)
         {
             errs.push_back(datas1[i]);
         }
-        if (datas2[i] < 2.45 || datas2[i] > 2.55)
+        if (datas2[i] < CENTER - DEVIATION || datas2[i] > CENTER + DEVIATION)
         {
             errs.push_back(datas2[i]);
         }
     }
     for (unsigned int i = 0; i < datas3.size(); ++i)
     {
-        if (datas3[i] < 2.45 || datas3[i] > 2.55)
+        if (datas3[i] < CENTER - DEVIATION || datas3[i] > CENTER + DEVIATION)
         {
             errs.push_back(datas3[i]);
         }
-        if (datas4[i] < 2.45 || datas4[i] > 2.55)
+        if (datas4[i] < CENTER - DEVIATION || datas4[i] > CENTER + DEVIATION)
         {
             errs.push_back(datas4[i]);
         }
