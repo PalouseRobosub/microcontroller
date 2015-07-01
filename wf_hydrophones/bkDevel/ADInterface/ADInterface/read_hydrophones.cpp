@@ -1,5 +1,4 @@
 #include "hydrophones.h"
-#include <ctime>
 
 /*  General DWF Lib usage
 
@@ -12,19 +11,14 @@
 
 */
 
+//Global test variables. Will later be moved.
+double frequency = 300000.0;
+int samplesPerBuf = frequency * 2;
+
+
 int main(int carg, char **szarg){
     vector<int> cDevice;
     vector<HDWF> hdwfs(2,-1);
-    double v11 = -10;
-    double v12 = -10;
-    double v21 = -10;
-    double v22 = -10;
-
-    vector<double> datas1;
-    vector<double> datas2;
-    vector<double> datas3;
-    vector<double> datas4;
-    vector<double> errs;
 
     //Enumerate the Devices
     cDevice = enumDevs();
@@ -36,61 +30,37 @@ int main(int carg, char **szarg){
     cout << hdwfs.size() << endl;
     cout << "openDevs() returned [" << (hdwfs)[0] << ", " << (hdwfs)[1] << "]" << endl;
 
-
+    //Open the devices to record with
     if (hdwfs[0] != -1)
     {
-        setupAnalogRead(hdwfs[0], 0, 5, 0);
-        setupAnalogRead(hdwfs[0], 1, 5, 0);
+        setupRecordAnalogRead(hdwfs[0], true, true, 5, 0, frequency, samplesPerBuf);
     }
     if (hdwfs[1] != -1)
     {
-        setupAnalogRead(hdwfs[1], 0, 5, 0);
-        setupAnalogRead(hdwfs[1], 1, 5, 0);
+        setupRecordAnalogRead(hdwfs[1], true, true, 5, 0, frequency, samplesPerBuf);
     }
     // wait at least 2 seconds with Analog Discovery for the offset to stabilize, before the first reading after device open or offset/range change
     Wait(2);
 
+    //TODO: Add thread inits here
+    for (int i = 0; i < 2; ++i)
+    {
+      int err = pthread_create(&(tid[i]), NULL, &readDevice, hdwfs[i]);
+      if (err != 0) cout << "Thread " << i << " could not be created: " << strerror(err) << endl;
+      else cout << "Thread " << i " created." << endl;
+    }
+
+    //TODO: Start Cross Correlation Thread
+    int err = pthread_create(&(tid[2]), NULL, &crossCorrelation, NULL);
+    if (err != 0) cout << "Cross Correlation Thread was not created: " << strerror(err) << endl;
+    else cout << "Cross Correlation Thread Running." << endl;
+
     while(true)
     {
-
-    //TODO: Add thread inits here
-
-    //TODO: Join the data collection threads to wait for next set of data
-
-    //TODO: Start Cross Correlation Thread after other threads have finished
-
+      //TODO: Manage the threads here to search for exit status
     }
     // before application exit make sure to close all opened devices by this process
     FDwfDeviceCloseAll();
 
-
-    //Check data for errors
-    cout << datas1.size() << endl;
-
-    for(unsigned int i = 0; i < datas1.size(); ++i)
-    {
-        if (datas1[i] < CENTER - DEVIATION || datas1[i] > CENTER + DEVIATION)
-        {
-            errs.push_back(datas1[i]);
-        }
-        if (datas2[i] < CENTER - DEVIATION || datas2[i] > CENTER + DEVIATION)
-        {
-            errs.push_back(datas2[i]);
-        }
-    }
-    for (unsigned int i = 0; i < datas3.size(); ++i)
-    {
-        if (datas3[i] < CENTER - DEVIATION || datas3[i] > CENTER + DEVIATION)
-        {
-            errs.push_back(datas3[i]);
-        }
-        if (datas4[i] < CENTER - DEVIATION || datas4[i] > CENTER + DEVIATION)
-        {
-            errs.push_back(datas4[i]);
-        }
-    }
-
-    cout << errs.size() << endl;
-    cout << "Time Elapsed: " << end - start << endl;
     return 0;
 }

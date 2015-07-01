@@ -3,41 +3,33 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
-#include <cstring>
-#include <vector>
+#include <iostream> //For cout and endl
+#include <cstring> //For strerror()
+#include <vector> //For vector
+#include <pthread.h> //For threading
 
 using namespace std;
 
 //Include the DWF library
-#ifdef WIN32 //Just here so VS doesn't complain
-#include "dwf.h"
-#else
 #include <digilent/waveforms/dwf.h>
-#endif
 
 //Define the Wait macro
-#ifdef WIN32 //Just here so VS doesn't complain
-#include <windows.h>
-#define Wait(ts) Sleep(1000*ts)
-#else
 #include <unistd.h>
 #include <sys/time.h>
 #define Wait(ts) usleep(1000000*ts)
-#endif
 
 //#Defines to clarify which Analog Discovery is which
 #define AD1 "SN:210244659676"//Insert SN here
 #define AD2 "SN:210244449426"//Insert SN here
 
-#define CENTER 2.5
-#define DEVIATION 0.05
+//Global Variables to manage threading
+pthread_t tid[3];
 
 //Define our functions
 vector<int> enumDevs();
 void openDev(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
-void setupAnalogRead(HDWF handle, int channel, double range, double offset, double freq);
+void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq);
 void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size);
 void *readDevice(void * arg);
 void *crossCorrelation(void * arg);
