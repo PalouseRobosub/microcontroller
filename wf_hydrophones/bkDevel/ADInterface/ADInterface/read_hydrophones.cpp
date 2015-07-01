@@ -1,4 +1,5 @@
 #include "hydrophones.h"
+#include <pthread.h> //For threading
 
 /*  General DWF Lib usage
 
@@ -15,6 +16,8 @@
 double frequency = 300000.0;
 int samplesPerBuf = frequency * 2;
 
+//Global Variables to manage threading
+pthread_t threadId[3];
 
 int main(int carg, char **szarg){
     vector<int> cDevice;
@@ -45,13 +48,13 @@ int main(int carg, char **szarg){
     //TODO: Add thread inits here
     for (int i = 0; i < 2; ++i)
     {
-      int err = pthread_create(&(tid[i]), NULL, &readDevice, hdwfs[i]);
+      int err = pthread_create(&(threadId[i]), NULL, &readDevice, (void *)hdwfs[i]);
       if (err != 0) cout << "Thread " << i << " could not be created: " << strerror(err) << endl;
-      else cout << "Thread " << i " created." << endl;
+      else cout << "Thread " << i << " created." << endl;
     }
 
     //TODO: Start Cross Correlation Thread
-    int err = pthread_create(&(tid[2]), NULL, &crossCorrelation, NULL);
+    int err = pthread_create(&(threadId[2]), NULL, &crossCorrelation, NULL);
     if (err != 0) cout << "Cross Correlation Thread was not created: " << strerror(err) << endl;
     else cout << "Cross Correlation Thread Running." << endl;
 

@@ -243,7 +243,7 @@ void *readDevice(void * arg)
 //TODO: Add cross correlation threading
 void *crossCorrelation(void * arg)
 {
-
+    return (void *)0;
 }
 
 //TODO: Develop a main that manages the data passing

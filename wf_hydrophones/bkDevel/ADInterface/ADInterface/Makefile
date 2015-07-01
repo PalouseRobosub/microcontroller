@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-c -Wall -O3
 LDFLAGS=
-LIBS=-ldwf -lstdc++
+LIBS=-ldwf -lstdc++ -lpthread
 SOURCES=read_hydrophones.cpp ADInterface.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test.out

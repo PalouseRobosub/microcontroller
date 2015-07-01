@@ -6,7 +6,6 @@
 #include <iostream> //For cout and endl
 #include <cstring> //For strerror()
 #include <vector> //For vector
-#include <pthread.h> //For threading
 
 using namespace std;
 
@@ -21,9 +20,6 @@ using namespace std;
 //#Defines to clarify which Analog Discovery is which
 #define AD1 "SN:210244659676"//Insert SN here
 #define AD2 "SN:210244449426"//Insert SN here
-
-//Global Variables to manage threading
-pthread_t tid[3];
 
 //Define our functions
 vector<int> enumDevs();
