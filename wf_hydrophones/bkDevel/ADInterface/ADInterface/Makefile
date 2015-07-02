@@ -7,8 +7,8 @@ OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test.out
 
 all: $(SOURCES) $(EXECUTABLE)
-    
-$(EXECUTABLE): $(OBJECTS) 
+
+$(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 
 .cpp.o:

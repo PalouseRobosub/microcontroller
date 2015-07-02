@@ -1,4 +1,4 @@
-#include "hydrophones.h"
+#include "sys.h"
 
 //TODO: Add ability to pass in array/vector of SNs to find and return their locations
 //      This will lead to a slight, one time performance hit due to more looping being needed
@@ -158,51 +158,40 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
     FDwfAnalogInReset(handle);
     FDwfAnalogInFrequencySet(handle, freq);
 
-    //Set offset for channel 1
     if (ch1)
     {
+        //Enable the channel
+        FDwfAnalogInChannelEnableSet(handle, 0, true);
+
+        //Set offset for channel 1
         FDwfAnalogInChannelOffsetSet(handle, 0, offset);
-
         double actualOffset;
-
         FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
-
         cout << "CH1 offset set to: " << actualOffset << endl;
-    }
 
-    //Set offset for channel 2
-    if (ch2)
-    {
-        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
-
-        double actualOffset;
-
-        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
-
-        cout << "CH2 offset set to: " << actualOffset << endl;
-    }
-
-    //Set range for channel 1
-    if (ch1)
-    {
+        //Set range for channel 1
         FDwfAnalogInChannelRangeSet(handle, 0, range);
-
         double actualRange;
-
         FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
-
         cout << "CH1 range set to: " << actualRange << endl;
     }
 
-    //Set range for channel 2
+
     if (ch2)
     {
+        //Enable the channel
+        FDwfAnalogInChannelEnableSet(handle, 1, true);
+
+        //Set offset for channel 2
+        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
+        double actualOffset;
+        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
+        cout << "CH2 offset set to: " << actualOffset << endl;
+
+        //Set range for channel 2
         FDwfAnalogInChannelRangeSet(handle, 1, range);
-
         double actualRange;
-
         FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
-
         cout << "CH2 range set to: " << actualRange << endl;
     }
 
@@ -222,8 +211,10 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
     {
         FDwfAnalogInRecordLengthSet(handle, -1.0);
     }
+}
 
-    //Begin recording
+void beginRecord(HDWF handle)
+{
     FDwfAnalogInConfigure(handle, false, true);
 }
 
@@ -233,11 +224,58 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
 void *readDevice(void * arg)
 {
     if (arg == NULL) return (void*)-1; //TODO: Is this right?
-
+    HDWF handle = *((HDWF *)arg);
     while (true)
     {
+        //Start to record
+        beginRecord(handle);
+
         //update a buffer with the latest set of data
+        int cSamples = 0, cAvailable, cLost = 0, cCorrupted;
+        double* buffCH1 = new double[samplesPerBuf];
+        double* buffCH2 = new double[samplesPerBuf];
+        bool fLost = false, fCorrupted = false;
+        STS sts;
+
+        while (cSamples < samplesPerBuf)
+        {
+            if (!FDwfAnalogInStatus(handle, true, &sts))
+            {
+              char szError[512];
+              FDwfGetLastErrorMsg(szError);
+              cout << "Error: " << szError << endl;
+              break;
+            }
+
+            if (cSamples == 0 && (sts == stsCfg || sts == stsPrefill || sts == stsArm)) continue;
+
+            FDwfAnalogInStatusRecord(handle, &cAvailable, &cLost, &cCorrupted);
+
+            //Increment the counter by the number of samples lost
+            //This ensures that our interval remains a constant time
+            cSamples += cLost;
+
+            //Set flag if lost or corrupted
+            if (cLost) fLost = true;
+            if(cCorrupted) fCorrupted = true;
+
+            //Get the data
+            FDwfAnalogInStatusData(handle, 0, &buffCH1[cSamples], cAvailable);
+            FDwfAnalogInStatusData(handle, 1, &buffCH2[cSamples], cAvailable);
+
+            //Increment counter to the next data point to acquire
+            cSamples += cAvailable;
+        }
+
+        if (fLost) cout << "Samples were lost, reduce frequency" << endl;
+        if (fCorrupted) cout << "Samples may be corrupted, reduce frequency" << endl;
+
+        //TODO: Pass buffCH1 and buffCH2 into the shared memory queue
+        delete[] buffCH1;
+        delete[] buffCH2;
+	break;
     }
+    return NULL;
 }
 
 //TODO: Add cross correlation threading

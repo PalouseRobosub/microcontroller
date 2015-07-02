@@ -6,7 +6,7 @@ using chrono::high_resolution_clock;
 #define min(a,b) ((a<b)?a:b)
 #define max(a,b) ((a>b)?a:b)
 
-int main(int carg, char **szarg){    
+int main(int carg, char **szarg){
     double hzAcq = 200000.0;
     double incBy = 1000;
     int nSamples = (int)hzAcq*2, k = 0, errs = 0;
@@ -28,19 +28,19 @@ int main(int carg, char **szarg){
     }
 
     FDwfAnalogInChannelEnableSet(hdwf, 0, true);
-    
+
     FDwfAnalogInChannelRangeSet(hdwf, 0, 5);
 
     FDwfAnalogInChannelEnableSet(hdwf, 1, true);
-    
+
     FDwfAnalogInChannelRangeSet(hdwf, 1, 5);
 
     FDwfAnalogInChannelEnableSet(hdwf2, 0, true);
-    
+
     FDwfAnalogInChannelRangeSet(hdwf2, 0, 5);
 
     FDwfAnalogInChannelEnableSet(hdwf2, 1, true);
-    
+
     FDwfAnalogInChannelRangeSet(hdwf2, 1, 5);
 
     // recording rate for more samples than the device buffer is limited by device communication
@@ -64,21 +64,21 @@ int main(int carg, char **szarg){
     int cSamples = 0, cSamples1 = 0;
     int cAvailable, cLost=0, cLost2=0, cCorrupted, totalSamplesLost, totalCorrupted, cAvailable1;
     bool fLost = false, fCorrupted = false;
-    
+
     FDwfAnalogInAcquisitionModeSet(hdwf, acqmodeRecord);
     FDwfAnalogInFrequencySet(hdwf, hzAcq);
     FDwfAnalogInRecordLengthSet(hdwf, 1.0*nSamples/hzAcq);
     FDwfAnalogInAcquisitionModeSet(hdwf2, acqmodeRecord);
     FDwfAnalogInFrequencySet(hdwf2, hzAcq);
     FDwfAnalogInRecordLengthSet(hdwf2, 1.0*nSamples/hzAcq);
-    
+
     // wait at least 2 seconds with Analog Discovery for the offset to stabilize, before the first reading after device open or offset/range change
     //Wait(2);
-    
+
     // start
     FDwfAnalogInConfigure(hdwf, false, true);
     FDwfAnalogInConfigure(hdwf2, false, true);
-    
+
     cout << k + 1 << "Recording at: " << hzAcq << endl;
     //high_resolution_clock::period = ratio<1,1000000000>();
     auto start = high_resolution_clock::now();
@@ -109,8 +109,8 @@ int main(int carg, char **szarg){
         cSamples += cLost + cLost2;
         totalSamplesLost += cLost + cLost2;
 
-	totalCorrupted += cCorrupted;
-        
+	      totalCorrupted += cCorrupted;
+
         if(cLost || cLost2) fLost = true;
         if(cCorrupted) fCorrupted = true;
 
@@ -128,7 +128,7 @@ int main(int carg, char **szarg){
     auto end = high_resolution_clock::now();
     //double difference = end.rep;// - start.rep);
     cout << "done in " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " microseconds" << endl;
-    
+
     if(fLost){
         printf("Samples were lost! Reduce frequency\n");
 	printf("Lost %d samples\n", totalSamplesLost);
@@ -139,7 +139,7 @@ int main(int carg, char **szarg){
         if (k == 50) break;
         else ++errs;
     }
-    
+
     if (k == 50)
     {
         if (errs > 0) break;
