@@ -15,4 +15,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o *.out
+	rm -rf *.o *.out *.*~ *~
+
+remake:
+	(rm -rf *.o *.out *.*~ *~) && make

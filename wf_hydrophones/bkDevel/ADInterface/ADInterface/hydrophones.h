@@ -23,7 +23,7 @@ using namespace std;
 #define AD2 "SN:210244449426"//Insert SN here
 
 //#defines for the frequency and samples to make per buffer
-#define frequency 300000
+#define frequency 2500
 #define samplesPerBuf frequency*2
 
 //Define our functions

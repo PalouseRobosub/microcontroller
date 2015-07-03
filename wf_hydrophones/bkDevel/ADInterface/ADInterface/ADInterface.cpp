@@ -63,9 +63,9 @@ void openDev(int dev, HDWF * handle)
 {
     if (dev != -1)
     {
-        !FDwfDeviceOpen(dev, handle) ? cout << "Device could not be opened!" << endl : cout << "Device opened" << endl;
+        !FDwfDeviceOpen(dev, handle) ? cout << "Device " << dev << " could not be opened!" << endl : cout << "Device " << dev << " opened" << endl;
     }
-    else cout << "Device could not be connected!" << endl;
+    else cout << "Device " << dev << " could not be connected!" << endl;
 }
 
 /* Function: analogReadSingleDataDev ()
@@ -217,71 +217,3 @@ void beginRecord(HDWF handle)
 {
     FDwfAnalogInConfigure(handle, false, true);
 }
-
-//Pass the device hardware definition as an argument
-//This is the thread that will read data from a device
-//TODO: Determine best way to read the devices in parallel
-void *readDevice(void * arg)
-{
-    if (arg == NULL) return (void*)-1; //TODO: Is this right?
-    HDWF handle = *((HDWF *)arg);
-    while (true)
-    {
-        //Start to record
-        beginRecord(handle);
-
-        //update a buffer with the latest set of data
-        int cSamples = 0, cAvailable, cLost = 0, cCorrupted;
-        double* buffCH1 = new double[samplesPerBuf];
-        double* buffCH2 = new double[samplesPerBuf];
-        bool fLost = false, fCorrupted = false;
-        STS sts;
-
-        while (cSamples < samplesPerBuf)
-        {
-            if (!FDwfAnalogInStatus(handle, true, &sts))
-            {
-              char szError[512];
-              FDwfGetLastErrorMsg(szError);
-              cout << "Error: " << szError << endl;
-              break;
-            }
-
-            if (cSamples == 0 && (sts == stsCfg || sts == stsPrefill || sts == stsArm)) continue;
-
-            FDwfAnalogInStatusRecord(handle, &cAvailable, &cLost, &cCorrupted);
-
-            //Increment the counter by the number of samples lost
-            //This ensures that our interval remains a constant time
-            cSamples += cLost;
-
-            //Set flag if lost or corrupted
-            if (cLost) fLost = true;
-            if(cCorrupted) fCorrupted = true;
-
-            //Get the data
-            FDwfAnalogInStatusData(handle, 0, &buffCH1[cSamples], cAvailable);
-            FDwfAnalogInStatusData(handle, 1, &buffCH2[cSamples], cAvailable);
-
-            //Increment counter to the next data point to acquire
-            cSamples += cAvailable;
-        }
-
-        if (fLost) cout << "Samples were lost, reduce frequency" << endl;
-        if (fCorrupted) cout << "Samples may be corrupted, reduce frequency" << endl;
-
-        //TODO: Pass buffCH1 and buffCH2 into the shared memory queue
-        delete[] buffCH1;
-        delete[] buffCH2;
-	break;
-    }
-    return NULL;
-}
-
-//TODO: Add cross correlation threading
-void *crossCorrelation(void * arg)
-{
-    return (void *)0;
-}
-
-//TODO: Develop a main that manages the data passing
