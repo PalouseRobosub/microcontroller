@@ -2,6 +2,7 @@
 
 //TODO: Add ability to pass in array/vector of SNs to find and return their locations
 //      This will lead to a slight, one time performance hit due to more looping being needed
+
 /* Function: enumDevices ()
  * Description: Finds the two devices specified by AD1 and AD2
  * Input Params: None
@@ -22,7 +23,9 @@ vector<int> enumDevs()
     FDwfEnum(enumfilterDiscovery, &num_devs);
 
     //Show number of detected devices
-    printf("Found %d Analog Discoveries.\n", num_devs);
+    #if DEBUG
+        cout << "Found " << num_devs << " Analog Discoveries."<< endl;
+    #endif
 
     //find the SN for each device
     for (int i = 0; i < num_devs; ++i)
@@ -35,15 +38,19 @@ vector<int> enumDevs()
     {
         if (strcmp(enum_SN[i], AD1) == 0)
         {
-            cout << "Found AD1" << endl;
+            #if DEBUG
+                cout << "Found AD1" << endl;
+            #endif
             devs[0] = i;
         }
         else if (strcmp(enum_SN[i], AD2) == 0)
         {
-            cout << "Found AD2" << endl;
+            #if DEBUG
+                cout << "Found AD2" << endl;
+            #endif
             devs[1] = i;
         }
-        else
+        else if (DEBUG)
         {
             cout << "Found device: " << enum_SN[i] << endl;
         }
@@ -106,7 +113,9 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         double actualOffset;
 
         FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
-        cout << "CH1 offset set to: " << actualOffset << endl;
+        #if DEBUG
+            cout << "CH1 offset set to: " << actualOffset << endl;
+        #endif
     }
     if (ch2)
     {
@@ -114,7 +123,9 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         double actualOffset;
 
         FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
-        cout << "CH2 offset set to: " << actualOffset << endl;
+        #if DEBUG
+            cout << "CH2 offset set to: " << actualOffset << endl;
+        #endif
     }
 
     //Set the range for the desired channels
@@ -125,8 +136,9 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         double actualRange;
 
         FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
-
-        cout << "CH1 range set to: " << actualRange << endl;
+        #if DEBUG
+            cout << "CH1 range set to: " << actualRange << endl;
+        #endif
     }
     if (ch2)
     {
@@ -135,8 +147,9 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         double actualRange;
 
         FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
-
-        cout << "CH2 range set to: " << actualRange << endl;
+        #if DEBUG
+            cout << "CH2 range set to: " << actualRange << endl;
+        #endif
     }
 
     // start signal generation
@@ -167,13 +180,17 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
         FDwfAnalogInChannelOffsetSet(handle, 0, offset);
         double actualOffset;
         FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
-        cout << "CH1 offset set to: " << actualOffset << endl;
+        #if DEBUG
+            cout << "CH1 offset set to: " << actualOffset << endl;
+        #endif
 
         //Set range for channel 1
         FDwfAnalogInChannelRangeSet(handle, 0, range);
         double actualRange;
         FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
-        cout << "CH1 range set to: " << actualRange << endl;
+        #if DEBUG
+            cout << "CH1 range set to: " << actualRange << endl;
+        #endif
     }
 
 
@@ -186,13 +203,17 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
         FDwfAnalogInChannelOffsetSet(handle, 1, offset);
         double actualOffset;
         FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
-        cout << "CH2 offset set to: " << actualOffset << endl;
+        #if DEBUG
+            cout << "CH2 offset set to: " << actualOffset << endl;
+        #endif
 
         //Set range for channel 2
         FDwfAnalogInChannelRangeSet(handle, 1, range);
         double actualRange;
         FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
-        cout << "CH2 range set to: " << actualRange << endl;
+        #if DEBUG
+            cout << "CH2 range set to: " << actualRange << endl;
+        #endif
     }
 
     //Set the acquisition mode to record

@@ -27,6 +27,7 @@ using namespace std;
 #define samplesPerBuf frequency*2
 
 //Define our functions
+void sigint_handler(int sig);
 vector<int> enumDevs();
 void openDev(int dev, HDWF * handle);
 double analogReadSingleDataDev(HDWF handle, int channel);
