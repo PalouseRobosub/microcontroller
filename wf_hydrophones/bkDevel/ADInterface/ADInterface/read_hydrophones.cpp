@@ -69,7 +69,7 @@ int main(int carg, char **szarg){
     {
         int err = pthread_create(&(threadId[i]), NULL, &crossCorrelation, NULL);
         if (err != 0) cout << "Cross Correlation Thread " << i << " was not created: " << strerror(err) << endl;
-        else if cout << "Cross Correlation Thread " << i << " Running." << endl;
+        else cout << "Cross Correlation Thread " << i << " Running." << endl;
     }
 
     //Join the data collection threads for testing
@@ -100,7 +100,8 @@ void *readDevice(void * arg)
     if (arg == NULL) return NULL; //TODO: Is this right?
     HDWF handle = *((HDWF *)arg);
     pthread_t id = pthread_self();
-    while (true)
+    int j = 0;
+    while (j < 20)
     {
         //update a buffer with the latest set of data
         int cSamples = 0, cAvailable, cLost = 0, cCorrupted;
@@ -157,7 +158,8 @@ void *readDevice(void * arg)
             qdev2ch1.push(buffCH1);
             qdev2ch2.push(buffCH2);
         }
-        break;
+        ++j;
+	Wait(0.01);
     }
     return NULL;
 }
@@ -200,10 +202,8 @@ void *crossCorrelation(void * arg)
                 #if DEBUG
                     cout << "b2 deleted!" << endl;
                 #endif
-                #if DEBUG
-                    break;
-                #endif
             }
+	    Wait(0.01);
         }
     }
     else if (id == threadId[3])
@@ -231,10 +231,8 @@ void *crossCorrelation(void * arg)
                 #if DEBUG
                     cout << "b4 deleted!" << endl;
                 #endif
-                #if DEBUG
-                    break;
-                #endif
             }
+	    Wait(0.01);
         }
     }
 
