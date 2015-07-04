@@ -3,20 +3,18 @@
 #include <signal.h> //For catching SIGINT
 
 /*  General DWF Lib usage
-
 1. Call enumeration functions to discover connected hardware devices.
 2. Call FDwfDeviceOpen function to establish a connection to specific hardware device.
 3. Call function to enable instrument within hardware device.
 4. Call functions to configure instrument and acquire/generate signals.
 5. Call function to disable instrument.
 6. Call FDwfDeviceClose function to disconnect from device
-
 */
 
 //The thread functions must be defined in this file in order to use the shared memory space
 
 //Global Variables to manage threading
-pthread_t threadId[4];
+pthread_t threadId[4]; //2 Threads per device: 1 for data collection, 1 for cross correlation
 queue<double*> qdev1ch1;
 queue<double*> qdev1ch2;
 queue<double*> qdev2ch1;
@@ -50,20 +48,15 @@ int main(int carg, char **szarg){
         return 0;
     }
 
-    //Open the devices to record with
-    if (hdwfs[0] != -1)
-    {
-        setupRecordAnalogRead(hdwfs[0], true, true, 5, 0, frequency, samplesPerBuf);
-    }
-    if (hdwfs[1] != -1)
-    {
-        setupRecordAnalogRead(hdwfs[1], true, true, 5, 0, frequency, samplesPerBuf);
-    }
+    //Setup the devices to record with
+    //Devices are guaranteed to exist at this point
+    setupRecordAnalogRead(hdwfs[0], true, true, 5, 0, frequency, samplesPerBuf);
+    setupRecordAnalogRead(hdwfs[1], true, true, 5, 0, frequency, samplesPerBuf);
 
     // wait at least 2 seconds with Analog Discovery for the offset to stabilize, before the first reading after device open or offset/range change
     Wait(2);
 
-    //TODO: Add thread inits here
+    //Data collection threads initialized
     for (int i = 0; i < 2; ++i)
     {
       int err = pthread_create(&(threadId[i]), NULL, &readDevice, (void *)&(hdwfs[i]));
@@ -71,19 +64,17 @@ int main(int carg, char **szarg){
       else cout << "Data Collection Thread " << i << " created." << endl;
     }
 
-    //TODO: Start Cross Correlation Thread
-    int err = pthread_create(&(threadId[2]), NULL, &crossCorrelation, NULL);
-    if (err != 0) cout << "Cross Correlation Thread 0 was not created: " << strerror(err) << endl;
-    else cout << "Cross Correlation Thread 0 Running." << endl;
+    //Cross Correlation Threads initialized
+    for(int i = 2; i < 4; ++i)
+    {
+        int err = pthread_create(&(threadId[i]), NULL, &crossCorrelation, NULL);
+        if (err != 0) cout << "Cross Correlation Thread " << i << " was not created: " << strerror(err) << endl;
+        else if cout << "Cross Correlation Thread " << i << " Running." << endl;
+    }
 
-    err = pthread_create(&(threadId[3]), NULL, &crossCorrelation, NULL);
-    if (err != 0) cout << "Cross Correlation Thread 1 was not created: " << strerror(err) << endl;
-    else cout << "Cross Correlation Thread 1 Running." << endl;
-
+    //Join the data collection threads for testing
     pthread_join(threadId[0], NULL);
     pthread_join(threadId[1], NULL);
-    //pthread_join(threadId[2], NULL);
-    //pthread_join(threadId[3], NULL);
 
     while(true)
     {
@@ -96,12 +87,17 @@ int main(int carg, char **szarg){
     return 0;
 }
 
-//Pass the device hardware definition as an argument
-//This is the thread that will read data from a device
-//TODO: Determine best way to read the devices in parallel
+/* Function: readDevice ()
+ * Description:
+ * NOTICE: THIS IS A THREAD FUNCTION, DO NOT CALL DIRECTLY!!(Will block your program)
+ * Input Params: A hardware handle for the device to collect data from cast as a void *
+ * Returns: void * - Unused
+ * Preconditions: Device is opened and handle is valid
+ * Postconditions: Data is continuously collected and stored in a queue every 2 seconds
+ */
 void *readDevice(void * arg)
 {
-    if (arg == NULL) return (void*)-1; //TODO: Is this right?
+    if (arg == NULL) return NULL; //TODO: Is this right?
     HDWF handle = *((HDWF *)arg);
     pthread_t id = pthread_self();
     while (true)
@@ -145,9 +141,10 @@ void *readDevice(void * arg)
             //Increment counter to the next data point to acquire
             cSamples += cAvailable;
         }
-
-        if (fLost) cout << "Samples were lost, reduce frequency" << endl;
-        if (fCorrupted) cout << "Samples may be corrupted, reduce frequency" << endl;
+        #if DEBUG
+            if (fLost) cout << "Samples were lost, reduce frequency" << endl;
+            if (fCorrupted) cout << "Samples may be corrupted, reduce frequency" << endl;
+        #endif
 
         //TODO: Pass buffCH1 and buffCH2 into the shared memory queue
         if (id == threadId[0]) //Add to the first pair of buffers
@@ -165,7 +162,16 @@ void *readDevice(void * arg)
     return NULL;
 }
 
-//TODO: Add cross correlation threading
+//TODO: Add cross correlation pre-processing and logic
+/* Function: crossCorrelation ()
+ * Description: This function, when in its own thread, will take the first data
+ *              points from the queues and do a cross correlation on them
+ * NOTICE: THIS IS A THREAD FUNCTION, DO NOT CALL DIRECTLY!!(Will block your program)
+ * Input Params: void* argument - Unused
+ * Returns: A void* - Unused
+ * Preconditions: None, Runs in a thread
+ * Postconditions: Data will be processed
+ */
 void *crossCorrelation(void * arg)
 {
     pthread_t id = pthread_self();
@@ -238,6 +244,13 @@ void *crossCorrelation(void * arg)
     return NULL;
 }
 
+/* Function: sigint_handler ()
+ * Description: Catches SIGINT and does cleanup prior to exit
+ * Input Params: signal value
+ * Returns: Nothing
+ * Preconditions: SIGINT thrown
+ * Postconditions: Program Exits
+ */
 void sigint_handler(int sig)
 {
     #if DEBUG

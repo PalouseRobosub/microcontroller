@@ -1,7 +1,8 @@
 #include "sys.h"
 
-//TODO: Add ability to pass in array/vector of SNs to find and return their locations
-//      This will lead to a slight, one time performance hit due to more looping being needed
+//?TODO?: enumDevs()
+//        Add ability to pass in array/vector of SNs to find and return their locations
+//        This will lead to a slight, one time performance hit due to more looping being needed
 
 /* Function: enumDevices ()
  * Description: Finds the two devices specified by AD1 and AD2
@@ -70,14 +71,22 @@ void openDev(int dev, HDWF * handle)
 {
     if (dev != -1)
     {
-        !FDwfDeviceOpen(dev, handle) ? cout << "Device " << dev << " could not be opened!" << endl : cout << "Device " << dev << " opened" << endl;
+        if(!FDwfDeviceOpen(dev, handle))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfDeviceOpen(): " << szError << endl;
+          return;
+        }
+        else if(DEBUG) cout << "Device " << dev << " opened" << endl;
     }
-    else cout << "Device " << dev << " could not be connected!" << endl;
+    else cout << "Device " << dev << " could not be connected (Invalid Device Number)!" << endl;
 }
 
 /* Function: analogReadSingleDataDev ()
  * Description: Reads the analog voltage on the given channel on the given device
- * Input Params: The device handle (HDWF) and the channel (int) on the given device to read from
+ * Input Params: device handle (HDWF)
+ *               channel (int)
  * Returns: The analog voltage (double)
  * Preconditions: Devices opened via openDevs and device setup to read analog via setupAnalogRead
  * Postconditions: None
@@ -92,23 +101,46 @@ double analogReadSingleDataDev(HDWF handle, int channel)
     return voltage;
 }
 
-//TODO: Add more guard code
 /* Function: setupAnalogRead ()
  * Description: Sets up the analog channels on a given device for reading
- * Input Params: The device handle (HDWF), the channel (int) on the given device to set up, the range (double) of voltage that will be input both positive and negative (i.e. 5 will set up a range from -2.5V to 2.5V) and the offset (double) of voltage for the channel from zero.
+ * Input Params: device handle (HDWF)
+ *               ch1 (bool) set true if channel 1 is to be used
+ *               ch2 (bool) set true if channel 2 is to be used
+ *               range (double)
+ *               offset (double)
+ *               freq (double) - frequency to record at
  * Returns: Nothing
  * Preconditions: Devices opened via openDevs
  * Postconditions: Given device can now be read from
  */
 void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq)
 {
-    FDwfAnalogInReset(handle);
-    FDwfAnalogInFrequencySet(handle, freq);
+    if(!FDwfAnalogInReset(handle))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in FDwfAnalogInReset(): " << szError << endl;
+      return;
+    }
 
-    //Set the offset for the desired channels
+    if(!FDwfAnalogInFrequencySet(handle, freq))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in FDwfAnalogInFrequencySet(): " << szError << endl;
+      return;
+    }
+
     if (ch1)
     {
-        FDwfAnalogInChannelOffsetSet(handle, 0, offset);
+        //Set the offset for the desired channels
+        if(!FDwfAnalogInChannelOffsetSet(handle, 0, offset))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelOffsetSet(): " << szError << endl;
+          return;
+        }
 
         double actualOffset;
 
@@ -116,22 +148,15 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         #if DEBUG
             cout << "CH1 offset set to: " << actualOffset << endl;
         #endif
-    }
-    if (ch2)
-    {
-        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
-        double actualOffset;
 
-        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
-        #if DEBUG
-            cout << "CH2 offset set to: " << actualOffset << endl;
-        #endif
-    }
-
-    //Set the range for the desired channels
-    if (ch1)
-    {
-        FDwfAnalogInChannelRangeSet(handle, 0, range);
+        //Set the range for the desired channels
+        if(!FDwfAnalogInChannelRangeSet(handle, 0, range))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelRangeSet(): " << szError << endl;
+          return;
+        }
 
         double actualRange;
 
@@ -142,7 +167,29 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
     }
     if (ch2)
     {
-        FDwfAnalogInChannelRangeSet(handle, 1, range);
+        //Set the offset for the desired channels
+        if(!FDwfAnalogInChannelOffsetSet(handle, 1, offset))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelOffsetSet(): " << szError << endl;
+          return;
+        }
+        double actualOffset;
+
+        FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
+        #if DEBUG
+            cout << "CH2 offset set to: " << actualOffset << endl;
+        #endif
+
+        //Set the range for the desired channels
+        if(!FDwfAnalogInChannelRangeSet(handle, 1, range))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelRangeSet(): " << szError << endl;
+          return;
+        }
 
         double actualRange;
 
@@ -152,15 +199,19 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
         #endif
     }
 
-    // start signal generation
-    //Do we want to reset the auto trigger timeout? if y = set p3 to true
+    // start signal capture
     FDwfAnalogInConfigure(handle, false, false);
 }
 
-//TODO: Add more guard code
 /* Function: setupRecordAnalogRead ()
  * Description: Sets up the analog channels on a given device for reading
- * Input Params: The device handle (HDWF), the channel (int) on the given device to set up, the range (double) of voltage that will be input both positive and negative (i.e. 5 will set up a range from -2.5V to 2.5V) and the offset (double) of voltage for the channel from zero.
+ * Input Params: device handle (HDWF)
+ *               ch1 (bool) - set true if channel 1 is to be used
+ *               ch2 (bool) - set true if channel 2 is to be used
+ *               range (double)
+ *               offset (double)
+ *               freq (double) - frequency to record at
+ *               sample_size (int) - number of samples to collect
  * Returns: Nothing
  * Preconditions: Devices opened via openDevs
  * Postconditions: Given device can now be read from
@@ -168,16 +219,43 @@ void setupAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offse
  */
 void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double offset, double freq, int sample_size)
 {
-    FDwfAnalogInReset(handle);
-    FDwfAnalogInFrequencySet(handle, freq);
+    //Reset the device
+    if(!FDwfAnalogInReset(handle))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in FDwfAnalogInReset(): " << szError << endl;
+      return;
+    }
+
+    //Set the sample frequency
+    if(!FDwfAnalogInFrequencySet(handle, freq))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in FDwfAnalogInFrequencySet(): " << szError << endl;
+      return;
+    }
 
     if (ch1)
     {
         //Enable the channel
-        FDwfAnalogInChannelEnableSet(handle, 0, true);
+        if(!FDwfAnalogInChannelEnableSet(handle, 0, true))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelEnableSet(): " << szError << endl;
+          return;
+        }
 
         //Set offset for channel 1
-        FDwfAnalogInChannelOffsetSet(handle, 0, offset);
+        if(!FDwfAnalogInChannelOffsetSet(handle, 0, offset))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelOffsetSet(): " << szError << endl;
+          return;
+        }
         double actualOffset;
         FDwfAnalogInChannelOffsetGet(handle, 0, &actualOffset);
         #if DEBUG
@@ -185,7 +263,13 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
         #endif
 
         //Set range for channel 1
-        FDwfAnalogInChannelRangeSet(handle, 0, range);
+        if(!FDwfAnalogInChannelRangeSet(handle, 0, range))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelRangeSet(): " << szError << endl;
+          return;
+        }
         double actualRange;
         FDwfAnalogInChannelRangeGet(handle, 0, &actualRange);
         #if DEBUG
@@ -197,10 +281,22 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
     if (ch2)
     {
         //Enable the channel
-        FDwfAnalogInChannelEnableSet(handle, 1, true);
+        if(!FDwfAnalogInChannelEnableSet(handle, 1, true))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelEnableSet(): " << szError << endl;
+          return;
+        }
 
         //Set offset for channel 2
-        FDwfAnalogInChannelOffsetSet(handle, 1, offset);
+        if(!FDwfAnalogInChannelOffsetSet(handle, 1, offset))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelOffsetSet(): " << szError << endl;
+          return;
+        }
         double actualOffset;
         FDwfAnalogInChannelOffsetGet(handle, 1, &actualOffset);
         #if DEBUG
@@ -208,7 +304,13 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
         #endif
 
         //Set range for channel 2
-        FDwfAnalogInChannelRangeSet(handle, 1, range);
+        if(!FDwfAnalogInChannelRangeSet(handle, 1, range))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInChannelRangeSet(): " << szError << endl;
+          return;
+        }
         double actualRange;
         FDwfAnalogInChannelRangeGet(handle, 1, &actualRange);
         #if DEBUG
@@ -217,24 +319,52 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
     }
 
     //Set the acquisition mode to record
-    FDwfAnalogInAcquisitionModeSet(handle, acqmodeRecord);
-
-    //Set Frequency as desired
-    FDwfAnalogInFrequencySet(handle, freq);
+    if(!FDwfAnalogInAcquisitionModeSet(handle, acqmodeRecord))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in FDwfAnalogInAcquisitionModeSet(): " << szError << endl;
+      return;
+    }
 
     //If continuous record is not wanted
     if (sample_size != -1)
     {
-        FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size / freq);
+        if(!FDwfAnalogInRecordLengthSet(handle, 1.0*sample_size / freq))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInRecordLengthSet(): " << szError << endl;
+          return;
+        }
     }
     //otherwise
     else
     {
-        FDwfAnalogInRecordLengthSet(handle, -1.0);
+        if(!FDwfAnalogInRecordLengthSet(handle, -1.0))
+        {
+          char szError[512];
+          FDwfGetLastErrorMsg(szError);
+          cout << "Error in FDwfAnalogInRecordLengthSet(): " << szError << endl;
+          return;
+        }
     }
 }
 
+/* Function: beginRecord ()
+ * Description: Starts recording for a specific device
+ * Input Params: The hardware handle for a device
+ * Returns: Nothing
+ * Preconditions: Device opened via openDevs
+ * Postconditions: Given Device starts collection of data
+ */
 void beginRecord(HDWF handle)
 {
-    FDwfAnalogInConfigure(handle, false, true);
+    if(!FDwfAnalogInConfigure(handle, false, true))
+    {
+      char szError[512];
+      FDwfGetLastErrorMsg(szError);
+      cout << "Error in beginRecord(): " << szError << endl;
+      return;
+    }
 }
