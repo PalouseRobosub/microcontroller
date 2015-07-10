@@ -9,7 +9,8 @@ typedef enum
 	GYRO,
 	MAGNETO,
 	TEMP,
-	PRESSURE
+	PRESSURE,
+	DEPTH
 } SENSOR;
 
 typedef struct Data
@@ -20,9 +21,10 @@ typedef struct Data
 int main(int argc, char**argv)
 {
 	int size;
-	char port[64] = "/dev/ttyUSB0";
+	char port[64] = "/dev/ttyUSB2";
 	char msg[256];
 	DATA accel, gyro, magneto;
+	short int depth;
 
 	if(argc >= 2)
 	{
@@ -37,8 +39,7 @@ int main(int argc, char**argv)
 	while (1)
 	{
 		size = p.get(msg);
-		printf("received: %s\n", msg);
-		switch(msg[1])
+		switch(msg[0])
 		{
 			case ACCEL:
 				if(size != 7)
@@ -66,6 +67,10 @@ int main(int argc, char**argv)
 				break;
 			case PRESSURE:
 				break;
+			case DEPTH:
+				depth = msg[1]<<8 | msg[2];
+				printf("depth: %d\n", depth);
+				break;
 			default:
 				perror("Invalid Sensor Code");
 
@@ -73,7 +78,6 @@ int main(int argc, char**argv)
 		}
 	}
 
-	printf("done receiving!\n");
 
 	return 0;
 }
