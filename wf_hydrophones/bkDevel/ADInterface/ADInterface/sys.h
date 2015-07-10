@@ -9,7 +9,7 @@
 #define AD2 "SN:210244449426"//Insert SN here
 
 //#defines for the frequency and samples to make per buffer
-#define frequency 2500
-#define samplesPerBuf frequency*2
+#define frequency 1000000
+#define samplesPerBuf ((int)(frequency*0.00001))
 
 #endif

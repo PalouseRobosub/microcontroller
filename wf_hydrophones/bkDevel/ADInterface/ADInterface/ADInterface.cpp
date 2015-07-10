@@ -360,13 +360,7 @@ void setupRecordAnalogRead(HDWF handle, bool ch1, bool ch2, double range, double
  */
 void beginRecord(HDWF handle)
 {
-    if(!FDwfAnalogInConfigure(handle, false, true))
-    {
-      char szError[512];
-      FDwfGetLastErrorMsg(szError);
-      cout << "Error in beginRecord(): " << szError << endl;
-      return;
-    }
+    FDwfAnalogInConfigure(handle, false, true);
 }
 
 string getFileName(int threadNum, int CHNum, int sampleNum)

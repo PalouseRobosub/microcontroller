@@ -101,10 +101,10 @@ void *readDevice(void * arg)
     HDWF handle = *((HDWF *)arg);
     pthread_t id = pthread_self();
     int j = 0;
-    while (j < 20)
+    while (j < 1000)
     {
         //update a buffer with the latest set of data
-        int cSamples = 0, cAvailable, cLost = 0, cCorrupted
+        int cSamples = 0, cAvailable, cLost = 0, cCorrupted;
         #if DEBUG
             int tCorrupted = 0, tLost = 0;
         #endif
@@ -122,7 +122,7 @@ void *readDevice(void * arg)
             {
               char szError[512];
               FDwfGetLastErrorMsg(szError);
-              cout << "Error: " << szError << endl;
+              cout << "Status Error: " << szError << endl;
               break;
             }
 
@@ -162,7 +162,6 @@ void *readDevice(void * arg)
             if (fCorrupted) cout << tCorrupted << " samples may be corrupted, reduce frequency" << endl;
         #endif
 
-        //TODO: Pass buffCH1 and buffCH2 into the shared memory queue
         if (id == threadId[0]) //Add to the first pair of buffers
         {
             qdev1ch1.push(buffCH1);
@@ -218,7 +217,7 @@ void *crossCorrelation(void * arg)
                     cout << "b2 deleted!" << endl;
                 #endif
             }
-	    Wait(0.01);
+	    Wait(0.000001);
         }
     }
     else if (id == threadId[3])
@@ -247,7 +246,7 @@ void *crossCorrelation(void * arg)
                     cout << "b4 deleted!" << endl;
                 #endif
             }
-	    Wait(0.01);
+	    Wait(0.000001);
         }
     }
 
