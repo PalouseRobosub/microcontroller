@@ -104,7 +104,10 @@ void *readDevice(void * arg)
     while (j < 20)
     {
         //update a buffer with the latest set of data
-        int cSamples = 0, cAvailable, cLost = 0, cCorrupted;
+        int cSamples = 0, cAvailable, cLost = 0, cCorrupted
+        #if DEBUG
+            int tCorrupted = 0, tLost = 0;
+        #endif
         double* buffCH1 = new double[samplesPerBuf];
         double* buffCH2 = new double[samplesPerBuf];
         bool fLost = false, fCorrupted = false;
@@ -132,8 +135,20 @@ void *readDevice(void * arg)
             cSamples += cLost;
 
             //Set flag if lost or corrupted
-            if (cLost) fLost = true;
-            if(cCorrupted) fCorrupted = true;
+            if (cLost)
+            {
+                fLost = true;
+                #if DEBUG
+                    tLost += cLost;
+                #endif
+            }
+            if(cCorrupted)
+            {
+                fCorrupted = true;
+                #if DEBUG
+                    tCorrupted += cCorrupted;
+                #endif
+            }
 
             //Get the data
             FDwfAnalogInStatusData(handle, 0, &buffCH1[cSamples], cAvailable);
@@ -143,8 +158,8 @@ void *readDevice(void * arg)
             cSamples += cAvailable;
         }
         #if DEBUG
-            if (fLost) cout << "Samples were lost, reduce frequency" << endl;
-            if (fCorrupted) cout << "Samples may be corrupted, reduce frequency" << endl;
+            if (fLost) cout << tLost << " samples were lost, reduce frequency" << endl;
+            if (fCorrupted) cout << tCorrupted << " samples may be corrupted, reduce frequency" << endl;
         #endif
 
         //TODO: Pass buffCH1 and buffCH2 into the shared memory queue
@@ -159,7 +174,7 @@ void *readDevice(void * arg)
             qdev2ch2.push(buffCH2);
         }
         ++j;
-	Wait(0.01);
+	    Wait(0.01);
     }
     return NULL;
 }

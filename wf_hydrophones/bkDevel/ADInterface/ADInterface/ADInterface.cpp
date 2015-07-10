@@ -368,3 +368,8 @@ void beginRecord(HDWF handle)
       return;
     }
 }
+
+string getFileName(int threadNum, int CHNum, int sampleNum)
+{
+    return NULL;
+}

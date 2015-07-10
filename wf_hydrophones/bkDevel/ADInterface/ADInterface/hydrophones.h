@@ -29,4 +29,7 @@ void beginRecord(HDWF handle);
 void *readDevice(void * arg);
 void *crossCorrelation(void * arg);
 
+//Method for getting a file name
+string getFileName(int threadNum, int CHNum, int sampleNum);
+
 #endif
