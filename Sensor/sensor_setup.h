@@ -19,6 +19,7 @@ typedef enum SENSOR_ID
     SID_MAGNETOMETER_0,
     SID_TEMPERATURE_0,
     SID_PRESSURE_0,
+    SID_DEPTH_0,
 
     SID_COUNT
 } Sensor_ID;
@@ -27,6 +28,7 @@ void sensor_setup(void *callback);
 void accel_setup(void *callback);
 void gyro_setup(void *callback);
 void mag_setup(void *callback);
+void depth_setup();
 
 void config_accel(void);
 void read_accel(void);

@@ -1,5 +1,6 @@
 #include "Sensor.h"
 #include "sensor_setup.h"
+#include "ADC.h"
 
 // <editor-fold defaultstate="collapsed" desc="Global Variables">
 Sensor_Data accel_data;
@@ -7,6 +8,7 @@ Sensor_Data gyro_data;
 Sensor_Data mag_data;
 Sensor_Data temp_data;
 Sensor_Data pressure_data;
+uint8 adc_work_queue[10*sizeof(ADC_Data)], adc_results_queue[10*sizeof(ADC_Data)];
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Local Variables">
@@ -45,6 +47,12 @@ u8 pressure_config_buffer[1];
 I2C_Node pressure_read;
 u8 pressure_read_buffer[6];
 // </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="depth sensor variables">
+ADC_Config depth_config;
+ADC_Node depth_read;
+// </editor-fold>
+
 // </editor-fold>
 
 //functions
@@ -53,6 +61,7 @@ void sensor_setup(void *callback)
     accel_setup(callback);
     gyro_setup(callback);
     mag_setup(callback);
+    depth_setup();
 }
 
 void accel_setup(void *callback)
@@ -141,6 +150,18 @@ void mag_setup(void *callback)
     mag_data.config_nodes_size = 1;
     mag_data.read_nodes = &mag_read;
     mag_data.read_nodes_size = 1;
+}
+
+void depth_setup()
+{
+    ADC_Config adc_config = {0};
+
+    adc_config.channels = (1 << ADC_CH_1);
+    adc_config.work_buffer_ptr = adc_work_queue;
+    adc_config.work_buffer_size = sizeof(adc_work_queue);
+    adc_config.result_buffer_ptr = adc_results_queue;
+    adc_config.result_buffer_size = sizeof(adc_results_queue);
+    initialize_ADC(adc_config);
 }
 
 /*void temp_setup(void *callback)

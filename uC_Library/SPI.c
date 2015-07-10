@@ -155,7 +155,7 @@ void __ISR(_SPI_1_VECTOR, IPL7AUTO) SPI_1_Handler(void) {
             //we have data to transmit - pop that data off the queue
             //store popped data into the transmit registry
             //while there is data in queue AND the transmit buffer is not full
-            while (!dequeue(&(spi_1.Tx_queue), &transmit, 1) && !(SPI1STATbits.SPITBF)) {
+            while (!(SPI1STATbits.SPITBF) && !dequeue(&(spi_1.Tx_queue), &transmit, 1)) {
                 //write the data to the buffer
                 SPI1BUF = transmit;
             } //write data until the queue is empty or the registry is full
@@ -189,7 +189,7 @@ void __ISR(_SPI_2_VECTOR, IPL7AUTO) SPI_2_Handler(void) {
             //we have data to transmit - pop that data off the queue
             //store popped data into the transmit registry
             //while there is data in queue AND the transmit buffer is not full
-            while (!dequeue(&(spi_2.Tx_queue), &transmit, 1) && !SPI2STATbits.SPITBF) {
+            while (!SPI2STATbits.SPITBF && !dequeue(&(spi_2.Tx_queue), &transmit, 1)) {
                 //write the data to the buffer
                 SPI2BUF = transmit;
             } //write data until the queue is empty or the registry is full

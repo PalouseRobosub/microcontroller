@@ -9,6 +9,7 @@
 
 // <editor-fold defaultstate="collapsed" desc="System Includes">
 #include "System.h"
+#include "ADC.h"
 #include "Timer.h"
 #include "UART.h"
 #include "I2C.h"
@@ -66,6 +67,7 @@
 //forward declarations
 void timer_callback(void);
 void sensor_send_uart(I2C_Node i2c_node);
+void depth_callback(ADC_Node node);
 
 
 /*************************************************************************
@@ -133,6 +135,7 @@ int main(void) {
     while (1) {
         //put background processes here
         bg_process_I2C();
+        bg_process_ADC();
     }
 
     return 0;
@@ -140,10 +143,12 @@ int main(void) {
 
 void timer_callback(void)
 {
+    static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
     //read all the sensors
     read_accel();
     read_gyro();
     read_mag();
+    read_ADC(depth_node);
 }
 
 void sensor_send_uart(I2C_Node node)
@@ -157,4 +162,18 @@ void sensor_send_uart(I2C_Node node)
     i = 1+node.data_size;
 
     send_packet(PACKET_UART1, send_data, i);
+}
+
+void depth_callback(ADC_Node node)
+{
+    uint8 send_data[3];
+    uint8 data_LB, data_HB;
+    data_LB = node.data & 0xFF;
+    data_HB = node.data >> 8;
+
+    send_data[0] = SID_DEPTH_0;
+    send_data[1] = data_LB;
+    send_data[2] = data_LB;
+
+    send_packet(PACKET_UART1, send_data, sizeof(send_data));
 }
