@@ -45,13 +45,13 @@ int Serial::sread(char *buf, int num)
 {
 	int got, i;
 	got = 0;
-	printf("getting %d bytes\n", num);
+//	printf("getting %d bytes\n", num);
 	while (got < num)
 	{
 		i = read(this->port_fd, buf+got, num - got);
-		printf("%d read,", i);
+//		printf("%d read,", i);
 		got += i;
-		printf("%d of %d bytes\n", got, num);
+//		printf("%d of %d bytes\n", got, num);
 	}
 
 	return got;

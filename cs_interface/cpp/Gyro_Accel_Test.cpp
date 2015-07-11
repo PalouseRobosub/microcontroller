@@ -21,8 +21,8 @@ Gyro_Accel_Test::Gyro_Accel_Test()
 void Gyro_Accel_Test::getQ(float * q)
 {
     now = std::chrono::system_clock::now();
-    std::chrono::duration<long int, std::ratio<1l, 1000000l>> t_diff = now - last_update;
-    sampleFreq = 1.0 / (t_diff.count()/1000000.0);
+    std::chrono::duration<long int, std::ratio<1l, 1000000000l>> t_diff = now - last_update;
+    sampleFreq = 1.0 / (t_diff.count()/1000000000.0);
     last_update = now;
 
     updateQuaternion(gyro.x * PI/180, gyro.y * PI/180, gyro.z * PI/180, accel.x, accel.y, accel.z);
