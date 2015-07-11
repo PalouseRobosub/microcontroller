@@ -1,4 +1,4 @@
-#include "gyro.h"
+#include "gyroscope.h"
 
 Gyroscope::Gyroscope()
 {
@@ -9,13 +9,17 @@ Gyroscope::Gyroscope()
 	polarity[0] = 1.0;
 	polarity[1] = 1.0;
 	polarity[2] = 1.0;
-	
+
 	offset[0] = 0;
 	offset[1] = 0;
 	offset[2] = 0;
 }
 
-
+//This function is used to set the offsets for the gyro
+//It is based on readings at a set interval
+//It should only be called when the IMU is not moving
+//TODO: Move outside the gyro class so that it has access to the raw packets instead
+//		of using the internal raw values
 void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayMS)
 {
 	int xyz[3];
@@ -23,33 +27,38 @@ void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayM
 
 	for (int i = 0; i < totSamples; ++i)
 	{
-		delay(sampleDelayMS);
-		readGyroRaw(xyz);
-		tmpOffset[0] += xyz[0];
-		tmpOffset[1] += xyz[1];
-		tmpOffset[2] += xyz[2];
+		std::this_thread::sleep_for(std::chrono::milliseconds(sampleDelayMS));
+		tmpOffset[0] += raw_x;
+		tmpOffset[1] += raw_y;
+		tmpOffset[2] += raw_z;
 	}
-	offset[0] = -tmpOffsets[0] / totSamples;
-	offset[1] = -tmpOffsets[1] / totSamples;
-	offset[2] = -tmpOffsets[2] / totSamples;
+	offset[0] = -tmpOffset[0] / totSamples;
+	offset[1] = -tmpOffset[1] / totSamples;
+	offset[2] = -tmpOffset[2] / totSamples;
 }
 
-void Gyroscope::updateGyro(int *gyroX, int *gyroY, int *gyroZ)
+void Gyroscope::updateGyro(float gyroX, float gyroY, float gyroZ)
 {
-	readGyroRaw(gyroX, gyroY, gyroZ);
-	*gyroX += offset[0];
-	*gyroY += offset[1];
-	*gyroZ += offset[2];
+	raw_x = gyroX;
+	x = gyroX;
+	raw_y = gyroY;
+	y = gyroY;
+	raw_z = gyroZ;
+	z = gyroZ;
 
-	*gyroX = *gyroX / 14.375 * polarity[0] * gain[0];
-	*gyroY = *gyroY / 14.375 * polarity[1] * gain[1];
-	*gyroZ = *gyroZ / 14.375 * polarity[2] * gain[2];
+	x += offset[0];
+	y += offset[1];
+	z += offset[2];
+
+	x = x / 14.375 * polarity[0] * gain[0];
+	y = y / 14.375 * polarity[1] * gain[1];
+	z = z / 14.375 * polarity[2] * gain[2];
 }
 
 
-void setRevPolarity(bool Xpol, bool Ypol, bool Zpol)
+void Gyroscope::setRevPolarity(bool Xpol, bool Ypol, bool Zpol)
 {
-  polarities[0] = _Xpol ? -1 : 1;
-  polarities[1] = _Ypol ? -1 : 1;
-  polarities[2] = _Zpol ? -1 : 1;
+	polarity[0] = Xpol ? -1 : 1;
+	polarity[1] = Ypol ? -1 : 1;
+	polarity[2] = Zpol ? -1 : 1;
 }

@@ -1,8 +1,9 @@
-#ifndef
-#define
+#ifndef GYRO_ACCEL_TEST
+#define GYRO_ACCEL_TEST
 #include "Accelerometer.h"
-#include "gyro.h"
+#include "gyroscope.h"
 #include <cmath>
+#include <chrono> //For std::chrono::duration, std::chrono::system_clock, std::chrono::time_point
 
 #define twoKpDef (2.0f * 0.5f) //2 * proportional gain
 #define twoKiDef (2.0f * 0.1f) //2 * integral gain
@@ -28,6 +29,8 @@ private:
     volatile float twoKp;          //2 * proportional gain (Kp)
     volatile float twoKi;          //2 * integral gain (Ki)
     volatile float integralFBx, integralFBy, integralFBz;
+    std::chrono::time_point<std::chrono::system_clock> last_update, now;
+    float sampleFreq;
 };
 
 #endif

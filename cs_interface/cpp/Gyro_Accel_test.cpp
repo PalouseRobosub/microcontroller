@@ -1,4 +1,4 @@
-#include "Gyro_Accel_Test"
+#include "Gyro_Accel_test.h"
 
 Gyro_Accel_Test::Gyro_Accel_Test()
 {
@@ -13,10 +13,18 @@ Gyro_Accel_Test::Gyro_Accel_Test()
     twoKp = twoKpDef;
     twoKi = twoKiDef;
     integralFBx = 0.0f,  integralFBy = 0.0f, integralFBz = 0.0f;
+
+    last_update = std::chrono::system_clock::now();
+    now = last_update;
 }
 
 void Gyro_Accel_Test::getQ(float * q)
 {
+    now = std::chrono::system_clock::now();
+    std::chrono::duration<long int, std::ratio<1l, 1000000l>> t_diff = now - last_update;
+    sampleFreq = 1.0 / (t_diff.count()/1000000.0);
+    last_update = now;
+
     updateQuaternion(gyro.x * PI/180, gyro.y * PI/180, gyro.z * PI/180, accel.x, accel.y, accel.z);
     q[0] = q0;
     q[1] = q1;
