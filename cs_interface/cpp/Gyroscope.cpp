@@ -1,4 +1,4 @@
-#include "gyroscope.h"
+#include "Gyroscope.h"
 
 Gyroscope::Gyroscope()
 {
