@@ -7,7 +7,8 @@ public:
     Accelerometer();
     float gain[3];
     float x,y,z;
-    void updateAccel(float ax, float ay, float az);
+    int x_raw, y_raw, z_raw;
+    void updateAccel(int ax, int ay, int az);
     void getXYZ(float *ax, float *ay, float *az);
 };
 

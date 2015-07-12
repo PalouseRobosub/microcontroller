@@ -4,6 +4,7 @@ Gyro_Accel_Test::Gyro_Accel_Test()
 {
     accel = Accelerometer();
     gyro = Gyroscope();
+    mag = Magnetometer();
 
     //init quaternion
     q0 = 1.0f;
@@ -18,6 +19,30 @@ Gyro_Accel_Test::Gyro_Accel_Test()
     now = last_update;
 }
 
+void Gyro_Accel_Test::update()
+{
+    float q[4];
+    getQ(q);
+
+    //Update Euler angles
+    psi = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/PI;
+    theta = -asin(2 * q1 * q3 + 2 * q0 * q2) * 180/PI;
+    phi = atan2(2 * q2 * q3 - 2 * q0 * q1, 2 * q0 * q0 + 2 * q3 * q3 - 1) * 180/PI;
+
+    //Update Yaw Pitch roll
+    //Estimate gravity
+    float gx, gy, gz; // estimated gravity direction
+
+    gx = 2 * (q1*q3 - q0*q2);
+    gy = 2 * (q0*q1 + q2*q3);
+    gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+
+    yaw = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/PI;
+    pitch = atan(gx / sqrt(gy*gy + gz*gz))  * 180/PI;
+    roll = atan(gy / sqrt(gx*gx + gz*gz))  * 180/PI;
+
+}
+
 void Gyro_Accel_Test::getQ(float * q)
 {
     now = std::chrono::system_clock::now();
@@ -25,7 +50,7 @@ void Gyro_Accel_Test::getQ(float * q)
     sampleFreq = 1.0 / (t_diff.count()/1000000000.0);
     last_update = now;
 
-    updateQuaternion(gyro.x * PI/180, gyro.y * PI/180, gyro.z * PI/180, accel.x, accel.y, accel.z);
+    updateQuaternion(gyro.x * PI/180, gyro.y * PI/180, gyro.z * PI/180, accel.x, accel.y, accel.z, mag.x, mag.y, mag.z);
     q[0] = q0;
     q[1] = q1;
     q[2] = q2;
@@ -34,40 +59,24 @@ void Gyro_Accel_Test::getQ(float * q)
 
 void Gyro_Accel_Test::getEuler(float * angles)
 {
-    float q[4];
-    getQ(q);
-    angles[0] = atan2(2 * q[1] * q[2] - 2 * q[0] * q[3], 2 * q[0]*q[0] + 2 * q[1] * q[1] - 1) * 180/PI; // psi
-    angles[1] = -asin(2 * q[1] * q[3] + 2 * q[0] * q[2]) * 180/PI; // theta
-    angles[2] = atan2(2 * q[2] * q[3] - 2 * q[0] * q[1], 2 * q[0] * q[0] + 2 * q[3] * q[3] - 1) * 180/PI; // phi
+    angles[0] = psi;
+    angles[1] = theta;
+    angles[2] = phi;
 }
 
 void Gyro_Accel_Test::getYPR(float *ypr)
 {
-    float q[4]; // quaternion
-    float gx, gy, gz; // estimated gravity direction
-    getQ(q); //Calculate the quaternion
-
-    gx = 2 * (q[1]*q[3] - q[0]*q[2]);
-    gy = 2 * (q[0]*q[1] + q[2]*q[3]);
-    gz = q[0]*q[0] - q[1]*q[1] - q[2]*q[2] + q[3]*q[3];
-
-    ypr[0] = atan2(2 * q[1] * q[2] - 2 * q[0] * q[3], 2 * q[0]*q[0] + 2 * q[1] * q[1] - 1) * 180/PI;
-    ypr[1] = atan(gx / sqrt(gy*gy + gz*gz))  * 180/PI;
-    ypr[2] = atan(gy / sqrt(gx*gx + gz*gz))  * 180/PI;
+    ypr[0] = yaw;
+    ypr[1] = pitch;
+    ypr[2] = roll;
 }
 
-void Gyro_Accel_Test::getAngles(float * angles)
+void Gyro_Accel_Test::getQVals(float * qs)
 {
-    float a[3]; //Euler
-    getEuler(a);
-
-    angles[0] = a[0];
-    angles[1] = a[1];
-    angles[2] = a[2];
-
-    if(angles[0] < 0)angles[0] += 360;
-    if(angles[1] < 0)angles[1] += 360;
-    if(angles[2] < 0)angles[2] += 360;
+    qs[0] = q0;
+    qs[1] = q1;
+    qs[2] = q2;
+    qs[3] = q3;
 }
 
 float Gyro_Accel_Test::invSqrt(float number)
@@ -86,7 +95,7 @@ float Gyro_Accel_Test::invSqrt(float number)
     return y;
 }
 
-void Gyro_Accel_Test::updateQuaternion(float gx, float gy, float gz, float ax, float ay, float az)
+void Gyro_Accel_Test::updateQuaternion(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz)
 {
     float recipNorm;
     float q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;

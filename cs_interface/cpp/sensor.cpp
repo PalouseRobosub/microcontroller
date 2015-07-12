@@ -1,5 +1,9 @@
 #include "sensor.h"
 
+using std::cout;
+using std::endl;
+using std::cerr
+
 typedef enum
 {
 	ACCEL,
@@ -20,9 +24,8 @@ int main(int argc, char**argv)
 	int size;
 	char port[64] = "/dev/ttyUSB2";
 	char msg[256];
-	float ypr[3];
+	float ypr[4];
 	Gyro_Accel_Test gat = Gyro_Accel_Test();
-	DATA magneto;
 	short int depth;
 
 	if(argc >= 2)
@@ -77,25 +80,30 @@ int main(int argc, char**argv)
 				//std::cout << "fuck you says magneto" << size << std::endl;
 				if(size != 7)
 					break;
-				//For now update the quaternion values when MAGNETO sends a packets
+
+				//  magneto.x = msg[2]<<8 | msg[1]; //Y value comes after Z value
+				//  magneto.y = msg[4]<<8 | msg[3];
+				//  magneto.z = msg[6]<<8 | msg[5];
+				gat.mag.updateMag(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
+				//For now update the quaternion values when MAGNETO sends a packet
+				gat.update();
+
 				gat.getEuler(ypr);
-				std::cout << "Psi: " << ypr[0] 
-						  << " Theta: " << ypr[1] 
-						  << " Phi: " << ypr[2]
-						  << std::endl;
+				cout << "Psi: " << ypr[0]
+					 << " Theta: " << ypr[1]
+					 << " Phi: " << ypr[2]
+					 << endl;
 				gat.getYPR(ypr);
-				std::cout << "YAW: " << ypr[0]
-					  << " PITCH: " << ypr[1]
-					  << " ROLL: " << ypr[2]
-					  << std::endl;
-				gat.getAngles(ypr);
-				std::cout << "X: " << ypr[0]
-					  << " Y: " << ypr[1]
-					  << " Z: " << ypr[2]
-					  << std::endl;
-				magneto.x = msg[2]<<8 | msg[1]; //Y value comes after Z value
-				magneto.y = msg[4]<<8 | msg[3];
-				magneto.z = msg[6]<<8 | msg[5];
+				cout << "YAW: " << ypr[0]
+					 << " PITCH: " << ypr[1]
+					 << " ROLL: " << ypr[2]
+					 << endl;
+				gat.getQVals(ypr);
+				cout << "Q0: " << ypr[0]
+					 << " Q1: " << ypr[1]
+					 << " Q2: " << ypr[2]
+					 << " Q3: " << ypr[3]
+					 << endl;
 				break;
 			case TEMP:
 				break;
@@ -103,9 +111,10 @@ int main(int argc, char**argv)
 				break;
 			case DEPTH:
 				depth = msg[2]<<8 | msg[1];
+				cout << "DEPTH: " << depth << endl << endl;
 				break;
 			default:
-				perror("Invalid Sensor Code");
+				cerr << "Invalid Sensor Code" << endl;
 
 
 		}

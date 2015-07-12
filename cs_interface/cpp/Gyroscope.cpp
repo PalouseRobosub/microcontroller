@@ -37,7 +37,7 @@ void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayM
 	offset[2] = -tmpOffset[2] / totSamples;
 }
 
-void Gyroscope::updateGyro(float gyroX, float gyroY, float gyroZ)
+void Gyroscope::updateGyro(int gyroX, int gyroY, int gyroZ)
 {
 	raw_x = gyroX;
 	x = gyroX;
