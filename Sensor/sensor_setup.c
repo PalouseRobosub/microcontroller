@@ -8,7 +8,7 @@ Sensor_Data gyro_data;
 Sensor_Data mag_data;
 Sensor_Data temp_data;
 Sensor_Data pressure_data;
-uint8 adc_work_queue[10*sizeof(ADC_Data)], adc_results_queue[10*sizeof(ADC_Data)];
+uint8 adc_work_queue[3*sizeof(ADC_Data)], adc_results_queue[3*sizeof(ADC_Data)];
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Local Variables">
@@ -161,6 +161,7 @@ void depth_setup()
     adc_config.work_buffer_size = sizeof(adc_work_queue);
     adc_config.result_buffer_ptr = adc_results_queue;
     adc_config.result_buffer_size = sizeof(adc_results_queue);
+    adc_config.callback = 0;
     initialize_ADC(adc_config);
 }
 
@@ -239,20 +240,7 @@ void config_gyro(void)
 
 void read_gyro(void)
 {
-    uint8 temp;
     read_sensor(gyro_data);
-    temp = gyro_read.data_buffer[0];
-    gyro_read.data_buffer[0] = gyro_read.data_buffer[1];
-    gyro_read.data_buffer[1] = temp;
-
-    temp = gyro_read.data_buffer[2];
-    gyro_read.data_buffer[2] = gyro_read.data_buffer[3];
-    gyro_read.data_buffer[3] = temp;
-
-    temp = gyro_read.data_buffer[4];
-    gyro_read.data_buffer[4] = gyro_read.data_buffer[5];
-    gyro_read.data_buffer[5] = temp;
-
 }
 
 void config_mag(void)
@@ -263,20 +251,6 @@ void config_mag(void)
 void read_mag(void)
 {
     read_sensor(mag_data);
-
-    uint8 temp;
-    read_sensor(mag_data);
-    temp = mag_read.data_buffer[0];
-    mag_read.data_buffer[0] = mag_read.data_buffer[1];
-    mag_read.data_buffer[1] = temp;
-
-    temp = mag_read.data_buffer[2];
-    mag_read.data_buffer[2] = mag_read.data_buffer[5];
-    mag_read.data_buffer[5] = temp;
-
-    temp = mag_read.data_buffer[4];
-    mag_read.data_buffer[4] = mag_read.data_buffer[3];
-    mag_read.data_buffer[3] = temp;
 }
 
 

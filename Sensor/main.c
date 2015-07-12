@@ -135,7 +135,7 @@ int main(void) {
     while (1) {
         //put background processes here
         bg_process_I2C();
-        bg_process_ADC();
+        //bg_process_ADC();
     }
 
     return 0;
@@ -154,10 +154,46 @@ void timer_callback(void)
 void sensor_send_uart(I2C_Node node)
 {
     uint8 send_data[256];
+    uint8 temp;
     uint8 i;
 
     send_data[0] = node.device_id;
     memcpy(&send_data[1], node.data_buffer, node.data_size);
+
+    switch(node.device_id)
+    {
+        case SID_ACCELEROMETER_0:
+            break;
+        case SID_GYROSCOPE_0:
+            temp = send_data[1];
+            send_data[1] = send_data[2];
+            send_data[2] = temp;
+
+            temp = send_data[3];
+            send_data[3] = send_data[4];
+            send_data[4] = temp;
+
+            temp = send_data[5];
+            send_data[5] = send_data[6];
+            send_data[6] = temp;
+            break;
+        case SID_MAGNETOMETER_0:      
+            temp = send_data[1];
+            send_data[1] = send_data[2];
+            send_data[2] = temp;
+
+            temp = send_data[3];
+            send_data[3] = send_data[6];
+            send_data[6] = temp;
+
+            temp = send_data[5];
+            send_data[5] = send_data[4];
+            send_data[4] = temp;
+            break;
+        default:
+            break;
+    }
+
 
     i = 1+node.data_size;
 
@@ -173,7 +209,7 @@ void depth_callback(ADC_Node node)
 
     send_data[0] = SID_DEPTH_0;
     send_data[1] = data_LB;
-    send_data[2] = data_LB;
+    send_data[2] = data_HB;
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));
 }
