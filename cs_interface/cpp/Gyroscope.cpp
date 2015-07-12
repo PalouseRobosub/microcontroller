@@ -25,12 +25,12 @@ void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayM
 	int xyz[3];
 	float tmpOffset[] = {0, 0, 0};
 
-	for (int i = 0; i < totSamples; ++i)
+	for (unsigned int i = 0; i < totSamples; ++i)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(sampleDelayMS));
-		tmpOffset[0] += raw_x;
+		tmpOffset[0] -= raw_x;
 		tmpOffset[1] += raw_y;
-		tmpOffset[2] += raw_z;
+		tmpOffset[2] -= raw_z;
 	}
 	offset[0] = -tmpOffset[0] / totSamples;
 	offset[1] = -tmpOffset[1] / totSamples;
@@ -39,12 +39,12 @@ void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayM
 
 void Gyroscope::updateGyro(int gyroX, int gyroY, int gyroZ)
 {
-	raw_x = gyroX;
-	x = gyroX;
+	raw_x = -gyroX;
+	x = -gyroX;
 	raw_y = gyroY;
 	y = gyroY;
-	raw_z = gyroZ;
-	z = gyroZ;
+	raw_z = -gyroZ;
+	z = -gyroZ;
 
 	x += offset[0];
 	y += offset[1];

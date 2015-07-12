@@ -18,13 +18,13 @@ void Magnetometer::SetScale(float gauss)
     else m_scale = 1;
 }
 
-void Magnetometer::updateMag(int x, int y, int z)
+void Magnetometer::updateMag(int xm, int ym, int zm)
 {
-    this.x_raw = x;
-    this.y_raw = y;
-    this.z_raw = z;
+    x_raw = -xm;
+    y_raw = ym;
+    z_raw = -zm;
 
-    this.x = x * m_scale;
-    this.y = y * m_scale;
-    this.z = z * m_scale;
+    x = -xm * m_scale;
+    y = ym * m_scale;
+    z = -zm * m_scale;
 }

@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-c -Wall -std=c++0x
 LDFLAGS=
 LIBS= -lstdc++
-SOURCES=Gyroscope.cpp Accelerometer.cpp Gyro_Accel_Test.cpp sensor.cpp packetizer.cpp serial.cpp
+SOURCES=Gyroscope.cpp Accelerometer.cpp Magnetometer.cpp Gyro_Accel_Test.cpp sensor.cpp packetizer.cpp serial.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=kaboom.exe
 

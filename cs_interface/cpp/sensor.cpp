@@ -2,7 +2,7 @@
 
 using std::cout;
 using std::endl;
-using std::cerr
+using std::cerr;
 
 typedef enum
 {
@@ -14,10 +14,10 @@ typedef enum
 	DEPTH
 } SENSOR;
 
-typedef struct Data
-{
-	int x, y, z;
-} DATA;
+//typedef struct Data
+//{
+//	int x, y, z;
+//} DATA;
 
 int main(int argc, char**argv)
 {
