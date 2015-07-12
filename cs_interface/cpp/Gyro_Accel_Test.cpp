@@ -93,7 +93,7 @@ void Gyro_Accel_Test::updateQuaternion(float gx, float gy, float gz, float ax, f
     float halfex = 0.0f, halfey = 0.0f, halfez = 0.0f;
     float qa, qb, qc;
 
-    //Avoiding extra computations later
+    // Auxiliary variables to avoid repeated arithmetic
     q0q0 = q0 * q0;
     q0q1 = q0 * q1;
     q0q2 = q0 * q2;
@@ -105,33 +105,61 @@ void Gyro_Accel_Test::updateQuaternion(float gx, float gy, float gz, float ax, f
     q2q3 = q2 * q3;
     q3q3 = q3 * q3;
 
-    //Only compute if Accelerometer measurement is valid to avoid NaN in normalization
-    if (ax != 0.0f && ay != 0.0f && az != 0.0f)
+    // Use magnetometer measurement only when valid (avoids NaN in magnetometer normalisation)
+    if((mx != 0.0f) && (my != 0.0f) && (mz != 0.0f)) {
+        float hx, hy, bx, bz;
+        float halfwx, halfwy, halfwz;
+
+        // Normalise magnetometer measurement
+        recipNorm = invSqrt(mx * mx + my * my + mz * mz);
+        mx *= recipNorm;
+        my *= recipNorm;
+        mz *= recipNorm;
+
+        // Reference direction of Earth's magnetic field
+        hx = 2.0f * (mx * (0.5f - q2q2 - q3q3) + my * (q1q2 - q0q3) + mz * (q1q3 + q0q2));
+        hy = 2.0f * (mx * (q1q2 + q0q3) + my * (0.5f - q1q1 - q3q3) + mz * (q2q3 - q0q1));
+        bx = sqrt(hx * hx + hy * hy);
+        bz = 2.0f * (mx * (q1q3 - q0q2) + my * (q2q3 + q0q1) + mz * (0.5f - q1q1 - q2q2));
+
+        // Estimated direction of magnetic field
+        halfwx = bx * (0.5f - q2q2 - q3q3) + bz * (q1q3 - q0q2);
+        halfwy = bx * (q1q2 - q0q3) + bz * (q0q1 + q2q3);
+        halfwz = bx * (q0q2 + q1q3) + bz * (0.5f - q1q1 - q2q2);
+
+        // Error is sum of cross product between estimated direction and measured direction of field vectors
+        halfex = (my * halfwz - mz * halfwy);
+        halfey = (mz * halfwx - mx * halfwz);
+        halfez = (mx * halfwy - my * halfwx);
+    }
+
+    // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
+    if((ax != 0.0f) && (ay != 0.0f) && (az != 0.0f))
     {
         float halfvx, halfvy, halfvz;
 
-        //Normalize the measurement
+        // Normalise accelerometer measurement
         recipNorm = invSqrt(ax * ax + ay * ay + az * az);
         ax *= recipNorm;
         ay *= recipNorm;
         az *= recipNorm;
 
-        //Estimate direction of gravity
+        // Estimated direction of gravity
         halfvx = q1q3 - q0q2;
         halfvy = q0q1 + q2q3;
         halfvz = q0q0 - 0.5f + q3q3;
 
-        //Calculate Error as a cross product of estimated direction and measured direction of field vectors
+        // Error is sum of cross product between estimated direction and measured direction of field vectors
         halfex += (ay * halfvz - az * halfvy);
         halfey += (az * halfvx - ax * halfvz);
-        halfex += (ax * halfvy - ay * halfvx);
+        halfez += (ax * halfvy - ay * halfvx);
     }
 
-    //Only compute if previous calculations are valid
-    if(halfex != 0.0f && halfey != 0.0f && halfez != 0.0f)
-    {
+    // Apply feedback only when valid data has been gathered from the accelerometer or magnetometer
+    if(halfex != 0.0f && halfey != 0.0f && halfez != 0.0f) {
         // Compute and apply integral feedback if enabled
-        if(twoKi > 0.0f) {
+        if(twoKi > 0.0f)
+        {
             integralFBx += twoKi * halfex * (1.0f / sampleFreq);  // integral error scaled by Ki
             integralFBy += twoKi * halfey * (1.0f / sampleFreq);
             integralFBz += twoKi * halfez * (1.0f / sampleFreq);
@@ -152,7 +180,7 @@ void Gyro_Accel_Test::updateQuaternion(float gx, float gy, float gz, float ax, f
     }
 
     // Integrate rate of change of quaternion
-    gx *= (0.5f * (1.0f / sampleFreq));
+    gx *= (0.5f * (1.0f / sampleFreq));   // pre-multiply common factors
     gy *= (0.5f * (1.0f / sampleFreq));
     gz *= (0.5f * (1.0f / sampleFreq));
     qa = q0;
