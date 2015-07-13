@@ -77,13 +77,15 @@ int main(void) {
 
     //buffer for uart ISRs
     uint8 uart_tx_buffer[128], uart_rx_buffer[128];
-    u8 i2c_rx_buf[10*sizeof(I2C_Node)], i2c_tx_buf[10*sizeof(I2C_Node)];
+    u8 i2c_rx_buf[21*sizeof(I2C_Node)], i2c_tx_buf[21*sizeof(I2C_Node)];
 
     //structures for configuring peripherals
     UART_Config uart_config = {0};
     Timer_Config timer_config = {0};
     Packetizer_Config packet_config = {0};
     I2C_Config i2c_config = {0};
+
+    volatile unsigned int i;
 
     TRISBbits.TRISB7 = 0;
     LATBbits.LATB7 = 0;
@@ -123,6 +125,10 @@ int main(void) {
     initialize_packetizer(packet_config);
 
     sensor_setup(&sensor_send_uart);
+
+    //delay to allow sensors to power up before configuring
+    for(i=0; i < 1000000; ++i);
+
     config_accel();
     config_gyro();
     config_mag();
@@ -135,7 +141,7 @@ int main(void) {
     while (1) {
         //put background processes here
         bg_process_I2C();
-        //bg_process_ADC();
+        bg_process_ADC();
     }
 
     return 0;
@@ -148,12 +154,13 @@ void timer_callback(void)
     read_accel();
     read_gyro();
     read_mag();
+    
     read_ADC(depth_node);
 }
 
 void sensor_send_uart(I2C_Node node)
 {
-    uint8 send_data[256];
+    uint8 send_data[16];
     uint8 temp;
     uint8 i;
 

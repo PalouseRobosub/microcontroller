@@ -8,7 +8,7 @@ Sensor_Data gyro_data;
 Sensor_Data mag_data;
 Sensor_Data temp_data;
 Sensor_Data pressure_data;
-uint8 adc_work_queue[3*sizeof(ADC_Data)], adc_results_queue[3*sizeof(ADC_Data)];
+uint8 adc_work_queue[3*sizeof(ADC_Node)], adc_results_queue[3*sizeof(ADC_Node)];
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Local Variables">
