@@ -20,6 +20,7 @@ typedef enum SENSOR_ID
     SID_TEMPERATURE_0,
     SID_PRESSURE_0,
     SID_DEPTH_0,
+    SID_START_SWITCH,
 
     SID_COUNT
 } Sensor_ID;

@@ -68,6 +68,7 @@
 void timer_callback(void);
 void sensor_send_uart(I2C_Node i2c_node);
 void depth_callback(ADC_Node node);
+void read_switch(void);
 
 
 /*************************************************************************
@@ -91,6 +92,10 @@ int main(void) {
     LATBbits.LATB7 = 0;
     ANSELBbits.ANSB15 = 0;
     RPB15R = 0x1;
+
+    //start switch
+    TRISBbits.TRISB2 = 1;
+    ANSELBbits.ANSB2 = 0;
 
     //setup peripherals
     timer_config.divide = Div_256;
@@ -150,12 +155,17 @@ int main(void) {
 void timer_callback(void)
 {
     static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
+
     //read all the sensors
     read_accel();
     read_gyro();
     read_mag();
     
     read_ADC(depth_node);
+
+     
+    //read the start switch
+    read_switch();               
 }
 
 void sensor_send_uart(I2C_Node node)
@@ -219,4 +229,14 @@ void depth_callback(ADC_Node node)
     send_data[2] = data_HB;
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));
+}
+
+void read_switch(void)
+{
+    uint8 send_data[2];
+
+    send_data[0] = SID_START_SWITCH;
+    send_data[1] = !(PORTBbits.RB2); //read the start switch, invert the logic
+
+    send_packet(PACKET_UART1, send_data, sizeof(send_data));    
 }
