@@ -36,7 +36,7 @@ int main(int argc, char**argv)
 
 	printf("serial port opened: %s\n", port);
 
-	float tmpOffset[] = {0,0,0};
+	int16_t tmpOffset[] = {0,0,0};
 	cout << "Getting Samples for Gyro Offset" << endl;
 	for (int i = 0; i < 100; ++i)
 	{
@@ -52,6 +52,7 @@ int main(int argc, char**argv)
 	gat.gyro.offset[1] = -tmpOffset[1] / 10;
 	gat.gyro.offset[2] = -tmpOffset[2] / 10;
 
+    //Loop to get all of the messages
 	while (1)
 	{
 		size = p.get(msg);

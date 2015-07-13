@@ -19,7 +19,7 @@ void Magnetometer::SetScale(float gauss)
     else m_scale = 1;
 }
 
-void Magnetometer::updateMag(int xm, int ym, int zm)
+void Magnetometer::updateMag(int16_t xm, int16_t ym, int16_t zm)
 {
     x_raw = xm;
     y_raw = ym;

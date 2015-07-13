@@ -1,6 +1,10 @@
 #ifndef ACCEL_H
 #define ACCEL_H
 
+#include <cstdint>
+
+using std::int16_t;
+
 class Accelerometer
 {
 public:
@@ -8,9 +12,9 @@ public:
     float alpha;
     float gain[3];
     float x,y,z;
-    int x_raw, y_raw, z_raw;
     int fx, fy, fz; //Filter variables
-    void updateAccel(int ax, int ay, int az);
+    int16_t x_raw, y_raw, z_raw;
+    void updateAccel(int16_t ax, int16_t ay, int16_t az);
     void getXYZ(float *ax, float *ay, float *az);
 };
 
