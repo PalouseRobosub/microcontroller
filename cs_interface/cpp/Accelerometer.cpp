@@ -7,12 +7,12 @@ Accelerometer::Accelerometer()
     gain[2] = 0.00349265;
 }
 
-void Accelerometer::updateAccel(int ax, int ay, int az)
+void Accelerometer::updateAccel(int16_t ax, int16_t ay, int16_t az)
 {
     x_raw = -ax;
     y_raw = -ay;
     z_raw = -az;
-    
+
     x = gain[0] * (-ax);
     y = gain[1] * (-ay);
     z = gain[2] * (-az);

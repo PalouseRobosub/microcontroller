@@ -5,6 +5,7 @@ Gyro_Accel_Test::Gyro_Accel_Test()
     accel = Accelerometer();
     gyro = Gyroscope();
     mag = Magnetometer();
+    mag.SetScale(0.88);
 
     //init quaternion
     q0 = 1.0f;
