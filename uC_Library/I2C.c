@@ -6,8 +6,8 @@ void (*I2C_1_callback) (void);
 void (*I2C_2_callback) (void);
 
 //channel data structures
-I2C_Data i2c1;
-I2C_Data i2c2;
+I2C_Data i2c1 = {0};
+I2C_Data i2c2 = {0};
 
 //i2c state machine variables
 I2C_STATE i2c_1_state;
@@ -17,7 +17,7 @@ I2C_Data* initialize_I2C(I2C_Config config) {
                          //comment
     switch (config.channel) {
         case I2C_CH_1:
-            I2C1BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
+            I2C1BRG = config.pb_clk / (2 * I2C_SPEED) - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
             i2c1.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
@@ -38,7 +38,7 @@ I2C_Data* initialize_I2C(I2C_Config config) {
             break;
 
         case I2C_CH_2:
-            I2C2BRG = 1 / (2 * I2C_SPEED) * config.pb_clk - 2; //calculate the proper divider
+            I2C2BRG = config.pb_clk / (2 * I2C_SPEED)  - 2; //calculate the proper divider
 
             //setup the rx and tx buffers
             i2c2.Rx_queue = create_queue(config.rx_buffer_ptr, config.rx_buffer_size);
