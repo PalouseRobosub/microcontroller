@@ -1,13 +1,10 @@
 #ifndef MAGNETOMETER
 #define MAGNETOMETER
 
-<<<<<<< HEAD
 #include <cmath>
-=======
 #include <cstdint>
 
 using std::int16_t;
->>>>>>> 295047038745c2e487f4a2f01e7a42196859dd90
 
 class Magnetometer
 {

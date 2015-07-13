@@ -4,7 +4,7 @@ using std::cout;
 using std::endl;
 using std::cerr;
 
-typedef enum
+enum
 {
 	ACCEL,
 	GYRO,
@@ -12,7 +12,7 @@ typedef enum
 	TEMP,
 	PRESSURE,
 	DEPTH
-} SENSOR;
+};
 
 //typedef struct Data
 //{
@@ -22,11 +22,12 @@ typedef enum
 int main(int argc, char**argv)
 {
 	int size;
-	char port[64] = "/dev/ttyUSB2";
+	char port[64] = "/dev/ttyUSB4";
 	char msg[256];
 	float ypr[4];
 	Gyro_Accel_Test gat = Gyro_Accel_Test();
 	short int depth;
+	unsigned char *data = (unsigned char*) msg;	
 
 	if(argc >= 2)
 	{
@@ -36,21 +37,21 @@ int main(int argc, char**argv)
 
 	printf("serial port opened: %s\n", port);
 
-	int16_t tmpOffset[] = {0,0,0};
+	int tmpOffset[] = {0,0,0};
 	cout << "Getting Samples for Gyro Offset" << endl;
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 50; ++i)
 	{
 		p.get(msg);
 		while(msg[0] != GYRO){p.get(msg);} //Wait for next gyro packet
-		tmpOffset[0] += msg[2]<<8 | msg[1];
-		tmpOffset[1] += msg[4]<<8 | msg[3];
-		tmpOffset[2] += msg[6]<<8 | msg[5];
-		if(i % 10 == 0) cout << tmpOffset[0] << " " << tmpOffset[1] << " " << tmpOffset[2] << endl;
+		tmpOffset[0] += (short int) (data[2]<<8 | data[1]);
+		tmpOffset[1] += (short int) (data[4]<<8 | data[3]);
+		tmpOffset[2] += (short int) (data[6]<<8 | data[5]);
+//		if(i % 10 == 0) cout << tmpOffset[0] << " " << tmpOffset[1] << " " << tmpOffset[2] << endl;
 	}
 
-	gat.gyro.offset[0] = -tmpOffset[0] / 10;
-	gat.gyro.offset[1] = -tmpOffset[1] / 10;
-	gat.gyro.offset[2] = -tmpOffset[2] / 10;
+	gat.gyro.offset[0] = (int16_t) (-tmpOffset[0] / 50);
+	gat.gyro.offset[1] = (int16_t) (-tmpOffset[1] / 50);
+	gat.gyro.offset[2] = (int16_t) (-tmpOffset[2] / 50);
 
     //Loop to get all of the messages
 	while (1)
@@ -63,8 +64,8 @@ int main(int argc, char**argv)
 				//std::cout << "fuck you says accel" << size << std::endl;
 				if(size != 7)
 					break;
-				gat.accel.updateAccel(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
-//				cout << "RAW ACCEL: " << gat.accel.x_raw << " " << gat.accel.y_raw << " " << gat.accel.z_raw << endl;
+				gat.accel.updateAccel(data[2]<<8 | data[1],  data[4]<<8 | data[3], data[6]<<8 | data[5]);
+				cout << "A: " << gat.accel.x << " " << gat.accel.y << " " << gat.accel.z << endl;
 				// accel.x = msg[2]<<8 | msg[1];
 				// accel.y = msg[4]<<8 | msg[3];
 				// accel.z = msg[6]<<8 | msg[5];
@@ -74,8 +75,8 @@ int main(int argc, char**argv)
 				//std::cout << "fuck you says gyro" << size << std::endl;
 				if(size != 7)
 					break;
-				gat.gyro.updateGyro(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
-//				cout << "RAW GYRO: " << gat.gyro.raw_x << " " << gat.gyro.raw_y << " " << gat.gyro.raw_z << endl;
+				gat.gyro.updateGyro(data[2]<<8 | data[1], data[4]<<8 | data[3], data[6]<<8 | data[5]);
+				cout << "G: " << gat.gyro.fx << " " << gat.gyro.fy << " " << gat.gyro.fz << endl;
 				// gyro.x = msg[1]<<8 | msg[2];
 				// gyro.y = msg[3]<<8 | msg[4];
 				// gyro.z = msg[5]<<8 | msg[6];
@@ -88,8 +89,8 @@ int main(int argc, char**argv)
 				//  magneto.x = msg[2]<<8 | msg[1]; //Y value comes after Z value
 				//  magneto.y = msg[4]<<8 | msg[3];
 				//  magneto.z = msg[6]<<8 | msg[5];
-				gat.mag.updateMag(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
-//				cout << "RAW MAG: " << gat.mag.x_raw << " " << gat.mag.y_raw << " " << gat.mag.z_raw << endl;
+				gat.mag.updateMag(data[2]<<8 | data[1], data[4]<<8 | data[3], data[6]<<8 | data[5]);
+				cout << "M: " << gat.mag.x << " " << gat.mag.y << " " << gat.mag.z << endl;
 				//For now update the quaternion values when MAGNETO sends a packet
 				gat.update();
 
@@ -115,7 +116,7 @@ int main(int argc, char**argv)
 			case PRESSURE:
 				break;
 			case DEPTH:
-				depth = msg[2]<<8 | msg[1];
+				depth = data[2]<<8 | data[1];
 				cout << "DEPTH: " << depth << endl << endl;
 				break;
 			default:

@@ -1,7 +1,7 @@
 #ifndef GYRO_ACCEL_TEST
 #define GYRO_ACCEL_TEST
-#include "Accelerometer.h"
-#include "Gyroscope.h"
+#include "Accelerometer.hpp"
+#include "Gyroscope.hpp"
 #include "Magnetometer.hpp"
 #include <cmath>
 #include <chrono> //For std::chrono::duration, std::chrono::system_clock, std::chrono::time_point

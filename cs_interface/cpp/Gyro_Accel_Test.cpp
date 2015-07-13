@@ -52,7 +52,7 @@ void Gyro_Accel_Test::getQ(float * q)
     sampleFreq = 1.0 / (t_diff.count()/1000000000.0);
     last_update = now;
 
-    updateQuaternion(gyro.x * PI/180, gyro.y * PI/180, gyro.z * PI/180, accel.x, accel.y, accel.z, mag.x, mag.y, mag.z);
+    updateQuaternion(gyro.fx * PI/180, gyro.fy * PI/180, gyro.fz * PI/180, accel.x, accel.y, accel.z, mag.x, mag.y, mag.z);
     q[0] = q0;
     q[1] = q1;
     q[2] = q2;

@@ -13,7 +13,7 @@ public:
 	float gain[3];
 	float alpha;
 	float x, y, z;
-	int fx, fy, fz;
+	float fx, fy, fz;
 	int16_t raw_x, raw_y, raw_z;
 	int16_t offset[3];
 	float polarity[3];

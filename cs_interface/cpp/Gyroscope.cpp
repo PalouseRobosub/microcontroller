@@ -1,8 +1,8 @@
-#include "Gyroscope.h"
+#include "Gyroscope.hpp"
 
 Gyroscope::Gyroscope()
 {
-	alpha = 0.5;
+	alpha = 0.9;
 	gain[0] = 1.0;
 	gain[1] = 1.0;
 	gain[2] = 1.0;
@@ -43,21 +43,29 @@ void Gyroscope::updateGyro(int16_t gyroX, int16_t gyroY, int16_t gyroZ)
 	raw_x = gyroX;
 	x = -gyroX;
 	raw_y = gyroY;
-	y = gyroY;
+	y = -gyroY;
 	raw_z = gyroZ;
-	z = -gyroZ;
+	z = gyroZ;
 
-	fx = x*alpha + fx*(1.0-alpha);
-	fy = y*alpha + fy*(1.0-alpha);
-	fz = z*alpha + fz*(1.0-alpha);
+//	fx = x*alpha + fx*(1.0-alpha);
+//	fy = y*alpha + fy*(1.0-alpha);
+//	fz = z*alpha + fz*(1.0-alpha);
 
 	fx += offset[0];
 	fy += offset[1];
 	fz += offset[2];
 
+
 	fx = fx / 14.375 * polarity[0] * gain[0];
 	fy = fy / 14.375 * polarity[1] * gain[1];
 	fz = fz / 14.375 * polarity[2] * gain[2];
+
+/*	if(fx < 10)
+		fx = 0;
+	if(fy < 10)
+		fy = 0;
+	if(fz < 10)
+		fz = 0;*/
 }
 
 
