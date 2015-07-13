@@ -37,14 +37,15 @@ int main(int argc, char**argv)
 	printf("serial port opened: %s\n", port);
 
 	float tmpOffset[] = {0,0,0};
-
-	for (int i = 0; i < 300; ++i)
+	cout << "Getting Samples for Gyro Offset" << endl;
+	for (int i = 0; i < 100; ++i)
 	{
 		p.get(msg);
 		while(msg[0] != GYRO){p.get(msg);} //Wait for next gyro packet
 		tmpOffset[0] += msg[2]<<8 | msg[1];
 		tmpOffset[1] += msg[4]<<8 | msg[3];
 		tmpOffset[2] += msg[6]<<8 | msg[5];
+		if(i % 10 == 0) cout << tmpOffset[0] << " " << tmpOffset[1] << " " << tmpOffset[2] << endl;
 	}
 
 	gat.gyro.offset[0] = -tmpOffset[0] / 10;
@@ -62,6 +63,7 @@ int main(int argc, char**argv)
 				if(size != 7)
 					break;
 				gat.accel.updateAccel(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
+//				cout << "RAW ACCEL: " << gat.accel.x_raw << " " << gat.accel.y_raw << " " << gat.accel.z_raw << endl;
 				// accel.x = msg[2]<<8 | msg[1];
 				// accel.y = msg[4]<<8 | msg[3];
 				// accel.z = msg[6]<<8 | msg[5];
@@ -72,6 +74,7 @@ int main(int argc, char**argv)
 				if(size != 7)
 					break;
 				gat.gyro.updateGyro(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
+//				cout << "RAW GYRO: " << gat.gyro.raw_x << " " << gat.gyro.raw_y << " " << gat.gyro.raw_z << endl;
 				// gyro.x = msg[1]<<8 | msg[2];
 				// gyro.y = msg[3]<<8 | msg[4];
 				// gyro.z = msg[5]<<8 | msg[6];
@@ -85,6 +88,7 @@ int main(int argc, char**argv)
 				//  magneto.y = msg[4]<<8 | msg[3];
 				//  magneto.z = msg[6]<<8 | msg[5];
 				gat.mag.updateMag(msg[2]<<8 | msg[1], msg[4]<<8 | msg[3], msg[6]<<8 | msg[5]);
+//				cout << "RAW MAG: " << gat.mag.x_raw << " " << gat.mag.y_raw << " " << gat.mag.z_raw << endl;
 				//For now update the quaternion values when MAGNETO sends a packet
 				gat.update();
 

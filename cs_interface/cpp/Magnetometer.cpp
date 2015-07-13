@@ -3,6 +3,7 @@
 Magnetometer::Magnetometer()
 {
     m_scale = 1.0;
+    alpha = 0.5;
 }
 
 void Magnetometer::SetScale(float gauss)
@@ -20,11 +21,26 @@ void Magnetometer::SetScale(float gauss)
 
 void Magnetometer::updateMag(int xm, int ym, int zm)
 {
-    x_raw = -xm;
+    x_raw = xm;
     y_raw = ym;
-    z_raw = -zm;
+    z_raw = zm;
 
-    x = -xm * m_scale;
-    y = ym * m_scale;
-    z = -zm * m_scale;
+    fx = -x_raw*alpha + fx*(1.0-alpha);
+    fy = y_raw*alpha + fy*(1.0-alpha);
+    fz = -z_raw*alpha + fz*(1.0-alpha);
+
+    //Normalize the values
+    float norm = sqrt(fx*fx + fy*fy + fz*fz);
+    if(norm != 0)
+    {
+        x = fx * m_scale / norm;
+        y = fy * m_scale / norm;
+        z = fz * m_scale / norm;
+    }
+    else
+    {
+        x = fx * m_scale;
+        y = fy * m_scale;
+        z = fz * m_scale;
+    }
 }

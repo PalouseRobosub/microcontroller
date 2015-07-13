@@ -2,6 +2,7 @@
 
 Gyroscope::Gyroscope()
 {
+	alpha = 0.5;
 	gain[0] = 1.0;
 	gain[1] = 1.0;
 	gain[2] = 1.0;
@@ -39,20 +40,24 @@ void Gyroscope::zeroCalibrate(unsigned int totSamples, unsigned int sampleDelayM
 
 void Gyroscope::updateGyro(int gyroX, int gyroY, int gyroZ)
 {
-	raw_x = -gyroX;
+	raw_x = gyroX;
 	x = -gyroX;
 	raw_y = gyroY;
 	y = gyroY;
-	raw_z = -gyroZ;
+	raw_z = gyroZ;
 	z = -gyroZ;
 
-	x += offset[0];
-	y += offset[1];
-	z += offset[2];
+	fx = x*alpha + fx*(1.0-alpha);
+	fy = y*alpha + fy*(1.0-alpha);
+	fz = z*alpha + fz*(1.0-alpha);
 
-	x = x / 14.375 * polarity[0] * gain[0];
-	y = y / 14.375 * polarity[1] * gain[1];
-	z = z / 14.375 * polarity[2] * gain[2];
+	fx += offset[0];
+	fy += offset[1];
+	fz += offset[2];
+
+	fx = fx / 14.375 * polarity[0] * gain[0];
+	fy = fy / 14.375 * polarity[1] * gain[1];
+	fz = fz / 14.375 * polarity[2] * gain[2];
 }
 
 
