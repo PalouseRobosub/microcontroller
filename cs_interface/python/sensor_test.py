@@ -8,6 +8,7 @@ gyro = 1
 magnometer = 2
 temperature = 3
 pressure = 4
+sid_depth = 5
 
 # Variables for printing
 p = Packetizer('/dev/ttyUSB2')
@@ -34,6 +35,7 @@ def main():
 	magno_z = 0
 	temp = 0
 	press = 0
+	depth_data = 0;
 
 	p.get_lock()
 	while(1):
@@ -43,13 +45,15 @@ def main():
 			accel_y = convert(data[4], data[3])
 			accel_z = convert(data[6], data[5])
 		elif (data[0] == gyro): # Gyroscope Data
-			gyro_x = convert(data[1], data[2])
-			gyro_y = convert(data[3], data[4])
-			gyro_z = convert(data[5], data[6])
+			gyro_x = convert(data[2], data[1])
+			gyro_y = convert(data[4], data[3])
+			gyro_z = convert(data[6], data[5])
 		elif (data[0] == magnometer): # Magnometer Data
-			magno_x = convert(data[1], data[2])
-			magno_y = convert(data[5], data[6]) #Y value comes after Z value
-			magno_z = convert(data[3], data[4])
+			magno_x = convert(data[2], data[1])
+			magno_y = convert(data[6], data[5]) #Y value comes after Z value
+			magno_z = convert(data[4], data[3])
+		elif (data[0] == sid_depth): # depth sensor Data
+			depth_data = (data[1] << 8) | data[2];
 
 		os.system('clear')
 
@@ -57,6 +61,7 @@ def main():
 		print 'Accelerometer: \tX={}\tY={}\tZ={}' .format(accel_x, accel_y, accel_z)
 		print 'Gryoscope: \tX={}\tY={}\tZ={}' .format(gyro_x, gyro_y, gyro_z)
 		print 'Magnetometer: \tX={}\tY={}\tZ={}' .format(magno_x, magno_y, magno_z)
+		print 'Depth: {}' .format(depth_data)
 
 # Junk required to call main first
 if __name__ == "__main__":
