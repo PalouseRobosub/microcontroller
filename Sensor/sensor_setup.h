@@ -20,6 +20,7 @@ typedef enum SENSOR_ID
     SID_TEMPERATURE_0,
     SID_PRESSURE_0,
     SID_DEPTH_0,
+    SID_BAT_VOLT_0,
     SID_START_SWITCH,
 
     SID_COUNT
@@ -30,6 +31,7 @@ void accel_setup(void *callback);
 void gyro_setup(void *callback);
 void mag_setup(void *callback);
 void depth_setup();
+void battery_volt_setup();
 
 void config_accel(void);
 void read_accel(void);

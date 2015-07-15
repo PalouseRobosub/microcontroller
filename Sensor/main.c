@@ -68,6 +68,7 @@
 void timer_callback(void);
 void sensor_send_uart(I2C_Node i2c_node);
 void depth_callback(ADC_Node node);
+void bat_volt_callback(ADC_Node node);
 void read_switch(void);
 
 
@@ -155,6 +156,7 @@ int main(void) {
 void timer_callback(void)
 {
     static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
+    static ADC_Node bat_volt_node = {0x02, ADC_CH_5, 0 , &bat_volt_callback};
 
     //read all the sensors
     read_accel();
@@ -162,6 +164,7 @@ void timer_callback(void)
     read_mag();
     
     read_ADC(depth_node);
+    read_ADC(bat_volt_node);
 
      
     //read the start switch
@@ -229,6 +232,21 @@ void depth_callback(ADC_Node node)
     send_data[2] = data_HB;
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));
+}
+
+void bat_volt_callback(ADC_Node node)
+{
+    uint8 send_data[3];
+    uint8 data_LB, data_HB;
+    data_LB = node.data & 0xFF;
+    data_HB = node.data >> 8;
+
+    send_data[0] = SID_BAT_VOLT_0;
+    send_data[1] = data_LB;
+    send_data[2] = data_HB;
+
+    send_packet(PACKET_UART1, send_data, sizeof(send_data));
+
 }
 
 void read_switch(void)

@@ -9,6 +9,7 @@ Sensor_Data mag_data;
 Sensor_Data temp_data;
 Sensor_Data pressure_data;
 uint8 adc_work_queue[3*sizeof(ADC_Node)], adc_results_queue[3*sizeof(ADC_Node)];
+uint8 bat_volt_work_queue[3*sizeof(ADC_Node)], bat_volt_result_queue[3*sizeof(ADC_Node)];
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Local Variables">
@@ -163,6 +164,19 @@ void depth_setup()
     adc_config.result_buffer_size = sizeof(adc_results_queue);
     adc_config.callback = 0;
     initialize_ADC(adc_config);
+}
+
+void battery_volt_setup()
+{
+    ADC_Config config = {0};
+
+    config.channels = (1 << ADC_CH_5);
+    config.work_buffer_ptr = bat_volt_work_queue;
+    config.work_buffer_size = sizeof(bat_volt_work_queue);
+    config.result_buffer_ptr = bat_volt_result_queue;
+    config.result_buffer_size = sizeof(bat_volt_result_queue);
+    config.callback = 0;
+    initialize_ADC(config);
 }
 
 /*void temp_setup(void *callback)
