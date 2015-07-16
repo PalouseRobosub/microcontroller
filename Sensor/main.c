@@ -97,6 +97,10 @@ int main(void) {
     //start switch
     TRISBbits.TRISB2 = 1;
     ANSELBbits.ANSB2 = 0;
+    
+    //battery voltage
+    TRISBbits.TRISB3 = 1;
+    ANSELBbits.ANSB3 = 1;
 
     //setup peripherals
     timer_config.divide = Div_256;
