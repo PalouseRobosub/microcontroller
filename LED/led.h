@@ -21,10 +21,10 @@ void init_UART(UART_Config uart_config, uint8 *uart_rx_buffer);
 void init_packet(Packetizer_Config packet_config, UART_Config uart_config);
 
 void copy_strip(PIXEL *pixels, PIXEL *colors);
-void set_all(PIXEL *pixels, PIXEL color);
-void set_strip(PIXEL *pixels, PIXEL color);
-void set_dual_all(PIXEL *pixels, PIXEL color1, PIXEL color2);
-void set_dual_strip(PIXEL *pixels, PIXEL color1, PIXEL color2);
+void set_all(PIXEL *pixels, PIXEL *color);
+void set_strip(PIXEL *pixels, PIXEL *color);
+void set_dual_all(PIXEL *pixels, PIXEL *color1, PIXEL *color2);
+void set_dual_strip(PIXEL *pixels, PIXEL *color1, PIXEL *color2);
 
 
 #ifdef	__cplusplus
