@@ -16,9 +16,9 @@ extern "C" {
 
 void parse_packet(uint8 *buffer, uint8 size);
 void initialize_pins();
-void init_SPI(SPI_Config spi_config, uint8 *spi_tx_buf);
-void init_UART(UART_Config uart_config, uint8 *uart_rx_buffer);
-void init_packet(Packetizer_Config packet_config, UART_Config uart_config);
+void init_SPI(SPI_Config *spi_config, uint8 *spi_tx_buf);
+void init_UART(UART_Config *uart_config, uint8 *uart_rx_buffer);
+void init_packet(Packetizer_Config *packet_config, UART_Config *uart_config);
 
 void copy_strip(PIXEL *pixels, PIXEL *colors);
 void set_all(PIXEL *pixels, PIXEL *color);

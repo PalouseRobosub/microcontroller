@@ -5,8 +5,6 @@ void parse_packet(uint8 *buffer, uint8 size)
     static uint8 led_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
     PIXEL *pixels = (PIXEL *) led_buf;
 
-    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
-
     switch(*buffer)
     {
         case manual:
@@ -34,37 +32,30 @@ void parse_packet(uint8 *buffer, uint8 size)
 
 void initialize_pins() {
     ANSELBbits.ANSB13 = 0;
+    ANSELAbits.ANSA1 = 0;
+    ANSELBbits.ANSB14 = 0;
     RPA1R = 0b0011; //set the RPA2R to SDO1
     U1RXR = 0b0011; // Set the pin to RPB13
 }
 
-void init_SPI(SPI_Config spi_config, uint8 *spi_tx_buf)
+void init_SPI(SPI_Config *spi_config, uint8 *spi_tx_buf)
 {
-    spi_config.which_spi = SPI_CH_1;
-    spi_config.pb_clk = 15000000;
-    spi_config.speed = 295000;
-    spi_config.tx_en = 1;
-    spi_config.clk_edge = 0;
-    spi_config.tx_buffer_ptr = spi_tx_buf;
-    spi_config.tx_buffer_size = sizeof(spi_tx_buf);
-    initialize_SPI(spi_config);
+    spi_config->which_spi = SPI_CH_1;
+    spi_config->pb_clk = 15000000;
+    spi_config->speed = 295000;
+    spi_config->tx_en = 1;
+    spi_config->clk_edge = 0;
+    spi_config->tx_buffer_ptr = spi_tx_buf;
+    spi_config->tx_buffer_size = sizeof(spi_tx_buf);
+    initialize_SPI(*spi_config);
 }
-void init_UART(UART_Config uart_config, uint8 *uart_rx_buffer)
+void init_UART(UART_Config *uart_config, uint8 *uart_rx_buffer)
 {
-    uart_config.which_uart = UART_CH_1;
-    uart_config.pb_clk = 15000000;
-    uart_config.speed = 115200;
-    uart_config.rx_buffer_ptr = uart_rx_buffer;
-    uart_config.rx_buffer_size = sizeof(uart_rx_buffer);
-    uart_config.rx_en = 1;
+    
 }
-void init_packet(Packetizer_Config packet_config, UART_Config uart_config)
+void init_packet(Packetizer_Config *packet_config, UART_Config *uart_config)
 {
-    packet_config.which_channel = PACKET_UART1;
-    packet_config.control_byte = 0x0A;
-    packet_config.callback = &parse_packet;
-    packet_config.uart_config = uart_config;
-    initialize_packetizer(packet_config);
+    
 }
 
 void copy_strip(PIXEL *pixels, PIXEL *colors)

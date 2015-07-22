@@ -63,15 +63,15 @@
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 // </editor-fold>
 
+
+
 /*************************************************************************
  Main Function
  ************************************************************************/
 int main(void) {
-
-    //buffer for uart ISRs
     uint8 uart_rx_buffer[128];
-    uint8 spi_tx_buffer[NUMLEDS*3 + (NUMLEDS-1)/32 + 1];
-
+    uint8 spi_tx_buffer[(NUMLEDS*3 + (NUMLEDS-1)/32 + 1)*3];
+    
     //structures for configuring peripherals
     UART_Config uart_config = {0};
     Timer_Config timer_config = {0};
@@ -79,9 +79,28 @@ int main(void) {
     Packetizer_Config packet_config = {0};
 
     initialize_pins();
-    init_SPI(spi_config, spi_tx_buffer);
-    init_UART(uart_config, uart_rx_buffer);
-    init_packet(packet_config, uart_config);
+
+    spi_config.which_spi = SPI_CH_1;
+    spi_config.pb_clk = 15000000;
+    spi_config.speed = 295000;
+    spi_config.tx_en = 1;
+    spi_config.clk_edge = 0;
+    spi_config.tx_buffer_ptr = spi_tx_buffer;
+    spi_config.tx_buffer_size = sizeof(spi_tx_buffer);
+    initialize_SPI(spi_config);
+
+    uart_config.which_uart = UART_CH_1;
+    uart_config.pb_clk = 15000000;
+    uart_config.speed = 115200;
+    uart_config.rx_buffer_ptr = uart_rx_buffer;
+    uart_config.rx_buffer_size = sizeof(uart_rx_buffer);
+    uart_config.rx_en = 1;
+
+    packet_config.which_channel = PACKET_UART1;
+    packet_config.control_byte = 0x0A;
+    packet_config.callback = &parse_packet;
+    packet_config.uart_config = uart_config;
+    initialize_packetizer(packet_config);
 
     //Global interrupt enable. Do this lbm ast!
     INTEnableSystemMultiVectoredInt();
