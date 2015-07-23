@@ -52,11 +52,15 @@ class LED{
 	int send_dual_strip(std::string primary_color, std::string secondary_color, uint8_t strip);
 	int send_refresh();
 
-	int set_pixel(int strip, int pixel, PIXEL color);
-	int set_pixel_inv(int strip, int offset, int interval, PIXEL color);
-	int set_strip(int strip, PIXEL color);
-	int add_strip();
-	int remove_strip();
+	int set_pixel(const std::string &name, int pixel, const std::string &color);
+	int set_pixel_inv(const std::string &name, int offset, int interval, const std::string &color);
+	int set_strip(const std::string &name, const std::string color);
+
+	int add_strip(const std::string &name);
+	int remove_strip(const std::string &name);
+	int check_strip(const std::string &name);
+	int load_strip_map(const std::string &file, bool overwrite);
+	int save_strip_map(const std::string &file, bool overwrite);
 
 	int add_color(const std::string &color, uint8_t red, uint8_t green, uint8_t blue, bool replace);
 	int check_color(const std::string color);

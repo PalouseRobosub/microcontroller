@@ -144,6 +144,141 @@ int LED::send_refresh()
 	return uc_stream->send(msg, 1);
 }
 
+int LED::set_pixel(const std::string &name, int pixel, const std::string &color)
+{
+	std::unordered_map<std::string, PIXEL[STRIPSIZE]>::const_iterator strip_it;
+	PIXEL color_temp;
+	check_color(color, color_temp.red, color_temp.green, color_temp.blue);
+	strip_it = strip_map.find(name);
+
+	return 1;
+}
+
+int LED::set_pixel_inv(const std::string &name, int offset, int interval, const std::string &color)
+{
+	std::unordered_map<std::string, PIXEL[STRIPSIZE]>::iterator strip_it;
+	PIXEL pixel;
+	check_color(color, pixel.red, pixel.green, pixel.blue);
+	strip_it = strip_map.find(name);
+	if(interval < 0)
+	{
+		return -1;
+	}
+	else if((interval == 0) && (offset < STRIPSIZE))
+	{
+		strip_it->second[offset] = pixel;
+	}
+	else
+	{
+		for(int i = offset; i < STRIPSIZE; i += interval)
+		{
+			strip_it->second[i] = pixel;
+		}
+	}
+	return 1;	
+}
+
+int LED::set_strip(const std::string &name, const std::string color)
+{
+	std::unordered_map<std::string, PIXEL[STRIPSIZE]>::iterator strip_it;
+	PIXEL pixel;
+	check_color(color, pixel.red, pixel.green, pixel.blue);
+	strip_it = strip_map.find(name);
+	for(int i = 0; i < STRIPSIZE; ++i)
+	{
+	  strip_it->second[i] = pixel;
+	}
+	return 1;
+}
+
+int LED::add_strip(const std::string &name)
+{
+	strip_map[name];
+	return 1;
+}
+
+int LED::remove_strip(const std::string &name)
+{
+	strip_map.erase(name);
+	return 1;
+}
+
+int LED::check_strip(const std::string &name)
+{
+	return strip_map.count(name);
+}
+
+int LED::load_strip_map(const std::string &file, bool overwrite)
+{
+	std::ifstream infile;
+	std::string strip;
+	PIXEL pixel;
+	infile.open(file);
+	int red, green, blue;
+	int strips_added = 0;
+	std::unordered_map<std::string, PIXEL[STRIPSIZE]>::iterator strip_it;
+	
+	if(infile.is_open())
+	{
+		while(!infile.eof())
+		{
+			infile >> strip;
+			if(add_strip(strip) || overwrite)
+			{
+				strip_it = strip_map.find(strip);
+
+				for(int i = 0; i < STRIPSIZE; ++i)
+				{
+					infile >> std::hex >> red >> green >> blue;
+					pixel.red = red;
+					pixel.green = green;
+					pixel.blue = blue;
+					strip_it->second[i] = pixel;
+				}
+			}
+		}
+
+		infile.close();
+	}
+	return strips_added;
+}
+
+
+int LED::save_strip_map(const std::string &file, bool overwrite)
+{
+	std::ofstream outfile;
+
+	if(!(access(file.c_str(), F_OK) != -1) | overwrite)
+	{
+		outfile.open(file, std::ofstream::out | (std::ofstream::trunc));
+		if(outfile.is_open())
+		{
+			for(auto it = strip_map.begin(); it != strip_map.end(); ++it)
+			{
+				outfile << it->first.c_str() << std::endl;	
+				for(int i = 0; i << STRIPSIZE; ++i)
+				{
+					outfile << std::hex << (int) it->second[i].red << " " << (int) it->second[i].green << " " << (int) it->second[i].blue << "   ";
+
+					if((i + 1)%3 == 0)
+					{
+						outfile << std::endl;
+					}
+
+					if((i + 1)%3 != 1)
+					{
+						outfile << std::endl;
+					}
+				}
+			}
+		}
+
+		outfile.close();
+		return 1;
+	}
+	return 0;
+}
+
 int LED::add_color(const  std::string &color, uint8_t red, uint8_t green, uint8_t blue, bool replace)
 {
 	if(check_color(color))
@@ -188,7 +323,6 @@ int LED::load_color_map(const std::string &file, bool overwrite)
 {
 	std::ifstream infile;
 	std::string color;
-	PIXEL pixel;
 	infile.open(file);
 	int red, green, blue;
 	int colors_added = 0;
