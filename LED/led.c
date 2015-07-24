@@ -1,10 +1,17 @@
 #include "led.h"
 
+//Timer mode
+TimerMode mode = toggle;
+
+//LED frame buffer
+static uint8 led_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
+PIXEL *pixels = (PIXEL *) led_buf;
+
+static uint8  led_toggle_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
+PIXEL *toggle_pixels = (PIXEL *) led_toggle_buf;
+
 void parse_packet(uint8 *buffer, uint8 size)
 {
-    static uint8 led_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
-    PIXEL *pixels = (PIXEL *) led_buf;
-
     switch(*buffer)
     {
         case manual:
@@ -58,6 +65,110 @@ void init_packet(Packetizer_Config *packet_config, UART_Config *uart_config)
     
 }
 
+void init_Timer (Timer_Config timer_config, uint16 period)
+{
+    timer_config.enabled = TRUE;
+    timer_config .which_timer = 1;
+    timer_config.divide = Div_256;
+    timer_config.callback = timer_tick;
+    timer_config.period = period;
+    initialize_timer (timer_config);
+}
+
+//timer subroutine
+void timer_tick ()
+{
+    switch (mode)
+    {
+        case forward_warp_shift:
+            forward_warp_shift ();
+            break;
+        case backward_warp_shift:
+            backward_warp_shift ();
+            break;
+        case clockwise_shift:
+            clockwise_shift ();
+            break;
+        case counterclockwise_shift:
+            counterclockwise_shift ();
+            break;
+        case toggle:
+            toggle ();
+            break;
+        default:
+            break;
+    }
+}
+void forward_warp_shift ()
+{
+    PIXEL tempL, tempR;
+    uint8 i = 0;
+    tempL = pixels [7];
+    tempR = pixels [8];
+    for (i=0; i <= 7; i++)
+    {
+        pixels [i+1] = pixels [i];
+    }
+    for (i=15; i >=8; i--)
+    {
+        pixels [i-1] = pixels [i];
+    }
+    pixels [0] = tempL;
+    pixels [15] = tempR;
+    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
+}
+
+void backward_warp_shift ()
+{
+    PIXEL tempL, tempR;
+    uint8 i = 7;
+    tempL = pixels [0];
+    tempR = pixels [15];
+    for (i = 7; i >=1; i-- )
+    {
+        pixels [i-1] = pixels[i];
+    }
+    for (i = 8; i <= 14; i++)
+    {
+        pixels [i+1] = pixels[i];
+    }
+    pixels [7] = tempL;
+    pixels [15] = tempR;
+    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
+}
+
+void clockwise_shift ()
+{
+    uint8 i = 0;
+    PIXEL temp;
+    temp = pixels [15];
+    for (i =0; <= 14; i++)
+    {
+        pixels [i+1] = pixels [i];
+    }
+    pixels [0] = temp;
+    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
+}
+
+void counterclockwise_shift ()
+{
+    uint8 i = 0;
+    PIXEL temp;
+    temp = pixels [0];
+    for (i = 15; i >= 1; i--)
+    {
+        pixels [i-1] = pixels [i];
+    }
+    pixels [15] = temp;
+    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
+}
+void toggle ()
+{
+    PIXEL *temp_ptr = 0;
+    temp_ptr = pixels;
+    pixels = toggle_pixels;
+    toggle_pixels = temp_ptr;
+}
 void copy_strip(PIXEL *pixels, PIXEL *colors)
 {
     memcpy(pixels, colors, STRIPSIZE*3);
@@ -93,6 +204,7 @@ void set_dual_all(PIXEL *pixels, PIXEL *color1, PIXEL *color2)
         }
     }
 }
+
 void set_dual_strip(PIXEL *pixels, PIXEL *color1, PIXEL *color2)
 {
     int i = 0;

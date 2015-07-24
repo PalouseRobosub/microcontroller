@@ -18,6 +18,13 @@ typedef enum {
 	set
 } ComCodes;
 
+typedef enum {
+    forward_warp_shift,
+    backward_warp_shift,
+            clockwise_shift,
+           counterclockwise_shift,
+    toggle
+}TimerMode;
+
 
 #endif
-
