@@ -70,7 +70,9 @@ void sensor_send_uart(I2C_Node i2c_node);
 void depth_callback(ADC_Node node);
 void bat_volt_callback(ADC_Node node);
 void read_switch(void);
+void send_depth();
 
+uint16 depth_value;
 
 /*************************************************************************
  Main Function
@@ -104,7 +106,7 @@ int main(void) {
 
     //setup peripherals
     timer_config.divide = Div_256;
-    timer_config.period = 5859;
+    timer_config.period = 586;
     timer_config.which_timer = Timer_1;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
@@ -161,18 +163,24 @@ void timer_callback(void)
 {
     static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
     static ADC_Node bat_volt_node = {0x02, ADC_CH_5, 0 , &bat_volt_callback};
+    static int i = 0;
+
 
     //read all the sensors
-    read_accel();
-    read_gyro();
-    read_mag();
-    
-    read_ADC(depth_node);
-    read_ADC(bat_volt_node);
-
-     
-    //read the start switch
-    read_switch();               
+    for(i; i < 10; ++i)
+    {
+        read_ADC(depth_node);
+    }
+    if(i == 10)
+    {
+        read_accel();
+        read_gyro();
+        read_mag();
+        read_ADC(bat_volt_node);
+        send_depth();
+        read_switch();
+        i = 0;
+    }
 }
 
 void sensor_send_uart(I2C_Node node)
@@ -226,14 +234,20 @@ void sensor_send_uart(I2C_Node node)
 
 void depth_callback(ADC_Node node)
 {
-    uint8 send_data[3];
-    uint8 data_LB, data_HB;
-    data_LB = node.data & 0xFF;
-    data_HB = node.data >> 8;
+    depth_value += node.data;
+}
 
+void send_depth()
+{
+    uint8 send_data[3];
+
+    depth_value /= 10;
     send_data[0] = SID_DEPTH_0;
-    send_data[1] = data_LB;
-    send_data[2] = data_HB;
+        
+    send_data[1] = depth_value & 0xFF;
+    send_data[2] = depth_value >> 8;
+    
+    depth_value = 0;
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));
 }
