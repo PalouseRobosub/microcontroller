@@ -72,11 +72,8 @@ int main(void) {
     uint8 uart_rx_buffer[128];    
     uint8 spi_tx_buffer[NUMLEDS*3 + (NUMLEDS-1)/32 + 1];
 
-    int timer_period = 58000;
-
     //structures for configuring peripherals
     UART_Config uart_config = {0};
-    Timer_Config timer_config = {0};
     SPI_Config spi_config = {0};
     Packetizer_Config packet_config = {0};
 

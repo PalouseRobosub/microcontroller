@@ -10,21 +10,25 @@ typedef struct Pixel
 } PIXEL;
 
 typedef enum {
-	manual,
-	all,
-	strip,
-	dual_all,
+    manual,
+    all,
+    strip,
+    dual_all,
     dual_strip,
-	set
+    set,
+    save_pattern,
+    start_pattern,
+    change_period
 } ComCodes;
 
 typedef enum {
+    reset_period,
     forward_warp_shift,
     backward_warp_shift,
-            clockwise_shift,
-           counterclockwise_shift,
+    clockwise_shift,
+    counterclockwise_shift,
     toggle
-}TimerMode;
+} Pattern;
 
 
 #endif

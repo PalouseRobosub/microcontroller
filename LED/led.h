@@ -28,11 +28,12 @@ void set_strip(PIXEL *pixels, PIXEL color);
 void set_dual_all(PIXEL *pixels, PIXEL color1, PIXEL color2);
 void set_dual_strip(PIXEL *pixels, PIXEL color1, PIXEL color2);
 
-void forward_warp_shift ();
-void backward_warp_shift ();
-void clockwise_shift ();
-void counterclockwise_shift ();
-void toggle ();
+void Pattern_Select();
+void forward_warp_shift();
+void backward_warp_shift();
+void clockwise_shift();
+void counterclockwise_shift();
+void toggle();
 
 
 #ifdef	__cplusplus
