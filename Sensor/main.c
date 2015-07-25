@@ -64,15 +64,18 @@
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
 // </editor-fold>
 
+
+
 //forward declarations
 void timer_callback(void);
 void sensor_send_uart(I2C_Node i2c_node);
 void depth_callback(ADC_Node node);
 void bat_volt_callback(ADC_Node node);
 void read_switch(void);
-void send_depth();
+void timer_update(uint8 *msg, uint8 length);
 
-uint16 depth_value;
+int update_rate[SID_COUNT];
+int update_counter[SID_COUNT];
 
 /*************************************************************************
  Main Function
@@ -106,8 +109,8 @@ int main(void) {
 
     //setup peripherals
     timer_config.divide = Div_256;
-    timer_config.period = 586;
-    timer_config.which_timer = Timer_1;
+    timer_config.period = 1172;
+    timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
     initialize_timer(timer_config);
@@ -133,7 +136,7 @@ int main(void) {
     packet_config.control_byte = 0x0A;
     packet_config.which_channel = PACKET_UART1;
     packet_config.uart_config = uart_config;
-    packet_config.callback = NULL;
+    packet_config.callback = &timer_update;
     initialize_packetizer(packet_config);
 
     sensor_setup(&sensor_send_uart);
@@ -154,6 +157,7 @@ int main(void) {
         //put background processes here
         bg_process_I2C();
         bg_process_ADC();
+        packetizer_background_process(PACKET_UART1);
     }
 
     return 0;
@@ -163,23 +167,42 @@ void timer_callback(void)
 {
     static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
     static ADC_Node bat_volt_node = {0x02, ADC_CH_5, 0 , &bat_volt_callback};
-    static int i = 0;
-
-
-    //read all the sensors
-    for(i; i < 10; ++i)
+    int i;
+    
+    for(i=0; i < SID_COUNT; ++i)
     {
-        read_ADC(depth_node);
-    }
-    if(i == 10)
-    {
-        read_accel();
-        read_gyro();
-        read_mag();
-        read_ADC(bat_volt_node);
-        send_depth();
-        read_switch();
-        i = 0;
+        ++update_counter[i];
+        if (update_counter[i] >= update_rate[i])
+        {
+            update_counter[i] = 0;
+            //now read that sensor
+            switch(i)
+            {
+                case SID_ACCELEROMETER_0:
+                    read_accel();
+                    break;
+                case SID_GYROSCOPE_0:
+                    read_gyro();
+                    break;
+                case SID_MAGNETOMETER_0:
+                    read_mag();
+                    break;
+                case SID_TEMPERATURE_0:
+                    break;
+                case SID_PRESSURE_0:
+                    break;
+                case SID_DEPTH_0:
+                    read_ADC(depth_node);
+                    break;
+                case SID_BAT_VOLT_0:
+                    read_ADC(bat_volt_node);
+                case SID_START_SWITCH:
+                    read_switch();
+                default:
+                    break;
+                    //send error message to computer
+            }            
+        }
     }
 }
 
@@ -234,22 +257,15 @@ void sensor_send_uart(I2C_Node node)
 
 void depth_callback(ADC_Node node)
 {
-    depth_value += node.data;
-}
+     uint8 send_data[3];
 
-void send_depth()
-{
-    uint8 send_data[3];
-
-    depth_value /= 10;
     send_data[0] = SID_DEPTH_0;
-        
-    send_data[1] = depth_value & 0xFF;
-    send_data[2] = depth_value >> 8;
-    
-    depth_value = 0;
+
+    send_data[1] = node.data & 0xFF;
+    send_data[2] = node.data >> 8;
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));
+
 }
 
 void bat_volt_callback(ADC_Node node)
@@ -275,4 +291,18 @@ void read_switch(void)
     send_data[1] = !(PORTBbits.RB2); //read the start switch, invert the logic
 
     send_packet(PACKET_UART1, send_data, sizeof(send_data));    
+}
+
+void timer_update(uint8 *msg, uint8 length)
+{
+    uint8 div = msg[1];
+    uint16 *period = (uint16*) (msg+2);
+    
+    if(msg[0] < SID_COUNT)
+        update_rate[msg[0]] = div;
+    else if((msg[0] == SID_COUNT) && (length == 4))
+    {
+        T2CONbits.TCKPS = msg[1];
+        PR2 = *period;
+    }
 }
