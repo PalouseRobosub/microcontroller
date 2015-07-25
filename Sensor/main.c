@@ -74,7 +74,7 @@ void bat_volt_callback(ADC_Node node);
 void read_switch(void);
 void timer_update(uint8 *msg, uint8 length);
 
-int update_rate[SID_COUNT];
+int update_rate[SID_COUNT] = {2,2,2,2,2,2,10,10};
 int update_counter[SID_COUNT];
 
 /*************************************************************************
@@ -109,7 +109,7 @@ int main(void) {
 
     //setup peripherals
     timer_config.divide = Div_256;
-    timer_config.period = 1172;
+    timer_config.period = 1500; // 586;
     timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
@@ -168,8 +168,15 @@ void timer_callback(void)
     static ADC_Node depth_node = {0x01, ADC_CH_1, 0, &depth_callback};
     static ADC_Node bat_volt_node = {0x02, ADC_CH_5, 0 , &bat_volt_callback};
     int i;
+
+    read_accel();
+    read_gyro();
+    read_mag();
+    read_ADC(depth_node);
+    read_ADC(bat_volt_node);
+    read_switch();
     
-    for(i=0; i < SID_COUNT; ++i)
+  /*  for(i=0; i < SID_COUNT; ++i)
     {
         ++update_counter[i];
         if (update_counter[i] >= update_rate[i])
@@ -196,14 +203,17 @@ void timer_callback(void)
                     break;
                 case SID_BAT_VOLT_0:
                     read_ADC(bat_volt_node);
+                   break;
                 case SID_START_SWITCH:
                     read_switch();
+                    break;
                 default:
                     break;
                     //send error message to computer
             }            
         }
     }
+   */
 }
 
 void sensor_send_uart(I2C_Node node)
