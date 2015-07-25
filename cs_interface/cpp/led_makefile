@@ -1,0 +1,21 @@
+CC=g++
+CFLAGS=-c -Wall -std=c++11
+LDFLAGS=
+LIBS= -lstdc++
+SOURCES=Packetizer.cpp Serial.cpp Led.cpp LedTest.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=led.exe
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf *.o *.out *.exe *.*~ *~
+
+remake:
+	(rm -rf *.o *.out *.exe *.*~ *~) && make -f led_makefile
