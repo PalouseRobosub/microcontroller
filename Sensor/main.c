@@ -109,7 +109,7 @@ int main(void) {
 
     //setup peripherals
     timer_config.divide = Div_256;
-    timer_config.period = 1500; // 586;
+    timer_config.period = 1172; // 586;
     timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
