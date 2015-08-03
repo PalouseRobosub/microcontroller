@@ -1,0 +1,5 @@
+off 80 80 80
+white ff ff ff
+red ff 80 80
+green 80 ff 80
+blue 80 80 ff
