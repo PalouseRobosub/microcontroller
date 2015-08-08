@@ -56,13 +56,25 @@ extern "C" {
         RPC2,
         RPC4, // End Int1
     }Pin;
-
-    void config_interrupt(Interrupt intNum, int pin);
-    void config_interrupt(Interrupt intNum, char pin);
-
-
-
-
+    
+    typedef enum {
+        falling,
+        rising
+    } Polarity;
+    
+    typedef struct INTERRUPT_CONFIG{
+        Interrupt extInt;
+        Pin pin;
+        Polarity polarity;
+        int priority;
+        int subPriority;
+        bool enable;
+        void *callback;
+    } Interrupt_Config;
+    
+    void initialize_INT(Interrupt_Config config);
+    void disable_INT(Interrupt extInt);
+    void enable_INT(Interrupt extInt);
 
 #ifdef	__cplusplus
 }
