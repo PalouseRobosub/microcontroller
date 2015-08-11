@@ -9,7 +9,48 @@ void (*callback_int4) (void);
 
 void initialize_INT(Interrupt_Config config) 
 {
-    
+
+    //for initialization, we must first set the directionality of the pin and disable any analog values on the pin
+    switch (config.extInt) {
+    //set the tristate and the PPS
+    //disable analog on this pin
+        case INT1:
+            if ((config.pin - (3*8)) > 0b1000) {
+                config.pin = 3*8;
+            }
+            INT1R = config.pin - (3*8);
+            break;
+        case INT2:
+            if ((config.pin - (2*8)) > 0b1000) {
+                config.pin = 2*8;
+            }
+            INT2R = config.pin - (3*8);
+            break;
+        case INT3:
+            if ((config.pin -(1*8)) > 0b1000) {
+                config.pin = 1*8;
+            }
+            INT3R = config.pin - (3*8);
+            break;
+        case INT4:
+            if (config.pin > 0b1000) {
+                config.pin = 0;
+            }
+            INT4R = config.pin;
+            break;
+        default:
+            //error
+            break;
+    }
+
+    //next, configure the polarity
+
+    //set the priority
+
+    //enable/disable the interrupt
+
+
+    //finally, we must set the callback
 
 }
 void disable_INT(Interrupt extInt) {
