@@ -68,7 +68,7 @@ extern "C" {
         Polarity polarity;
         int priority;
         int subPriority;
-        bool enable;
+        int enable;
         void *callback;
     } Interrupt_Config;
     

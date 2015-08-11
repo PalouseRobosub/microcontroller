@@ -32,7 +32,7 @@ void disable_INT(Interrupt extInt) {
 void enable_INT(Interrupt extInt) {
     //set the bit
 }
-
+/*
 void __ISR(_EXTERNAL_0_VECTOR, IPL7AUTO, IPL6AUTO, IPL5AUTO, IPL4AUTO, IPL3AUTO, IPL2AUTO, IPL1AUTO) Ext_Int1_Handler {
 
     asm volatile ("di"); //disable interrupts
@@ -44,4 +44,4 @@ void __ISR(_EXTERNAL_0_VECTOR, IPL7AUTO, IPL6AUTO, IPL5AUTO, IPL4AUTO, IPL3AUTO,
     
     
     asm volatile ("ei"); //reenable interrupts
-}
+}*/
