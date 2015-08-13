@@ -23,38 +23,38 @@ extern "C" {
     }Interrupt;
 
     typedef enum {
-        RPA0, // Start Int4
-        RPB3,
-        RPB4,
-        RPB15,
-        RPB7,
-        RPC7,
-        RPC0,
-        RPC5, // End Int4
-        RPA1, //Start Int3
-        RPB5,
-        RPB1,
-        RPB11,
-        RPB8,
-        RPA8,
-        RPC8,
-        RPA9, //End Int3
-        RPA2, //Start Int2
-        RPB6,
-        RPA4,
-        RPB13,
-        RPB2,
-        RPC6,
-        RPC1,
-        RPC3, // End Int2
-        RPA3, //Start Int1
-        RPB14,
-        RPB0,
-        RPB10,
-        RPB9,
-        RPC9,
-        RPC2,
-        RPC4, // End Int1
+        Pin_RPA0, // Start Int4
+        Pin_RPB3,
+        Pin_RPB4,
+        Pin_RPB15,
+        Pin_RPB7,
+        Pin_RPC7,
+        Pin_RPC0,
+        Pin_RPC5, // End Int4
+        Pin_RPA1, //Start Int3
+        Pin_RPB5,
+        Pin_RPB1,
+        Pin_RPB11,
+        Pin_RPB8,
+        Pin_RPA8,
+        Pin_RPC8,
+        Pin_RPA9, //End Int3
+        Pin_RPA2, //Start Int2
+        Pin_RPB6,
+        Pin_RPA4,
+        Pin_RPB13,
+        Pin_RPB2,
+        Pin_RPC6,
+        Pin_RPC1,
+        Pin_RPC3, // End Int2
+        Pin_RPA3, //Start Int1
+        Pin_RPB14,
+        Pin_RPB0,
+        Pin_RPB10,
+        Pin_RPB9,
+        Pin_RPC9,
+        Pin_RPC2,
+        Pin_RPC4, // End Int1
     }Pin;
     
     typedef enum {

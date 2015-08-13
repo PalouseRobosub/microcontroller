@@ -19,24 +19,40 @@ void initialize_INT(Interrupt_Config config)
                 config.pin = 3*8;
             }
             INT1R = config.pin - (3*8);
+            switch (config.pin) {
+                case :
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+            }
+            INTCONbits.INT1EP = config.polarity;
             break;
         case INT2:
             if ((config.pin - (2*8)) > 0b1000) {
                 config.pin = 2*8;
             }
             INT2R = config.pin - (3*8);
+            INTCONbits.INT2EP = config.polarity;
             break;
         case INT3:
             if ((config.pin -(1*8)) > 0b1000) {
                 config.pin = 1*8;
             }
             INT3R = config.pin - (3*8);
+            INTCONbits.INT3EP = config.polarity;
             break;
         case INT4:
             if (config.pin > 0b1000) {
                 config.pin = 0;
             }
             INT4R = config.pin;
+            INTCONbits.INT4EP = config.polarity;
+            break;
+        case INT0:
+            INTCONbits.INT0EP = config.polarity;
             break;
         default:
             //error
@@ -44,6 +60,7 @@ void initialize_INT(Interrupt_Config config)
     }
 
     //next, configure the polarity
+
 
     //set the priority
 
