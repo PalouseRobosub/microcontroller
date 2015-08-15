@@ -14,45 +14,48 @@ void initialize_INT(Interrupt_Config config)
     switch (config.extInt) {
     //set the tristate and the PPS
     //disable analog on this pin
+        case INT0:
+            //we will disable the analog on this pin and configure the tristate as an input
+            TRISBbits.TRISB7 = 1;
+            //no analog
+            INTCONbits.INT0EP = config.polarity;
+            break;
         case INT1:
-            if ((config.pin - (3*8)) > 0b1000) {
-                config.pin = 3*8;
-            }
             INT1R = config.pin - (3*8);
             switch (config.pin) {
-                case :
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
+                case Pin_RPB14:
+                    break;
+                case Pin_RPB0:
+                    break;
+                case Pin_RPB10:
+                    break;
+
+                case Pin_RPB9:
+                    break;
+                case Pin_RPC9:
+                    break;
+                case Pin_RPC2:
+                    break;
+                case Pin_RPC4:
+                    break;
+                default: //RPA3 will also default to here
+                    //we will set RPA3 as the pin
+
+                    break;
             }
             INTCONbits.INT1EP = config.polarity;
             break;
         case INT2:
-            if ((config.pin - (2*8)) > 0b1000) {
-                config.pin = 2*8;
-            }
-            INT2R = config.pin - (3*8);
+            INT2R = config.pin - (2*8);
             INTCONbits.INT2EP = config.polarity;
             break;
         case INT3:
-            if ((config.pin -(1*8)) > 0b1000) {
-                config.pin = 1*8;
-            }
-            INT3R = config.pin - (3*8);
+            INT3R = config.pin - (1*8);
             INTCONbits.INT3EP = config.polarity;
             break;
         case INT4:
-            if (config.pin > 0b1000) {
-                config.pin = 0;
-            }
             INT4R = config.pin;
             INTCONbits.INT4EP = config.polarity;
-            break;
-        case INT0:
-            INTCONbits.INT0EP = config.polarity;
             break;
         default:
             //error
