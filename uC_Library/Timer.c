@@ -13,7 +13,7 @@ void (*timer_5_callback) (void);
 //function_ptr is the ISR function pointer
 //enable specifies whether to enable the interrupt or not
 
-void initialize_timer(Timer_Config config) {
+void initialize_Timer(Timer_Config config) {
 
     //switch case to determine which timer we are working with
     switch (config.which_timer) {
@@ -40,7 +40,9 @@ void initialize_timer(Timer_Config config) {
             T1CONbits.TCKPS = config.divide; //set the clock divider
             PR1 = config.period; //set the period for the timer
             IPC1bits.T1IP = 7; //set the interrupt to priority level 7
-            IEC0bits.T1IE = config.enabled; //enable the interrupt
+            if (config.callback != NULL) {
+                IEC0bits.T1IE = config.enabled; //enable the interrupt
+            }
             timer_1_callback = config.callback; //set the ISR function pointer
             T1CONbits.ON = config.enabled; //actually turn the timer on
             break;
@@ -49,7 +51,9 @@ void initialize_timer(Timer_Config config) {
             T2CONbits.TCKPS = config.divide; //set the clock divider
             PR2 = config.period; //set the period for the timer
             IPC2bits.T2IP = 7; //set the interrupt priority
-            IEC0bits.T2IE = config.enabled; //set the interrupt enable
+            if (config.callback != NULL) {
+                IEC0bits.T2IE = config.enabled; //set the interrupt enable
+            }
             timer_2_callback = config.callback; //set the ISR function pointer
             T2CONbits.ON = config.enabled; //actually turn the timer on
             break;
@@ -58,7 +62,9 @@ void initialize_timer(Timer_Config config) {
             T3CONbits.TCKPS = config.divide; //set the clock divider
             PR3 = config.period; //set the period of the timer
             IPC3bits.T3IP = 7; //set the interrupt priotity
-            IEC0bits.T3IE = config.enabled; //enable the interrupt
+            if (config.callback != NULL) {
+                IEC0bits.T3IE = config.enabled; //enable the interrupt
+            }
             timer_3_callback = config.callback; //set the ISR function pointer
             T3CONbits.ON = config.enabled; //actually turn the timer on
             break;
@@ -67,7 +73,9 @@ void initialize_timer(Timer_Config config) {
             T4CONbits.TCKPS = config.divide;
             PR4 = config.period;
             IPC4bits.T4IP = 7;
-            IEC0bits.T4IE = config.enabled;
+            if (config.callback != NULL) {
+                IEC0bits.T4IE = config.enabled;
+            }
             timer_4_callback = config.callback;
             T4CONbits.ON = config.enabled; //actually turn the timer on
             break;
@@ -76,7 +84,9 @@ void initialize_timer(Timer_Config config) {
             T5CONbits.TCKPS = config.divide;
             PR5 = config.period;
             IPC5bits.T5IP = 7;
-            IEC0bits.T5IE = config.enabled;
+            if (config.callback != NULL) {
+                IEC0bits.T5IE = config.enabled;
+            }
             timer_5_callback = config.callback;
             T5CONbits.ON = config.enabled; //actually turn the timer on
             break;
@@ -89,18 +99,33 @@ void enable_timer(Timer_Type which_timer)
     {
         case Timer_1:
             T1CONbits.ON = 1;
+            if (timer_1_callback != NULL) {
+                IEC0bits.T1IE = 1;
+            }
             break;
         case Timer_2:
             T2CONbits.ON = 1;
+            if (timer_2_callback != NULL) {
+                IEC0bits.T2IE = 1;
+            }
             break;
         case Timer_3:
             T3CONbits.ON = 1;
+            if (timer_3_callback != NULL) {
+                IEC0bits.T3IE = 1;
+            }
             break;
         case Timer_4:
             T4CONbits.ON = 1;
+            if (timer_4_callback != NULL) {
+                IEC0bits.T4IE = 1;
+            }
             break;
         case Timer_5:
             T5CONbits.ON = 1;
+            if (timer_5_callback != NULL) {
+                IEC0bits.T5IE = 1;
+            }
             break;
     }
 }
@@ -111,18 +136,23 @@ void disable_timer(Timer_Type which_timer)
     {
         case Timer_1:
             T1CONbits.ON = 0;
+            IEC0bits.T1IE = 0;
             break;
         case Timer_2:
             T2CONbits.ON = 0;
+            IEC0bits.T2IE = 0;
             break;
         case Timer_3:
             T3CONbits.ON = 0;
+            IEC0bits.T3IE = 0;
             break;
         case Timer_4:
             T4CONbits.ON = 0;
+            IEC0bits.T4IE = 0;
             break;
         case Timer_5:
             T5CONbits.ON = 0;
+            IEC0bits.T5IE = 0;
             break;
     }
 }

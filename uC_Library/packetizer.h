@@ -17,8 +17,8 @@ extern "C" {
 
     /// \enum Data_Channel Set of all packetizable channels
     typedef enum {
-        PACKET_UART1,
-        PACKET_UART2
+        PACKET_UART_CH_1,
+        PACKET_UART_CH_2
     } Data_Channel;
 
     typedef struct PACKETIZER_DATA {

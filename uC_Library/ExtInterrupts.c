@@ -8,7 +8,7 @@ void (*callback_int3) (void);
 void (*callback_int4) (void);
 
 
-void initialize_INT(Interrupt_Config config) 
+void initialize_Interrupt(Interrupt_Config config) 
 {
     
     //for initialization, we must first set the directionality of the pin and disable any analog values on the pin
@@ -312,7 +312,7 @@ void initialize_INT(Interrupt_Config config)
     }
 
 }
-void disable_INT(Interrupt extInt) {
+void disable_Interrupt(Interrupt extInt) {
     //clear the bit
     switch (extInt) {
         case INT0:
@@ -335,7 +335,7 @@ void disable_INT(Interrupt extInt) {
             break;
     }
 }
-void enable_INT(Interrupt extInt) {
+void enable_Interrupt(Interrupt extInt) {
     //set the bit
     switch (extInt) {
         case INT0:

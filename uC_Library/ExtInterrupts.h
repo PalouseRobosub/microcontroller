@@ -64,9 +64,9 @@ extern "C" {
         void *callback;
     } Interrupt_Config;
     
-    void initialize_INT(Interrupt_Config config);
-    void disable_INT(Interrupt extInt);
-    void enable_INT(Interrupt extInt);
+    void initialize_Interrupt(Interrupt_Config config);
+    void disable_Interrupt(Interrupt extInt);
+    void enable_Interrupt(Interrupt extInt);
     
 
 #ifdef	__cplusplus

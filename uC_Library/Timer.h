@@ -64,19 +64,19 @@ extern "C" {
      * \param config Configuration struct for the desired timer
      * \see TIMER_CONFIG
      */
-    void initialize_timer(Timer_Config config);
+    void initialize_Timer(Timer_Config config);
 
     /**
      * Enables a timer
      * \param which_timer The timer to enable
      */
-    void enable_timer(Timer_Type which_timer);
+    void enable_Timer(Timer_Type which_timer);
 
     /**
      * Disables a timer
      * \param which_timer The timer to disable
      */
-    void disable_timer(Timer_Type which_timer);
+    void disable_Timer(Timer_Type which_timer);
 
 
 

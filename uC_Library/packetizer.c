@@ -7,12 +7,12 @@ Packetizer_Data UART2_channel;
 void initialize_packetizer(Packetizer_Config config) {
 
     switch (config.which_channel) {
-        case PACKET_UART1:
+        case PACKET_UART_CH_1:
             UART1_channel.control_byte = config.control_byte;
             UART1_channel.receive_callback = config.callback;
             initialize_UART(config.uart_config);
             break;
-        case PACKET_UART2:
+        case PACKET_UART_CH_2:
             UART2_channel.control_byte = config.control_byte;
             UART2_channel.receive_callback = config.callback;
             initialize_UART(config.uart_config);
@@ -27,12 +27,12 @@ void send_packet(Data_Channel which_channel, uint8* data, uint8 data_size) {
     __builtin_disable_interrupts();
 
     switch (which_channel) {
-        case PACKET_UART1:
+        case PACKET_UART_CH_1:
             send_UART(UART_CH_1, &(UART1_channel.control_byte), 1);
             send_UART(UART_CH_1, &(data_size), 1);
             ret = send_UART(UART_CH_1, data, data_size);
             break;
-        case PACKET_UART2:
+        case PACKET_UART_CH_2:
             send_UART(UART_CH_2, &(UART2_channel.control_byte), 1);
             send_UART(UART_CH_2, &(data_size), 1);
             ret = send_UART(UART_CH_2, data, data_size);
@@ -70,7 +70,7 @@ void packetizer_background_process(Data_Channel which_channel) {
     //get one byte and setup the variables
     //this is the only thing that is device-specific
     switch (which_channel) {
-        case PACKET_UART1:
+        case PACKET_UART_CH_1:
             status = receive_UART(UART_CH_1, &current_byte, 1);
             receive_callback = UART1_channel.receive_callback;
             control_byte = &UART1_channel.control_byte;
@@ -80,7 +80,7 @@ void packetizer_background_process(Data_Channel which_channel) {
             received_index = &UART1_channel.received_index;
             packet_length = &UART1_channel.packet_length;
             break;
-        case PACKET_UART2:
+        case PACKET_UART_CH_2:
             status = receive_UART(UART_CH_2, &current_byte, 1);
             receive_callback = UART2_channel.receive_callback;
             control_byte = &UART2_channel.control_byte;
