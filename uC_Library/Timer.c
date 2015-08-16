@@ -14,31 +14,88 @@ void (*timer_5_callback) (void);
 //enable specifies whether to enable the interrupt or not
 
 void initialize_Timer(Timer_Config config) {
+    
+    //determine the best divider based upon desired frequency
+    Clock_Divider div;
+    int period;
+    //first,we will determine the best clock divider to use based upon max PR size, this will give us highest accuracy
+    if (config.frequency  > (float)config.pbclk/65535) {
+        //we can use Div_1
+        div = Div_1;
+        period = config.pbclk/(config.frequency*1);
+    } else if (config.frequency > (float)config.pbclk/(65535*2)){
+        //div 2 is best
+        div = Div_2;
+        period = config.pbclk/(config.frequency*2);
+    } else if (config.frequency > (float)config.pbclk/(65535*4)) {
+        //div 4
+        div = Div_4;
+        period = config.pbclk/(config.frequency*4);
+    } else if(config.frequency > (float)config.pbclk/(65535*8)) {
+        //div 8
+        div = Div_8;
+        period = config.pbclk/(config.frequency*8);
+    } else if (config.frequency > (float)config.pbclk/(65535*16)) {
+        //div 16
+        div = Div_16;
+        period = config.pbclk/(config.frequency*16);
+    } else if (config.frequency > (float)config.pbclk/(65535*32)) {
+        //div 32
+        div = Div_32;
+        period = config.pbclk/(config.frequency*32);
+    } else if (config.frequency > (float)config.pbclk/(65535*64)) {
+        //div 64
+        div = Div_64;
+        period = config.pbclk/(config.frequency*64);
+    } else {
+        //div 256
+        div = Div_256;
+        period = config.pbclk/(config.frequency*256);
+    }
+    
+    //determine the period
+    
 
     //switch case to determine which timer we are working with
     switch (config.which_timer) {
         case Timer_1:
-            switch (config.divide) {
+            //determine the divider for a type A timer
+            switch (div) {
                 case Div_1:
-                    config.divide = 0b00;
+                    T1CONbits.TCKPS = 0; //1:8 is closest scaler
+                    PR1 = period;
+                    break;
+                case Div_2:
+                    
+                    T1CONbits.TCKPS = 0b1; //1:8 is closest scaler
+                    PR1 = period/4;
+                    break;
+                case Div_4:
+                    T1CONbits.TCKPS = 0b1; //1:8 is closest scaler
+                    PR1 = period/2;
                     break;
                 case Div_8:
-                    config.divide = 0b01;
+                    T1CONbits.TCKPS = 0b1; //1:8 
+                    PR1 = period;
+                    break;
+                case Div_16:
+                    T1CONbits.TCKPS = 0b10; //1:64 is closest scaler
+                    PR1 = period/4;
+                    break;
+                case Div_32:
+                    T1CONbits.TCKPS = 0b10; //1:64 is closest scaler
+                    PR1 = period/2;
                     break;
                 case Div_64:
-                    config.divide = 0b10;
+                    T1CONbits.TCKPS = 0b10; //1:64
+                    PR1 = period;
                     break;
                 case Div_256:
-                    config.divide = 0b11;
-                    break;
-                default:
-                    //set divide to 64? this is bad error handling
-                    config.divide = 0b10;
+                    T1CONbits.TCKPS = 0b11; //1:256
+                    PR1 = period;
                     break;
             }
-
-            T1CONbits.TCKPS = config.divide; //set the clock divider
-            PR1 = config.period; //set the period for the timer
+            
             IPC1bits.T1IP = 7; //set the interrupt to priority level 7
             if (config.callback != NULL) {
                 IEC0bits.T1IE = config.enabled; //enable the interrupt
@@ -48,8 +105,8 @@ void initialize_Timer(Timer_Config config) {
             break;
 
         case Timer_2:
-            T2CONbits.TCKPS = config.divide; //set the clock divider
-            PR2 = config.period; //set the period for the timer
+            T2CONbits.TCKPS = div; //set the clock divider
+            PR2 = period; //set the period for the timer
             IPC2bits.T2IP = 7; //set the interrupt priority
             if (config.callback != NULL) {
                 IEC0bits.T2IE = config.enabled; //set the interrupt enable
@@ -59,8 +116,8 @@ void initialize_Timer(Timer_Config config) {
             break;
 
         case Timer_3:
-            T3CONbits.TCKPS = config.divide; //set the clock divider
-            PR3 = config.period; //set the period of the timer
+            T3CONbits.TCKPS = div; //set the clock divider
+            PR3 = period; //set the period of the timer
             IPC3bits.T3IP = 7; //set the interrupt priotity
             if (config.callback != NULL) {
                 IEC0bits.T3IE = config.enabled; //enable the interrupt
@@ -70,8 +127,8 @@ void initialize_Timer(Timer_Config config) {
             break;
 
         case Timer_4:
-            T4CONbits.TCKPS = config.divide;
-            PR4 = config.period;
+            T4CONbits.TCKPS = div;
+            PR4 = period;
             IPC4bits.T4IP = 7;
             if (config.callback != NULL) {
                 IEC0bits.T4IE = config.enabled;
@@ -81,8 +138,8 @@ void initialize_Timer(Timer_Config config) {
             break;
 
         case Timer_5:
-            T5CONbits.TCKPS = config.divide;
-            PR5 = config.period;
+            T5CONbits.TCKPS = div;
+            PR5 = period;
             IPC5bits.T5IP = 7;
             if (config.callback != NULL) {
                 IEC0bits.T5IE = config.enabled;

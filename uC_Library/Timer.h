@@ -36,10 +36,8 @@ extern "C" {
 
     typedef struct TIMER_CONFIG {
         Timer_Type which_timer; ///< The timer to configure
-        Clock_Divider divide; ///< The divider to use
-        uint16 period; ///< The period to store in the PRx register
-        //uint pb_clk;  //for future work
-        //uint frequency;
+        uint frequency;
+        uint pbclk;
         void (*callback); ///< The function to call when the timer is triggered
         boolean enabled; ///< Tells if the timer is enabled
     }Timer_Config; ///< Configuration struct for any timer

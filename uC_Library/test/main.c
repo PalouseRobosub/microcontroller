@@ -61,98 +61,29 @@
 /*************************************************************************
  Main Function
  ************************************************************************/
-#include "../System.h"
-#include "../Timer.h"
-#include "../Queue.h"
-#include "../UART.h"
-#include "../I2C.h"
-#include "../packetizer.h"
+#include "../sublibinal.h"
 
-
-void routine1();
-void routine2(I2C_Node node);
-void routine3();
-void config_acl();
-void packetizer_callback(uint8 *data, uint8 data_size);
-
-void initialize_pins() {
-    ANSELA = ANSELB = 0;
-    TRISB |= 1<<13;
-    U1RXR = 0b0011; // Set the pin to RPB13
-    RPB15R = 0b0001; //set the output pin to RPB15 U1TX queue
+void timer() {
+    PORTAbits.RA3 = ~(PORTAbits.RA3);
 }
-uint8 buffer[10];
-uint8 data[10] = "UART";
 
 int main(void) {
-    uint8 buffer_tx[100];
-    uint8 buffer_rx[100];
-    UART_Config u_con;
-    Packetizer_Config p_con;
-
-    //Configure the UART
-    u_con.pb_clk = 15000000;
-    u_con.rx_buffer_ptr = buffer_rx;
-    u_con.rx_buffer_size = 100;
-    u_con.rx_callback = NULL;
-    u_con.rx_en = TRUE;
-    u_con.speed = 115200;
-    u_con.tx_buffer_ptr = buffer_tx;
-    u_con.tx_buffer_size = 100;
-    u_con.tx_callback = NULL;
-    u_con.tx_en = TRUE;
-    u_con.which_uart = UART_CH_1;
-
-    //Configure the Packetizer
-    p_con.callback = &packetizer_callback;
-    p_con.control_byte = 0xA;
-    p_con.uart_config = u_con;
-    p_con.which_channel = UART_CH_1;
+    asm volatile("di");
     
-    initialize_pins();
+    TRISAbits.TRISA3 = 0;
+    //We will initialize our timer and hook an LED to it
+    Timer_Config t = {0};
+    t.callback = &timer;
+    t.enabled = TRUE;
+    t.frequency = 60;
+    t.pbclk = 15000000;
+    t.which_timer = Timer_1;
+    initialize_Timer(t);
     
-    initialize_packetizer(p_con);
-
-
-    //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
-    asm volatile ("ei"); //reenable interrupts
-
-    while (1) {
-        packetizer_background_process(PACKET_UART1);
-    }
-
-    return 0;
+    asm volatile("ei");
+    
+    while (1);
+    
 }
 
- void config_acl(void)
- {
-
-    //add the node to the queue
- }
-
-void routine1() {
-    send_packet(UART_CH_1, data, 4);
-}
-void routine2(I2C_Node Node) {
-    //this is the callback routine for I2C. In this routine, the data needs to be interpretted
-    //data is sent in I2C 2's complement 16 bits
-
-    //first interpret the information
-
-    data[0] = 0xA;
-    //send_UART(UART1, 1, data);
-    //send_UART(UART1, 6, Node.data_buffer);
-    //send_UART(UART1, 10, data);
-    return;
-}
-void routine3() {
-    int foo;
-    foo++;
-}
-void packetizer_callback(uint8 *data, uint8 data_size) {
-    //decode the packet
-    uint8 foo1, foo2;
-    foo1 = data[0];
-    foo2 = data[1];
-}
