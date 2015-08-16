@@ -52,9 +52,6 @@ void initialize_Timer(Timer_Config config) {
         div = Div_256;
         period = config.pbclk/(config.frequency*256);
     }
-    
-    //determine the period
-    
 
     //switch case to determine which timer we are working with
     switch (config.which_timer) {

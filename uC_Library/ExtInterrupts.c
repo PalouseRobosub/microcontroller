@@ -312,6 +312,7 @@ void initialize_Interrupt(Interrupt_Config config)
     }
 
 }
+
 void disable_Interrupt(Interrupt extInt) {
     //clear the bit
     switch (extInt) {

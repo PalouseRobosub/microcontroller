@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#include "PPS.h"
+
 #include "ADC.h"
 #include "ExtInterrupts.h"
 #include "I2C.h"
@@ -22,7 +24,7 @@ extern "C" {
 #include "Timer.h"
 #include "UART.h"
 #include "packetizer.h"
-
+#include "PWM.h"
 #ifdef	__cplusplus
 }
 #endif
