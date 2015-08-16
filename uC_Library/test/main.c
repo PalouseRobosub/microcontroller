@@ -63,8 +63,15 @@
  ************************************************************************/
 #include "../sublibinal.h"
 
+    PWM_Config p = {0};
+    
 void timer() {
     PORTAbits.RA3 = ~(PORTAbits.RA3);
+    if (p.dutyCycle > 1) {
+        p.dutyCycle = .01;
+    }
+    p.dutyCycle += .01;
+    update_PWM(p, p.dutyCycle);
 }
 
 int main(void) {
@@ -77,8 +84,16 @@ int main(void) {
     t.enabled = TRUE;
     t.frequency = 60;
     t.pbclk = 15000000;
-    t.which_timer = Timer_1;
+    t.which_timer = Timer_2;
     initialize_Timer(t);
+    
+    p.channel = PWM_CH_1;
+    p.dutyCycle = .01;
+    p.enable = TRUE;
+    p.pin = Pin_RPA0;
+    p.timer = t;
+    initialize_PWM(p);
+    
     
     INTEnableSystemMultiVectoredInt();
     asm volatile("ei");

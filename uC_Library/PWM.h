@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#include "PPS.h"
+#include "Timer.h"
     
     typedef enum {
         PWM_CH_1,
@@ -25,10 +27,9 @@ extern "C" {
     typedef struct {
         float dutyCycle; // Only used in PWM mode
         Timer_Config timer;
-        Pin_Output pin; //our output pin
+        Pin pin; //our output pin
         uint8 enable;
         PWM_Channel channel;
-        void *callback; //A callback function for the OCx interrupt
     }PWM_Config;
 
     
@@ -37,7 +38,7 @@ extern "C" {
     void enable_PWM(PWM_Config config);
     void disable_PWM(PWM_Config config);
     
-    void update_PWM(float dutyCycle);
+    void update_PWM(PWM_Config config, float dutyCycle);
     
     
     

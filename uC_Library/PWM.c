@@ -1,14 +1,9 @@
 #include "PWM.h"
 #include "Timer.h"
-void (*PWM_1_callback)(void);
-void (*PWM_2_callback)(void);
-void (*PWM_3_callback)(void);
-void (*PWM_4_callback)(void);
-void (*PWM_5_callback)(void);
 
     void initialize_PWM(PWM_Config config) {
         //We will first initialize the OC channel
-        switch (config.PWM_Channel) {
+        switch (config.channel) {
             case PWM_CH_1:
                 switch (config.pin) {
                     case Pin_RPB3:
@@ -49,13 +44,6 @@ void (*PWM_5_callback)(void);
                 }
                 OC1CONbits.OCM = 0b110; //PWM no fault pin mode
                 
-                //if the callback is not null, there is a function to implement
-                if (config.callback != NULL) {
-                    PWM_1_callback = config.callback;
-                    IPC1bits.OC1IP = 7;
-                    IFS0bits.OC1IF = 0;
-                    IEC0bits.OC1IE = 1;
-                }
                 OC1CONbits.ON = config.enable;
                 break;
             case PWM_CH_2:
@@ -97,13 +85,6 @@ void (*PWM_5_callback)(void);
                 }
                 OC2CONbits.OCM = 0b110; //PWM no fault pin mode
                 
-                //if the callback is not null, there is a function to implement
-                if (config.callback != NULL) {
-                    PWM_2_callback = config.callback;
-                    IPC2bits.OC2IP = 7;
-                    IFS0bits.OC2IF = 0;
-                    IEC0bits.OC2IE = 1;
-                }
                 OC2CONbits.ON = config.enable;
                 break;
             case PWM_CH_3:
@@ -146,13 +127,6 @@ void (*PWM_5_callback)(void);
                 }
                 OC3CONbits.OCM = 0b110; //PWM no fault pin mode
                 
-                //if the callback is not null, there is a function to implement
-                if (config.callback != NULL) {
-                    PWM_3_callback = config.callback;
-                    IPC3bits.OC3IP = 7;
-                    IFS0bits.OC3IF = 0;
-                    IEC0bits.OC3IE = 1;
-                }
                 OC3CONbits.ON = config.enable;
                 break;
             case PWM_CH_4:
@@ -192,13 +166,6 @@ void (*PWM_5_callback)(void);
                 }
                 OC4CONbits.OCM = 0b110; //PWM no fault pin mode
                 
-                //if the callback is not null, there is a function to implement
-                if (config.callback != NULL) {
-                    PWM_4_callback = config.callback;
-                    IPC4bits.OC4IP = 7;
-                    IFS0bits.OC4IF = 0;
-                    IEC0bits.OC4IE = 1;
-                }
                 OC4CONbits.ON = config.enable;
                 break;
             case PWM_CH_5:
@@ -238,13 +205,6 @@ void (*PWM_5_callback)(void);
                 }
                 OC5CONbits.OCM = 0b110; //PWM no fault pin mode
                 
-                //if the callback is not null, there is a function to implement
-                if (config.callback != NULL) {
-                    PWM_5_callback = config.callback;
-                    IPC5bits.OC5IP = 7;
-                    IFS0bits.OC5IF = 0;
-                    IEC0bits.OC5IE = 1;
-                }
                 OC5CONbits.ON = config.enable;
                 break;
         }
@@ -254,48 +214,18 @@ void (*PWM_5_callback)(void);
         switch (config.channel) {
             case PWM_CH_1:
                 OC1CONbits.ON = 1;
-                if (config.callback != NULL) {
-                    PWM_1_callback = config.callback;
-                    IPC1bits.OC1IP = 7;
-                    IFS0bits.OC1IF = 0;
-                    IEC0bits.OC1IE = 1;
-                }
                 break;
             case PWM_CH_2:
                 OC2CONbits.ON = 1;
-                if (config.callback != NULL) {
-                    PWM_2_callback = config.callback;
-                    IPC2bits.OC2IP = 7;
-                    IFS0bits.OC2IF = 0;
-                    IEC0bits.OC2IE = 1;
-                }
                 break;
             case PWM_CH_3:
                 OC3CONbits.ON = 1;
-                if (config.callback != NULL) {
-                    PWM_3_callback = config.callback;
-                    IPC3bits.OC3IP = 7;
-                    IFS0bits.OC3IF = 0;
-                    IEC0bits.OC3IE = 1;
-                }
                 break;
             case PWM_CH_4:
                 OC4CONbits.ON = 1;
-                if (config.callback != NULL) {
-                    PWM_4_callback = config.callback;
-                    IPC4bits.OC4IP = 7;
-                    IFS0bits.OC4IF = 0;
-                    IEC0bits.OC4IE = 1;
-                }
                 break;
             case PWM_CH_5:
                 OC5CONbits.ON = 1;
-                if (config.callback != NULL) {
-                    PWM_5_callback = config.callback;
-                    IPC5bits.OC5IP = 7;
-                    IFS0bits.OC5IF = 0;
-                    IEC0bits.OC5IE = 1;
-                }
                 break;
         }
     }
@@ -375,60 +305,3 @@ void (*PWM_5_callback)(void);
                 break;
         }
     }
-
-    void __ISR(_OUTPUT_COMPARE_1_VECTOR, IPL7AUTO) OC1_Handler(void) 
-    {
-        asm volatile ("di");
-        
-        if (PWM_1_callback != NULL) {
-            PWM_1_callback();
-        }
-        
-        asm volatile ("ei");
-    }
-    void __ISR(_OUTPUT_COMPARE_2_VECTOR, IPL7AUTO) OC2_Handler(void) 
-    {
-        asm volatile ("di");
-        
-        if (PWM_2_callback != NULL) {
-            PWM_2_callback();
-        }
-        
-        asm volatile ("ei");
-    }
-    
-    
-    void __ISR(_OUTPUT_COMPARE_3_VECTOR, IPL7AUTO) OC3_Handler(void) 
-    {
-        asm volatile ("di");
-        
-        if (PWM_3_callback != NULL) {
-            PWM_3_callback();
-        }
-        
-        asm volatile ("ei");
-    }
-    
-    
-    void __ISR(_OUTPUT_COMPARE_4_VECTOR, IPL7AUTO) OC4_Handler(void) 
-    {
-        asm volatile ("di");
-        
-        if (PWM_4_callback != NULL) {
-            PWM_4_callback();
-        }
-        
-        asm volatile ("ei");
-    }
-    
-    void __ISR(_OUTPUT_COMPARE_5_VECTOR, IPL7AUTO) OC5_Handler(void) 
-    {
-        asm volatile ("di");
-        
-        if (PWM_5_callback != NULL) {
-            PWM_5_callback();
-        }
-        
-        asm volatile ("ei");
-    }
-    
