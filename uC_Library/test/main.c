@@ -77,6 +77,7 @@ void timer() {
 int main(void) {
     asm volatile("di");
     
+    
     TRISAbits.TRISA3 = 0;
     //We will initialize our timer and hook an LED to it
     Timer_Config t = {0};
