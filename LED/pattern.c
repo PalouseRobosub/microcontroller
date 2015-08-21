@@ -15,11 +15,11 @@ void Pattern_Select(uint8 *msg)
     Timer_Config pattern_timer;
     
     uint8  pattern = msg[0];
-    uint16 *period = &(msg+1);
+    uint16 *period = &(msg+1); //TODO Connor: switch to frequency
 
     pattern_timer.which_timer = Timer_2;
-    pattern_timer.divide      = Div_256;
-    pattern_timer.period      = *period * 58.6;
+    pattern_timer.divide      = Div_256; //TODO Connor: switch to frequency
+    pattern_timer.period      = *period * 58.6; //TODO Connor: switch to frequency
     pattern_timer.enabled     = 1;
 
     init = 1;
@@ -48,8 +48,8 @@ void Pattern_Select(uint8 *msg)
             break;
     }
     init = 0;
-    if(pattern_timer.period == 0)
-        initialize_timer(pattern_timer);
+    if(pattern_timer.period == 0) //TODO Connor: switch to frequency
+        initialize_Timer(pattern_timer);
 }
 
 void flash()

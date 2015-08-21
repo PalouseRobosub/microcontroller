@@ -46,14 +46,14 @@ void initialize_pins() {
     U1RXR = 0b0011; // Set the pin to RPB13
 }
 
-void init_Timer (Timer_Config timer_config, uint16 period)
+void init_Timer (Timer_Config timer_config, uint16 period) //TODO Connor: switch to frequency
 {
     timer_config.enabled = TRUE;
     timer_config .which_timer = 1;
-    timer_config.divide = Div_256;
+    timer_config.divide = Div_256; //TODO Connor: switch to frequency
     timer_config.callback = timer_tick;
-    timer_config.period = period;
-    initialize_timer (timer_config);
+    timer_config.period = period; //TODO Connor: switch to frequency
+    initialize_Timer (timer_config);
 }
 
 

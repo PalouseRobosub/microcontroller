@@ -108,12 +108,11 @@ int main(void) {
     ANSELBbits.ANSB3 = 1;
 
     //setup peripherals
-    timer_config.divide = Div_256;
-    timer_config.period = 1172; // 586;
+    timer_config.frequency = 50;
     timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
-    initialize_timer(timer_config);
+    initialize_Timer(timer_config);
 
     i2c_config.pb_clk = PB_CLK;
     i2c_config.channel = I2C_CH_1;
@@ -134,7 +133,7 @@ int main(void) {
     uart_config.rx_en = 1;    
 
     packet_config.control_byte = 0x0A;
-    packet_config.which_channel = PACKET_UART1;
+    packet_config.which_channel = PACKET_UART_CH_1;
     packet_config.uart_config = uart_config;
     packet_config.callback = &timer_update;
     initialize_packetizer(packet_config);
@@ -157,7 +156,7 @@ int main(void) {
         //put background processes here
         bg_process_I2C();
         bg_process_ADC();
-        packetizer_background_process(PACKET_UART1);
+        packetizer_background_process(PACKET_UART_CH_1);
     }
 
     return 0;
@@ -262,7 +261,7 @@ void sensor_send_uart(I2C_Node node)
 
     i = 1+node.data_size;
 
-    send_packet(PACKET_UART1, send_data, i);
+    send_packet(PACKET_UART_CH_1, send_data, i);
 }
 
 void depth_callback(ADC_Node node)
@@ -274,7 +273,7 @@ void depth_callback(ADC_Node node)
     send_data[1] = node.data & 0xFF;
     send_data[2] = node.data >> 8;
 
-    send_packet(PACKET_UART1, send_data, sizeof(send_data));
+    send_packet(PACKET_UART_CH_1, send_data, sizeof(send_data));
 
 }
 
@@ -289,7 +288,7 @@ void bat_volt_callback(ADC_Node node)
     send_data[1] = data_LB;
     send_data[2] = data_HB;
 
-    send_packet(PACKET_UART1, send_data, sizeof(send_data));
+    send_packet(PACKET_UART_CH_1, send_data, sizeof(send_data));
 
 }
 
@@ -300,7 +299,7 @@ void read_switch(void)
     send_data[0] = SID_START_SWITCH;
     send_data[1] = !(PORTBbits.RB2); //read the start switch, invert the logic
 
-    send_packet(PACKET_UART1, send_data, sizeof(send_data));    
+    send_packet(PACKET_UART_CH_1, send_data, sizeof(send_data));    
 }
 
 void timer_update(uint8 *msg, uint8 length)

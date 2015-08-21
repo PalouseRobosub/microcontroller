@@ -97,7 +97,7 @@ int main(void) {
     uart_config.tx_buffer_size = sizeof(uart_tx_buffer);
     uart_config.tx_en = 1;
 
-    packet_config.which_channel = PACKET_UART1;
+    packet_config.which_channel = PACKET_UART_CH_1;
     packet_config.control_byte = 0x0A;
     packet_config.uart_config = uart_config;
     packet_config.callback = &packetizer_callback;
@@ -117,7 +117,7 @@ int main(void) {
 
     while (1) {
         //background process for processing received packets
-        packetizer_background_process(PACKET_UART1);
+        packetizer_background_process(PACKET_UART_CH_1);
     }
 
     return 0;
