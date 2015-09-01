@@ -22,8 +22,9 @@
             void configure(int baud_rate);
 
             //private members
-            int port_fd;
-            char *port_name;
+            int port_fd_r;
+			int port_fd_w;
+			char *port_name;
     };
 
 #endif
