@@ -156,7 +156,7 @@ int main(void) {
         //put background processes here
         bg_process_I2C();
         bg_process_ADC();
-        packetizer_background_process(PACKET_UART_CH_1);
+        bg_process_packetizer(PACKET_UART_CH_1);
     }
 
     return 0;

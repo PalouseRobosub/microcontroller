@@ -117,7 +117,7 @@ int main(void) {
 
     while (1) {
         //background process for processing received packets
-        packetizer_background_process(PACKET_UART_CH_1);
+        bg_process_packetizer(PACKET_UART_CH_1);
     }
 
     return 0;
