@@ -15,8 +15,9 @@
 PROG_START_ADDR_VIRTUAL: .WORD 0x9D000800 # This is the program start address. This will be wiped if a bootloader is activated and then overwritten from there
 PROG_START_ADDR_PHYSICAL: .WORD 0x1D000800 
 PROG_DATA_PAGE_OFFSET: .WORD 0x00000000 # page address for current programming
-PROG_DATA: .PAGE 0
-TIMER_TIMOUTS: .BYTE 0 # variable for counting number of timer timeouts
+PROG_DATA_BYTE_OFFSET: .WORD 0x00000000 # offset for a UART transaction
+PROG_DATA: .PAGE 
+TIMER_TIMEOUTS: .BYTE 0 # variable for counting number of timer timeouts
 
 .TEXT # Specify the text section of memory
 
@@ -37,6 +38,13 @@ main:
     LI $t0, 0b10 << 4
     SW $t0, T1CON
 
+    # Configure the timer interrupt
+    LI $t0, 1 << 4
+    SW $t0, IFS0CLR
+    LI $t1, 7<<2 | 7
+    SW $t1, IPC1SET # set the priority and sub priority
+    SW $t0, IEC0SET  # enable the interrupt
+
     # #####################################################################
     # UART Configuration Section                                          #
     # --------------------------------------------------------------------#
@@ -48,6 +56,14 @@ main:
     SW $t0, U1BRG       # Configure UART baud rate
     LI $t0, 1 << 15
     SW $t0, U1MODE      # enable the UART
+
+    # enable receiver interrupt
+    LI $t0, 1<<8
+    SW $t0, IFS1CLR
+    SW $t0, IEC1SET
+    LI $t0, 7<<2 | 7
+    SW $t0, IPC8
+    
 
     # #####################################################################
     # Pin Configuration Section                                           #
@@ -76,27 +92,49 @@ main:
     # #######################################################################
     LI $t0, 0x2102424C  # Load the packet: !, 2, B, L
     SW $t0, U1TXREG     # transmit packet
-
-    LI $t0, 6000000 # load 6M into a timeout register, for a roughly 500ms timeout with 4 instructions
+    
+    # enable the timer
+    LI $t0, 1<<15
+    SW $t0, T1CONSET
 
     wait_response_loop:
         # Check to see UART status response, branch if response
-        ADDI $t0, -1                        # Subtract one from loop index
-        LW $t2, U1STA                       # Load the status of the UART
-        ANDI $t2, $t2, 1                    # Query to see if receive data is available
-        BNE $t2, $zero, response_received   # if we received data, we need to move to a programming state
-        BNE $t0, $zero, wait_response_loop  # if we did not receive data, continue waiting until timeout complete
-    
-    # time out if nothing is provided to the bootloader
-    # begin normal execution of the program flash memory where the bootloader would normally store the program
-    J normal_execution
+        LW $t1, PROG_DATA_BYTE_OFFSET       # if byteoffset is nonzero, we have received
+        LW $t2, TIMER_TIMEOUTS              # if timertimeouts is greater than 0, we have timed out
+        BNE $t1, $zero, response_received   # if we received data, we need to move to a programming state
+        BNE $t2, $zero, normal_execution    # if we did not receive data and have timedout, begin normal execution
+        J wait_response_loop                # if we haven't timed out and haven't received, keep waiting
 
-    # else we have received data for configuration and we should start programming memory
+
+
     response_received:
 
-    # T3 will contain the index of the page that we are currently writing
+    # reset the variables
+    SW $zero, PROG_DATA_BYTE_OFFSET
+    SW $zero, TIMER_TIMEOUTS
+
+    SW $zero, TMR1 # clear timer count
+    LI $t0, 0x21024C4C # send: !, 2, L, L
+    SW $t0, U1TXREG # transmit a ready package
+
     LW $t3, PROG_START_ADDR_PHYSICAL
     SW $t3, PROG_DATA_PAGE_OFFSET # store the start address in our programming pointer at initialization
+
+    # now we will loop waiting for a receive
+    LI $t3, 1
+    LI $t2, 1024
+
+    receive_program:
+        LW $t0, TIMER_TIMEOUTS
+        BEQ $t3, $t0, timeout_program # timeout after 300ms of no receives
+        LW $t0, PROG_DATA_BYTE_OFFSET 
+        BEQ $t2, $t0, page_received
+    J receive_program
+
+    timeout_program:
+        # first, query computer to see if byte count is accurate
+        # if byte count is accurate, jump to page_received
+
     
 
     # ################################################################
@@ -178,3 +216,81 @@ main:
 
 
 .END main
+
+# ##############################################################
+# Timeout Interrupt on Timer1                                  #
+# -------------------------------------------------------------#
+# This is the ISR for timer1. This function will increment the #
+# number of timeouts and then reset the timer value.           #
+# ##############################################################
+
+.SECTION .vector_4, code
+    J timeoutHandler
+.TEXT
+
+.ENT timeoutHandler
+timeoutHandler:
+    DI 
+    
+    # Save variable $t5
+    SW $t5, -4($sp)
+
+    LW $t5, TIMER_TIMEOUTS
+    ADDI $t5, $t5, 1
+    SW $t5, TIMER_TIMEOUTS
+    Sw $zero, TMR1 # reset the timer value
+
+    # clear timer1 flag
+    LI $t5, 1<<4
+    SW $t5, IFS0CLR 
+    
+    # restore t5
+    LW $t5, -4($sp)
+
+    EI
+    ERET
+.END timeoutHandler
+
+# ##################################################################
+# UART Receive Handler                                             #
+# -----------------------------------------------------------------#
+# This function receives data on UART and stores the byte into the #
+# program_data variable to be programmed into the flash memory     #
+# ##################################################################
+
+.SECTION .vector_32, code
+    J receiveHandler
+.TEXT
+
+.ENT receiveHandler
+receiveHandler:
+    DI
+    SW $t5, -4($sp)
+    SW $t4, -8($sp)
+
+    # load program memory and byte offset
+    LW $t4, PROG_DATA_BYTE_OFFSET
+    LA $t5, PROG_DATA
+    ADD $t5, $t5, $t4 # add them together to get our memory address in prog data
+
+    
+
+    # store the received byte into the RAM
+    LW $t4, U1RXR
+    SB $t4, ($t5)
+
+    # increment byte offset and store back in memory
+    ADDI $t4, $t4, 1
+    SW $t4, PROG_DATA_BYTE_OFFSET
+
+    # Reset the timer count
+    SW $zero, TMR1
+    SW $zero, TIMER_TIMEOUTS
+
+    # restore context and continue normal execution
+    LW $t4 -8($sp)
+    LW $t5, -4($sp)
+    EI
+    ERET
+
+.END receiveHandler
