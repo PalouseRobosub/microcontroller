@@ -49,7 +49,7 @@ void initialize_pins() {
 void init_Timer (Timer_Config timer_config, uint16 period) //TODO Connor: switch to frequency
 {
     timer_config.enabled = TRUE;
-    timer_config .which_timer = 1;
+    timer_config.which_timer = 1;
     timer_config.divide = Div_256; //TODO Connor: switch to frequency
     timer_config.callback = timer_tick;
     timer_config.period = period; //TODO Connor: switch to frequency
