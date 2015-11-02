@@ -2,40 +2,17 @@
 
 //LED frame buffer
 uint8 led_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
-PIXEL led_frame_buf[12][NUMLEDS] = {0};
-PIXEL *pixels = (PIXEL *) led_buf;
 
 void parse_packet(uint8 *buffer, uint8 size)
 {
-    switch(*buffer)
+    T2CONbits.ON = 0;
+    for (int i = 0; i < size; i+=3)
     {
-        case manual:
-            copy_strip(led_frame_buf[11] + (STRIPSIZE*buffer[1]), (PIXEL*) (buffer+2));
-            break;
-        case all:
-            set_all(led_frame_buf[11], (PIXEL*) (buffer+1));
-            break;
-        case strip:
-            set_strip(led_frame_buf[11] + (STRIPSIZE*buffer[1]), (PIXEL*) (buffer+2));
-            break;
-        case dual_all:
-            set_dual_all(led_frame_buf[11], (PIXEL*) (buffer+1), (PIXEL*) (buffer+4));
-            break;
-        case dual_strip:
-            set_dual_strip(led_frame_buf[11] + (STRIPSIZE*buffer[1]), (PIXEL*) (buffer+1), (PIXEL*) (buffer+4));
-            break;
-        case set:
-            T2CONbits.ON = 0;
-            memcpy(led_buf, led_frame_buf[buffer[0]]);
-            send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
-            break;
-        case save_pattern:
-            break;
-        case start_pattern:
-            break;
-        default:
-            break;
+        led_buf[i] = (buffer[i+1] >> 1) | 0x80;
+        led_buf[i+1] = (buffer[i] >> 1) | 0x80;
+        led_buf[i+2] = (buffer[i+2] >> 1) | 0x80;
     }
+    send_SPI(SPI_CH_1, led_buf, sizeof(led_buf));
 }
 
 void initialize_pins() {
@@ -54,57 +31,4 @@ void init_Timer (Timer_Config timer_config, uint16 period) //TODO Connor: switch
     timer_config.callback = timer_tick;
     timer_config.period = period; //TODO Connor: switch to frequency
     initialize_Timer (timer_config);
-}
-
-
-void copy_strip(PIXEL *pixels, PIXEL *colors)
-{
-    memcpy(pixels, colors, STRIPSIZE*3);
-}
-void set_all(PIXEL *pixels, PIXEL *color)
-{
-    int i = 0;
-    for(i = 0; i < NUMLEDS; i++)
-    {
-        pixels[i] = *color;
-    }
-}
-void set_strip(PIXEL *pixels, PIXEL *color)
-{
-    int i = 0;
-    for(i = 0; i < STRIPSIZE; i++)
-    {
-        pixels[i] = *color;
-    }
-}
-void set_dual_all(PIXEL *pixels, PIXEL *color1, PIXEL *color2)
-{
-    int i = 0;
-    for(i = 0; i < NUMLEDS; i++)
-    {
-        if(i&1)
-        {
-            pixels[i] = *color2;
-        }
-        else
-        {
-            pixels[i] = *color1;
-        }
-    }
-}
-
-void set_dual_strip(PIXEL *pixels, PIXEL *color1, PIXEL *color2)
-{
-    int i = 0;
-    for(i = 0; i < STRIPSIZE; i++)
-    {
-        if(i&1)
-        {
-            pixels[i] = *color2;
-        }
-        else
-        {
-            pixels[i] = *color1;
-        }
-    }
 }
