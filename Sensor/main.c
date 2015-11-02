@@ -108,7 +108,8 @@ int main(void) {
     ANSELBbits.ANSB3 = 1;
 
     //setup peripherals
-    timer_config.frequency = 50;
+    timer_config.pbclk = PB_CLK;
+    timer_config.frequency = 200;
     timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
@@ -123,6 +124,8 @@ int main(void) {
     initialize_I2C(i2c_config);
 
     uart_config.which_uart = UART_CH_1;
+    uart_config.rx_pin = Pin_RPB13;
+    uart_config.tx_pin = Pin_RPB15;
     uart_config.pb_clk = PB_CLK;
     uart_config.speed = 115200;
     uart_config.tx_buffer_ptr = uart_tx_buffer;
@@ -217,7 +220,7 @@ void timer_callback(void)
 
 void sensor_send_uart(I2C_Node node)
 {
-    uint8 send_data[16];
+    uint8 send_data[8];
     uint8 temp;
     uint8 i;
 
@@ -232,7 +235,7 @@ void sensor_send_uart(I2C_Node node)
             temp = send_data[1];
             send_data[1] = send_data[2];
             send_data[2] = temp;
-
+            
             temp = send_data[3];
             send_data[3] = send_data[4];
             send_data[4] = temp;
@@ -240,6 +243,10 @@ void sensor_send_uart(I2C_Node node)
             temp = send_data[5];
             send_data[5] = send_data[6];
             send_data[6] = temp;
+
+            temp = send_data[7];
+            send_data[7] = send_data[8];
+            send_data[8] = temp;
             break;
         case SID_MAGNETOMETER_0:      
             temp = send_data[1];

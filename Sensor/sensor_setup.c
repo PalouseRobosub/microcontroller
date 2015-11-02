@@ -25,7 +25,7 @@ uint8 accel_read_buffer[6];
 I2C_Node gyro_config;
 u8 gyro_config_buffer[1];
 I2C_Node gyro_read;
-u8 gyro_read_buffer[6];
+u8 gyro_read_buffer[8];
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="magnetometer variables">
@@ -112,9 +112,9 @@ void gyro_setup(void *callback)
 
     gyro_read.callback = callback;
     gyro_read.data_buffer = gyro_read_buffer;
-    gyro_read.data_size = 6;
+    gyro_read.data_size = 8;
     gyro_read.device_address = address;
-    gyro_read.sub_address = 0x1D;
+    gyro_read.sub_address = 0x1B;
     gyro_read.mode = READ;
     gyro_read.device_id = SID_GYROSCOPE_0;
 
