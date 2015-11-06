@@ -1,27 +1,19 @@
-// <editor-fold defaultstate="collapsed" desc="main.c">
 /*   File Name: main.c
  *
  *   Description:
  *              Main file
  *
  */
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="System Includes">
 #include "System.h"
 #include "SPI.h"
 #include "Timer.h"
 #include "UART.h"
 #include "packetizer.h"
 #include "led.h"
-#include "ledCommon.h"
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="System Defines">
 #define PB_CLK 15000000 //15 MHz
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Processor Configuration">
 //insert configuration for new microcontrollers
 #include <xc.h>
 
@@ -61,7 +53,6 @@
 #pragma config PWP = OFF                // Program Flash Write Protect (Disable)
 #pragma config BWP = OFF                // Boot Flash Write Protect bit (Protection Disabled)
 #pragma config CP = OFF                 // Code Protect (Protection Disabled)
-// </editor-fold>
 
 
 
@@ -101,13 +92,13 @@ int main(void) {
     packet_config.uart_config = uart_config;
     initialize_packetizer(packet_config);
 
-    //Global interrupt enable. Do this lbm ast!
+    //Global interrupt enable. Do this last!
     INTEnableSystemMultiVectoredInt();
     asm volatile ("ei"); //reenable interrupts
 
     while (1) {
         //put background processes here
-        packetizer_background_process(PACKET_UART_CH_1);
+        bg_process_packetizer(PACKET_UART_CH_1);
     }
 
     return 0;

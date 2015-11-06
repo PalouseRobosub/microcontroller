@@ -5,8 +5,9 @@ uint8 led_buf[NUMLEDS*3 + (NUMLEDS-1)/32 + 1] = {0};
 
 void parse_packet(uint8 *buffer, uint8 size)
 {
+    int i;
     T2CONbits.ON = 0;
-    for (int i = 0; i < size; i+=3)
+    for (i = 0; i < size; i+=3)
     {
         led_buf[i] = (buffer[i+1] >> 1) | 0x80;
         led_buf[i+1] = (buffer[i] >> 1) | 0x80;
@@ -21,14 +22,4 @@ void initialize_pins() {
     ANSELBbits.ANSB14 = 0;
     RPA1R = 0b0011; //set the RPA2R to SDO1
     U1RXR = 0b0011; // Set the pin to RPB13
-}
-
-void init_Timer (Timer_Config timer_config, uint16 period) //TODO Connor: switch to frequency
-{
-    timer_config.enabled = TRUE;
-    timer_config.which_timer = 1;
-    timer_config.divide = Div_256; //TODO Connor: switch to frequency
-    timer_config.callback = timer_tick;
-    timer_config.period = period; //TODO Connor: switch to frequency
-    initialize_Timer (timer_config);
 }
