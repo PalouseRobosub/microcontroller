@@ -17,6 +17,7 @@
       <itemPath>Bootloader.c</itemPath>
       <itemPath>UART_Interface.c</itemPath>
       <itemPath>FrameWork.c</itemPath>
+      <itemPath>NVM_Operations.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

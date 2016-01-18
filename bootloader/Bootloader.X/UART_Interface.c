@@ -1,0 +1,53 @@
+#include "Bootloader.h"
+
+
+void initialize_UART_Interface(int baudRate, int pbclk)
+{
+    ANSELBbits.ANSB13 = 0;
+    ANSELBbits.ANSB15 = 0;
+    TRISBbits.TRISB13 = 1; //Input -> RX
+    TRISBbits.TRISB15 = 0; //Output -> TX
+    
+    U1RXR = 3; //U1RX
+    RPB15R = 1; //U1TX
+    
+    U1STA = U1MODE = 0;
+    U1BRG = (pbclk/16/baudRate-1);
+    U1STAbits.UTXEN = 1;
+    U1STAbits.URXEN = 1;
+    U1MODEbits.ON = 1; //Turn the UART on
+}
+
+void UART_Tasks()
+{
+    uint8_t byte;
+    if (U1STAbits.URXDA == 1)
+    {
+        byte = U1RXREG;
+        constructRXFrame(byte);
+    }
+    
+    if (TX.isValid)
+    {
+        for (int i = 0; i < TX.length; i++)
+        {
+            send_Byte(TX.buffer[i]);
+        }
+        TX.length = 0;
+        TX.isValid = 0;
+    }
+}
+
+uint8_t get_Byte()
+{
+    uint8_t byte;
+    while (U1STAbits.URXDA == 0);
+    byte = U1RXREG;
+    return byte;
+}
+
+void send_Byte(uint8_t byte)
+{
+    U1TXREG = byte;
+    while (~U1STAbits.TRMT); //Wait for the register to empty
+}
