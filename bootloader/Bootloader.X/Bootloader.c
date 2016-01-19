@@ -7,6 +7,10 @@ Frame RX, TX;
 
 int main()
 {
+    TX.rawLength = 0;
+    RX.rawLength = 0;
+    RX.isValid = 0;
+    TX.isValid = 0;
     
     initialize_UART_Interface(115200, PB_CLK);
     
@@ -23,6 +27,6 @@ int main()
 void begin_Execution()
 {
     void (*programStart) (void);
-	programStart = (void (*)(void))FLASH_MEM_VIRTUAL_START;
+	programStart = (void (*)(void))(APP_BASE_ADDRESS + 0x1000);
     programStart();
 }

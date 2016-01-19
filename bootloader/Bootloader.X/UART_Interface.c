@@ -1,5 +1,6 @@
 #include "Bootloader.h"
 
+extern Frame RX, TX;
 
 void initialize_UART_Interface(int baudRate, int pbclk)
 {
@@ -18,10 +19,19 @@ void initialize_UART_Interface(int baudRate, int pbclk)
     U1MODEbits.ON = 1; //Turn the UART on
 }
 
-void UART_Tasks()
+void UART_tasks()
 {
+    int i;
+    
     uint8_t byte;
-    if (U1STAbits.URXDA == 1)
+	BYTE dummy;
+
+	if(U1STA & 0x000E)              // receive errors?
+	{
+		dummy = U1RXREG; 			// dummy read to clear FERR/PERR
+		U1STAbits.OERR = 0;			// clear OERR to keep receiving
+	}
+    if (U1STAbits.URXDA)
     {
         byte = U1RXREG;
         constructRXFrame(byte);
@@ -29,7 +39,7 @@ void UART_Tasks()
     
     if (TX.isValid)
     {
-        for (int i = 0; i < TX.length; i++)
+        for (i = 0; i < TX.length; i++)
         {
             send_Byte(TX.buffer[i]);
         }
@@ -48,6 +58,6 @@ uint8_t get_Byte()
 
 void send_Byte(uint8_t byte)
 {
+    while(U1STAbits.UTXBF); // wait for TX buffer to be empty
     U1TXREG = byte;
-    while (~U1STAbits.TRMT); //Wait for the register to empty
 }

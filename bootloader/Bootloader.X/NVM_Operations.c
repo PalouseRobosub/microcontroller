@@ -3,11 +3,17 @@
 #define NVMemIsError()    (NVMCON & (_NVMCON_WRERR_MASK | _NVMCON_LVDERR_MASK))
 const UINT countPerMicroSec = ((SYS_FREQ/1000000)/2);
 
+extern Frame RX, TX;
+
 void erase_Flash()
 {
-    for (int i = 0; i < (APP_MAX_ADDRESS - APP_BASE_ADDRESS)/PAGE_SIZE; i++)
+    int i;
+    RX.rawLength = 0;
+    RX.rawData[RX.rawLength++] = ERASE_FLASH;
+    
+    for (i = 0; i < (APP_MAX_ADDRESS - APP_BASE_ADDRESS)/PAGE_SIZE; i++)
     {
-        NVM_Erase_Page(APP_BASE_ADDRESS + i*PAGE_SIZE);
+        NVM_Erase_Page((void *)(APP_BASE_ADDRESS + i*PAGE_SIZE));
     }
 }
 
@@ -31,7 +37,7 @@ void delay_us(uint32_t us)
     WriteCoreTimer(bakupCount + targetCount);      
 }
 
-uint32_t NVM_Write_Word(uint32_t *address, uint32_t data)
+uint32_t NVM_Write_Word(void *address, uint32_t data)
 {
     uint32_t res;
     NVMADDR = KVA_TO_PA(address);
@@ -42,7 +48,7 @@ uint32_t NVM_Write_Word(uint32_t *address, uint32_t data)
     return res;
 }
 
-uint32_t NVM_Erase_Page(uint32_t *address)
+uint32_t NVM_Erase_Page(void *address)
 {
     NVMADDR = KVA_TO_PA(address);
     

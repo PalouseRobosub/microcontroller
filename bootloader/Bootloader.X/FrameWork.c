@@ -1,8 +1,9 @@
 #include <GenericTypeDefs.h>
-
 #include "Bootloader.h"
 
-void Framework_Tasks()
+extern Frame RX, TX;
+
+void Framework_tasks()
 {
     //Handle RX frames if they are valid
     if (RX.isValid)
@@ -10,9 +11,9 @@ void Framework_Tasks()
         RX.isValid = 0; //clear our flag
         handleCommand();
     }
-    
-    //Next, construct our TX frame
-    constructTXFrame();
+    if (TX.rawLength) //If there is raw data ready for us to create a frame of
+        //Next, construct our TX frame
+        constructTXFrame();
 }
 
 void handleCommand()
@@ -41,7 +42,8 @@ void handleCommand()
 
 void HexRecord_to_Flash(uint8_t *buffer, int size)
 {
-    uint32_t *progAddress;
+    int i;
+    void *progAddress;
     uint32_t wrData;
     
     static Hex_Record hexRec;
@@ -53,7 +55,7 @@ void HexRecord_to_Flash(uint8_t *buffer, int size)
         
         //First, verify our checksum
         uint8_t checksum = 0;
-        for (int i = 0; i < hexRec.RecDataLen + 5; i++)
+        for (i = 0; i < hexRec.RecDataLen + 5; i++)
             checksum += buffer[i];
 
         if (checksum != 0)
@@ -73,14 +75,18 @@ void HexRecord_to_Flash(uint8_t *buffer, int size)
                     hexRec.Address.byte.HB = buffer[1];
                     hexRec.Address.byte.LB = buffer[2];
                     
-                    hexRec.Address.Val = hexRec.Address + hexRec.ExtLinAddress.Val + hexRec.ExtSegAddress.Val;
+                    hexRec.Address.Val = hexRec.Address.Val + hexRec.ExtLinAddress.Val + hexRec.ExtSegAddress.Val;
                     
                     //Write all bytes of data
                     while (hexRec.RecDataLen)
                     {
-                        progAddress = KVA_TO_PA(hexRec.Address.Val);
-                        if(((progAddress >= (void *)APP_BASE_ADDRESS) && (progAddress <= (void *)APP_MAX_ADDRESS))
-						   && ((progAddress < (void*)DEV_CFG_BASE_ADDRESS) || (progAddress > (void*)DEV_CFG_MAX_ADDRESS)))
+                        progAddress = (void *)KVA_TO_PA(hexRec.Address.Val);
+                        
+                        if(((progAddress >= (void *)KVA_TO_PA(APP_BASE_ADDRESS)) && 
+                                (progAddress <= (void *)KVA_TO_PA(APP_MAX_ADDRESS)))
+						   && 
+                                ((progAddress < (void*)KVA_TO_PA(DEV_CFG_BASE_ADDRESS)) 
+                                || (progAddress > (void*)KVA_TO_PA(DEV_CFG_MAX_ADDRESS))))
 						{
 							if(hexRec.RecDataLen < 4)
 							{
@@ -143,10 +149,11 @@ void HexRecord_to_Flash(uint8_t *buffer, int size)
 
 void constructTXFrame()
 {
+    int i;
     //go through raw data and place it into the buffer
     TX.buffer[0] = SOT;
     TX.length = 1;
-    for (int i = 0; i < TX.rawLength; i++)
+    for (i = 0; i < TX.rawLength; i++)
     {
         if (TX.rawData[i] == SOT || TX.rawData[i] == EOT || TX.rawData[i] == DLE)
             TX.buffer[TX.length++] = DLE;

@@ -3,16 +3,20 @@
 
 #include <stdint.h>
 #define _SUPPRESS_PLIB_WARNING
+#define _DISABLE_OPENADC10_CONFIGPORT_WARNING
 #include <plib.h>
 
 #define FRAME_LENGTH 500
 #define SYS_FREQ 30000000
-#define APP_BASE_ADDRESS
-#define APP_MAX_ADDRESS
+#define USR_RESET_ADDRESS 0xBFC00000
+#define APP_BASE_ADDRESS 0x9D002000
+#define APP_MAX_ADDRESS 0x9D002000 + 0x20000 - 0x2000 - 0x1000 - 0x490
+#define DEV_CFG_BASE_ADDRESS 0x9FC00BF0
+#define DEV_CFG_MAX_ADDRESS 0x9FC00BFF
 
-#define SOT 01
-#define DLE 16
-#define EOT 04
+#define SOT 0x01
+#define DLE 0x16
+#define EOT 0x04
 
 #define NVM_WRITE_WORD          0x4001      // Word program operation
 #define NVM_ERASE_PAGE        0x4004      // Page erase operation
@@ -64,20 +68,20 @@ typedef struct FRAME {
 void initialize_UART_Interface(int baudRate, int pb_clk);
 void send_Byte(uint8_t byte);
 uint8_t get_Byte();
-void UART_Tasks();
+void UART_tasks();
 
 //Framework functions
-void Framework_Tasks();
 void constructRXFrame(char data);
 void constructTXFrame();
-void Framework_Tasks();
+void Framework_tasks();
 void handleCommand();
 void HexRecord_to_Flash(uint8_t *record, int size);
 
 //NVM Operations
-uint32_t NVM_Write_Word(uint32_t *address, uint32_t data);
+uint32_t NVM_Write_Word(void *address, uint32_t data);
 void delay_us(uint32_t us);
 uint32_t NVMOperation(uint32_t nvmop);
+uint32_t NVM_Erase_Page(void *address);
 
 //Command functions
 void erase_Flash();
