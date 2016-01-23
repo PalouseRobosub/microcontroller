@@ -15,6 +15,9 @@ void erase_Flash()
     {
         NVM_Erase_Page((void *)(APP_BASE_ADDRESS + i*PAGE_SIZE));
     }
+    
+    //Now, erase the IVT page for programs located at the end of program flash
+    NVM_Erase_Page((void *)EXCEPT_BASE_ADDRESS);
 }
 
 //Functions created with help from AN1388 Bootloader code from Microchip

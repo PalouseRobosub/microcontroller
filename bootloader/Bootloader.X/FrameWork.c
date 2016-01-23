@@ -82,11 +82,19 @@ void HexRecord_to_Flash(uint8_t *buffer, int size)
                     {
                         progAddress = (void *)KVA_TO_PA(hexRec.Address.Val);
                         
-                        if(((progAddress >= (void *)KVA_TO_PA(APP_BASE_ADDRESS)) && 
-                                (progAddress <= (void *)KVA_TO_PA(APP_MAX_ADDRESS)))
+                        if(     (\
+                                    ((progAddress >= (void *)KVA_TO_PA(APP_BASE_ADDRESS))   \
+                                    &&                                                      \
+                                    (progAddress <= (void *)KVA_TO_PA(APP_MAX_ADDRESS)))    \
+                                ||                                                          \
+                                    ((progAddress >= (void *)KVA_TO_PA(EXCEPT_BASE_ADDRESS))\
+                                     &&                                                     \
+                                    (progAddress <= (void *)KVA_TO_PA(EXCEPT_MAX_ADDRESS))) \
+                                )
 						   && 
-                                ((progAddress < (void*)KVA_TO_PA(DEV_CFG_BASE_ADDRESS)) 
-                                || (progAddress > (void*)KVA_TO_PA(DEV_CFG_MAX_ADDRESS))))
+                                ((progAddress < (void*)KVA_TO_PA(DEV_CFG_BASE_ADDRESS))     \
+                                ||                                                          \   
+                                (progAddress > (void*)KVA_TO_PA(DEV_CFG_MAX_ADDRESS))))     \
 						{
 							if(hexRec.RecDataLen < 4)
 							{

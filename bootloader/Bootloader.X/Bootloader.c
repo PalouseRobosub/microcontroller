@@ -24,9 +24,12 @@ int main()
     }
 }
 
+extern __startApp();
+
 void begin_Execution()
 {
     void (*programStart) (void);
-	programStart = (void (*)(void))(APP_BASE_ADDRESS + 0x1000);
+	programStart = (void (*)(void))(APP_BASE_ADDRESS);
     programStart();
+    __startApp();
 }
