@@ -74,8 +74,8 @@ void bat_volt_callback(ADC_Node node);
 void read_switch(void);
 void timer_update(uint8 *msg, uint8 length);
 
-int update_rate[SID_COUNT] = {2,2,2,2,2,2,10,10};
-int update_counter[SID_COUNT];
+//int update_rate[SID_COUNT] = {2,2,2,2,2,2,10,10};
+//int update_counter[SID_COUNT];
 
 /*************************************************************************
  Main Function
@@ -109,7 +109,7 @@ int main(void) {
 
     //setup peripherals
     timer_config.pbclk = PB_CLK;
-    timer_config.frequency = 200;
+    timer_config.frequency = 100;
     timer_config.which_timer = Timer_2;
     timer_config.callback = &timer_callback;
     timer_config.enabled = 1;
