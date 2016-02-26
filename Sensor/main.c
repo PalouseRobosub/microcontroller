@@ -138,7 +138,7 @@ int main(void) {
     packet_config.control_byte = 0x0A;
     packet_config.which_channel = PACKET_UART_CH_1;
     packet_config.uart_config = uart_config;
-    packet_config.callback = &timer_update;
+//    packet_config.callback = &timer_callback;
     initialize_packetizer(packet_config);
 
     sensor_setup(&sensor_send_uart);
@@ -309,7 +309,7 @@ void read_switch(void)
     send_packet(PACKET_UART_CH_1, send_data, sizeof(send_data));    
 }
 
-void timer_update(uint8 *msg, uint8 length)
+/*void timer_update(uint8 *msg, uint8 length)
 {
     uint8 div = msg[1];
     uint16 *period = (uint16*) (msg+2);
@@ -321,4 +321,4 @@ void timer_update(uint8 *msg, uint8 length)
         T2CONbits.TCKPS = msg[1];
         PR2 = *period;
     }
-}
+} */

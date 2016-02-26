@@ -30,7 +30,7 @@ u8 gyro_read_buffer[8];
 
 // <editor-fold defaultstate="collapsed" desc="magnetometer variables">
 I2C_Node mag_config;
-u8 mag_config_buffer;
+u8 mag_config_buffer[3];
 I2C_Node mag_read;
 u8 mag_read_buffer[6];
 // </editor-fold>
@@ -107,7 +107,7 @@ void gyro_setup(void *callback)
     gyro_config.sub_address = 0x15;
     gyro_config.mode = WRITE;
 
-    gyro_config_buffer[0] = 100; //Set Sample Rate Divider to 100;
+    gyro_config_buffer[0] = 9; //Set Sample Rate Divider to 100;
     gyro_config_buffer[1] = 0x19; //Configure Gyroscope Range and Set Internal Sample Rate
 
     gyro_read.callback = callback;
@@ -131,13 +131,15 @@ void mag_setup(void *callback)
 
     //magnetometer struct setups
     mag_config.callback = 0;
-    mag_config.data_buffer = &mag_config_buffer;
-    mag_config.data_size = 1;
+    mag_config.data_buffer = mag_config_buffer;
+    mag_config.data_size = 3;
     mag_config.device_address = address;
-    mag_config.sub_address = 0x02;
+    mag_config.sub_address = 0x00;
     mag_config.mode = WRITE;
 
-    mag_config_buffer = 0; //Set Magnetometer to Continuous-Measurement Mode
+    mag_config_buffer[0] = 0b00011000; 
+    mag_config_buffer[1] = 0b00100000;
+    mag_config_buffer[2] = 0b00000000; //Set Magnetometer to Continuous-Measurement Mode
 
     mag_read.callback = callback;
     mag_read.data_buffer = mag_read_buffer;
