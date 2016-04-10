@@ -2,6 +2,7 @@
 #define SENSORS_H
 
 #include <string.h>
+#include "sublibinal.h"
 
 //Define all addresses for Sensors
 #define ACCEL_ADDR 0x53
@@ -52,6 +53,7 @@ void readSensors(); //Enqueue reads for all of our sensors
 void sensorRead(I2C_Node node); //Sensor read node callback completed
 void depthConverting(I2C_Node node); //Depth conversion configuration node callback
 void timeToRead(); //Read timer callback -> sets read = 1
+void readDepth(); //Callback once conversion is complete to read the depth sensors
 
 //Sensor_Calibration.c
 void config_done(I2C_Node node); //Callback for configuration nodes

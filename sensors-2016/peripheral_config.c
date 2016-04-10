@@ -50,23 +50,27 @@ void configureSerial()
     initialize_packetizer(p);
 }
 
-void confiugreI2C()
+void configureI2C()
 {
     I2C_Config i1 = {0}, i2 = {0};
     
     i1.channel = I2C_CH_1;
     i1.pb_clk = PB_CLK;
-    i1.rx_buffer_ptr = results_ch_1;
-    i1.rx_buffer_size = sizeof(results_ch_1);
-    i1.tx_buffer_ptr = work_ch_1;
-    i1.tx_buffer_size = sizeof(work_ch_1);
+    i1.result_buffer_ptr = results_ch_1;
+    i1.result_buffer_size = sizeof(results_ch_1);
+    i1.work_buffer_ptr = work_ch_1;
+    i1.work_buffer_size = sizeof(work_ch_1);
+    i1.data_buffer_ptr = data_ch_1;
+    i1.data_buffer_size = sizeof(data_ch_1);
     initialize_I2C(i1);
     
     i2.channel = I2C_CH_2;
     i2.pb_clk = PB_CLK;
-    i2.rx_buffer_ptr = results_ch_2;
-    i2.rx_buffer_size = sizeof(results_ch_2);
-    i2.tx_buffer_ptr = work_ch_2;
-    i2.tx_buffer_size = sizeof(work_ch_2);
+    i2.result_buffer_ptr = results_ch_2;
+    i2.result_buffer_size = sizeof(results_ch_2);
+    i2.work_buffer_ptr = work_ch_2;
+    i2.work_buffer_size = sizeof(work_ch_2);
+    i2.data_buffer_ptr = data_ch_2;
+    i2.data_buffer_size = sizeof(data_ch_2);
     initialize_I2C(i2);
 }
