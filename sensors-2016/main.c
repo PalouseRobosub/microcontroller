@@ -49,7 +49,7 @@ int main()
     ANSELA = ANSELB = 0;
     
     TRISBbits.TRISB15 = 0;
-    LATBbits.LATB15 = 0; //I2C is not reset
+    LATBbits.LATB15 = 1; //I2C is reset
     
     TRISAbits.TRISA3 = 0;
     LATAbits.LATA3 = 0;
@@ -59,6 +59,8 @@ int main()
     configureTimer(); //Configure the timer that we read the sensors at and the wait timer for depth conversion
     configureSerial(); //Configure our serial communication to the host computer
     configureI2C(); //Configure I2C transactions
+    
+    LATBbits.LATB15 = 0; //I2C is not reset
     
     enable_Interrupts(); //Globally enable interrupts
     

@@ -9,7 +9,7 @@
 #define GYRO_ADDR 0x68
 #define DEPTH_ADDR 0x76
 #define MAG_ADDR 0x1E
-#define MUX_ADDR 0x70
+#define MUX_ADDR 0b1110000
 
 typedef enum {
     SID_ACCELEROMETER_1,
