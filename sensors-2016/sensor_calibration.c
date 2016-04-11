@@ -26,9 +26,6 @@ void configureSensors()
     configureGyroscope(0);
     configureMagnometer(0);
     
-    while (!calibrate_channel_1) //Wait for calibration to complete
-        bg_process_I2C();
-    
     switchChannel(1); //Set channel 1 active
     //---------------
     configureAccelerometer(1); //Configure accelerometers on Channel 1
@@ -37,9 +34,6 @@ void configureSensors()
     
     //While we wait, set up the read nodes
     configureReadNodes();
-    
-    while (!calibrationComplete) //Wait for calibration to complete
-        bg_process_I2C();
 }
 
 void configureAccelerometer(int channel)
@@ -82,7 +76,7 @@ void configureGyroscope(int channel)
     gyro_config.sub_address = 0x15;
     
     config[0] = 100;
-    config[1] = 0x19;
+    config[1] = 0x9;
     
     if (channel == 0)
     {
@@ -100,15 +94,18 @@ void configureGyroscope(int channel)
 
 void configureMagnometer(int channel)
 {
-    uint8 config = 0;
+    uint8 config[3] = {0};
+    config[0] = 0x18;
+    config[1] = 0x20;
+    config[2] = 0;
     
     I2C_Node mag_config = {0};
     mag_config.callback = &config_done;
     mag_config.data_buffer = &config;
-    mag_config.data_size = 1;
+    mag_config.data_size = sizeof(config);
     mag_config.device_address = MAG_ADDR;
     mag_config.mode = WRITE;
-    mag_config.sub_address = 0x02;
+    mag_config.sub_address = 0x00;
     
     if (channel == 0)
     {

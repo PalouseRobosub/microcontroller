@@ -17,11 +17,11 @@ void readSensors()
     channel_zero_busy = 1;
     
     //Send depth conversion start packets
-    depth_prep.device_id = SID_DEPTH_1;
+    /*depth_prep.device_id = SID_DEPTH_1;
     send_I2C(I2C_CH_1, depth_prep);
     
     depth_prep.device_id = SID_DEPTH_2;
-    send_I2C(I2C_CH_2, depth_prep);
+    send_I2C(I2C_CH_2, depth_prep);*/
     
     gyro_read.device_id = SID_GYROSCOPE_1;
     mag_read.device_id = SID_MAGNOMETER_1;
@@ -44,11 +44,11 @@ void readSensors()
     channel_one_busy = 1;
     
     //Send depth conversion start packets
-    depth_prep.device_id = SID_DEPTH_3;
+    /*depth_prep.device_id = SID_DEPTH_3;
     send_I2C(I2C_CH_1, depth_prep);
     
     depth_prep.device_id = SID_DEPTH_4;
-    send_I2C(I2C_CH_2, depth_prep);
+    send_I2C(I2C_CH_2, depth_prep);*/
     
     gyro_read.device_id = SID_GYROSCOPE_3;
     mag_read.device_id = SID_MAGNOMETER_3;
@@ -75,9 +75,9 @@ void sensorRead(I2C_Node node)
     send_packet(PACKET_UART_CH_1, packet, node.data_size + 1);
     
     sensors_read++;
-    if (sensors_read == 8)
+    if (sensors_read == 6)//8 with depth -> 6 without
         channel_zero_busy = 0;
-    else if (sensors_read >= 13)
+    else if (sensors_read >= 9) //13 with depth -> 13 without
         channel_one_busy = 0;
 }
 

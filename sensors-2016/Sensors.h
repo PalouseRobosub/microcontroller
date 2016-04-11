@@ -34,7 +34,7 @@ typedef enum {
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define READ_RATE 100 //Read the sensors at 100Hz
+#define READ_RATE 1 //Read the sensors at 100Hz
 
 
 #define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer
@@ -60,7 +60,7 @@ void config_done(I2C_Node node); //Callback for configuration nodes
 void configureSensors(); //Configuration for all sensors - this will block until all calibration is completed
 void configureAccelerometer(int channel); //Configure accelerometers on channel 0/1
 void configureGyroscope(int channel); //Configure gyroscopes on channel 0/1
-void configureMagnometers(int channel); //Configure mangometers on channel 0/1
+void configureMagnometer(int channel); //Configure mangometers on channel 0/1
 
 
 //Sensor_Support.c

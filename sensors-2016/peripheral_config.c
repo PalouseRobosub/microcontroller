@@ -1,12 +1,12 @@
 #include "Sensors.h"
 #include "sublibinal.h"
-
+#define BUFF_SIZE 2048
 //Global RX and TX buffers
 uint8 rx[512], tx[512];
 
 //Global I2C work and results buffer
-uint8 work_ch_1[512], data_ch_1[512], results_ch_1[512];
-uint8 work_ch_2[512], data_ch_2[512], results_ch_2[512];
+uint8 work_ch_1[BUFF_SIZE], data_ch_1[128], results_ch_1[BUFF_SIZE];
+uint8 work_ch_2[BUFF_SIZE], data_ch_2[128], results_ch_2[BUFF_SIZE];
 
 void configureTimer()
 {
