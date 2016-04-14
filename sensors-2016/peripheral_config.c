@@ -1,8 +1,8 @@
 #include "Sensors.h"
 #include "sublibinal.h"
-#define BUFF_SIZE 2048
+#define BUFF_SIZE 1024
 //Global RX and TX buffers
-uint8 rx[512], tx[512];
+uint8 rx[BUFF_SIZE], tx[BUFF_SIZE];
 
 //Global I2C work and results buffer
 uint8 work_ch_1[BUFF_SIZE], data_ch_1[128], results_ch_1[BUFF_SIZE];
@@ -18,12 +18,16 @@ void configureTimer()
     t.which_timer = READ_TIMER;
     initialize_Timer(t);
     
-    t.callback = &readDepth;
+    t.callback = &readDepth_1;
     t.enabled = FALSE;
     t.frequency = 1667; //.6 ms
     t.pbclk = PB_CLK;
-    t.which_timer = WAIT_TIMER;
+    t.which_timer = WAIT_TIMER_1;
     initialize_Timer(t);
+    
+    t.which_timer = WAIT_TIMER_2;
+    t.callback = &readDepth_2;
+    initialize_Timer(t); //Initialize wait timer 2
 }
 
 void configureSerial()

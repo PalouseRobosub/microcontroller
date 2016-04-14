@@ -75,8 +75,8 @@ void configureGyroscope(int channel)
     gyro_config.mode = WRITE;
     gyro_config.sub_address = 0x15;
     
-    config[0] = 100;
-    config[1] = 0x9;
+    config[0] = 9;
+    config[1] = 0x19;
     
     if (channel == 0)
     {
@@ -95,14 +95,14 @@ void configureGyroscope(int channel)
 void configureMagnometer(int channel)
 {
     uint8 config[3] = {0};
-    config[0] = 0x18;
-    config[1] = 0x20;
-    config[2] = 0;
+    config[0] = 0b00011000; 
+    config[1] = 0b00100000;
+    config[2] = 0b00000000; //Set Magnetometer to Continuous-Measurement Mode
     
     I2C_Node mag_config = {0};
     mag_config.callback = &config_done;
-    mag_config.data_buffer = &config;
-    mag_config.data_size = sizeof(config);
+    mag_config.data_buffer = config;
+    mag_config.data_size = 3;
     mag_config.device_address = MAG_ADDR;
     mag_config.mode = WRITE;
     mag_config.sub_address = 0x00;

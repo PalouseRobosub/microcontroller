@@ -29,7 +29,7 @@ void configureReadNodes()
     mag_read.mode = READ;
     mag_read.sub_address = 0x03;
     
-    depth_prep.callback = &depthConverting;
+    depth_prep.callback = NULL; //Cant be called
     depth_prep.data_buffer = NULL;
     depth_prep.data_size = 0;
     depth_prep.device_address = DEPTH_ADDR;

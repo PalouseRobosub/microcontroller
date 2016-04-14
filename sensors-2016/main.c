@@ -46,6 +46,7 @@ char read = 0;
 
 int main()
 {
+    int i = 0;
     ANSELA = ANSELB = 0;
     
     TRISBbits.TRISB15 = 0;
@@ -62,6 +63,9 @@ int main()
     
     LATBbits.LATB15 = 0; //I2C is not reset
     
+    //delay to allow sensors to power up before configuring
+    for(i=0; i < 1000000; ++i); //This delay is necessary for magnometer
+    
     enable_Interrupts(); //Globally enable interrupts
     
     configureSensors(); //Configure sensors on startup.
@@ -70,7 +74,7 @@ int main()
     
     while (1) //Enter the embedded loop
     {
-        bg_process_packetizer(PACKET_UART_CH_1);
+        //bg_process_packetizer(PACKET_UART_CH_1);
         
         if (read)
         {
@@ -78,6 +82,8 @@ int main()
             LATAINV |= 1<<3;
             read = 0;
         }
+        bg_process_I2C(I2C_CH_1, FALSE);
+        bg_process_I2C(I2C_CH_2, FALSE);
     }
     
 }
