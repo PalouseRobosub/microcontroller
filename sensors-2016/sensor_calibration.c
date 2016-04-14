@@ -1,24 +1,8 @@
 #include "Sensors.h"
 #include "sublibinal.h"
 
-boolean calibrationComplete = FALSE;
-boolean calibrate_channel_1 = FALSE;
-
-volatile int configurations_completed = 0;
-void config_done(I2C_Node node)
-{
-    configurations_completed++;
-    if (configurations_completed >= 6)
-        calibrate_channel_1 = TRUE;
-    
-    if (configurations_completed >= 9) //3 accel, 3 gyro, 3 magn, 4 depth
-        calibrationComplete = TRUE; //Allow our program to continue
-}
-
 void configureSensors()
 {
-    calibrate_channel_1 = FALSE;
-    configurations_completed = 0; //Reset the configurations_completed variable
     
     switchChannel(0); //Switch to channel 0 active
     //---------------
@@ -43,9 +27,9 @@ void configureAccelerometer(int channel)
     
     //First, configure the Accelerometer
     I2C_Node accel_config = {0};
-    accel_config.callback = &config_done;
+    accel_config.callback = NULL;
     accel_config.data_buffer = &configuration;
-    accel_config.data_size = sizeof(configuration);
+    accel_config.data_size = 1;
     accel_config.device_address = ACCEL_ADDR;
     accel_config.mode = WRITE;
     accel_config.sub_address = 0x2D;
@@ -68,9 +52,9 @@ void configureGyroscope(int channel)
 {
     uint8 config[2] = {0};
     I2C_Node gyro_config = {0};
-    gyro_config.callback = &config_done;
+    gyro_config.callback = NULL;
     gyro_config.data_buffer = config;
-    gyro_config.data_size = sizeof(config);
+    gyro_config.data_size = 2;
     gyro_config.device_address = GYRO_ADDR;
     gyro_config.mode = WRITE;
     gyro_config.sub_address = 0x15;
@@ -100,7 +84,7 @@ void configureMagnometer(int channel)
     config[2] = 0b00000000; //Set Magnetometer to Continuous-Measurement Mode
     
     I2C_Node mag_config = {0};
-    mag_config.callback = &config_done;
+    mag_config.callback = NULL;
     mag_config.data_buffer = config;
     mag_config.data_size = 3;
     mag_config.device_address = MAG_ADDR;

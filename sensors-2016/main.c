@@ -79,7 +79,7 @@ int main()
         if (read)
         {
             readSensors();
-            LATAINV |= 1<<3;
+            //LATAINV |= 1<<3;
             read = 0;
         }
         bg_process_I2C(I2C_CH_1, FALSE);

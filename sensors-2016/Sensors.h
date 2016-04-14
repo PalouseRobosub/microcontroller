@@ -34,7 +34,7 @@ typedef enum {
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define READ_RATE 1 //Read the sensors at 100Hz
+#define READ_RATE 10 //Read the sensors at 100Hz
 
 
 #define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer

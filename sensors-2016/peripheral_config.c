@@ -18,11 +18,11 @@ void configureTimer()
     t.which_timer = READ_TIMER;
     initialize_Timer(t);
     
-    t.callback = &readDepth_1;
     t.enabled = FALSE;
     t.frequency = 1667; //.6 ms
     t.pbclk = PB_CLK;
     t.which_timer = WAIT_TIMER_1;
+    t.callback = &readDepth_1;
     initialize_Timer(t);
     
     t.which_timer = WAIT_TIMER_2;
@@ -38,11 +38,11 @@ void configureSerial()
     u.speed = UART_SPEED;
     u.pb_clk = PB_CLK;
     u.rx_buffer_ptr = rx;
-    u.rx_buffer_size = sizeof(rx);
+    u.rx_buffer_size = BUFF_SIZE;
     u.rx_en = TRUE;
     u.rx_pin = Pin_RPA4;
     u.tx_buffer_ptr = tx;
-    u.tx_buffer_size = sizeof(tx);
+    u.tx_buffer_size = BUFF_SIZE;
     u.tx_en = TRUE;
     u.tx_pin = Pin_RPB4;
     u.which_uart = UART_CH_1;
@@ -61,20 +61,20 @@ void configureI2C()
     i1.channel = I2C_CH_1;
     i1.pb_clk = PB_CLK;
     i1.result_buffer_ptr = results_ch_1;
-    i1.result_buffer_size = sizeof(results_ch_1);
+    i1.result_buffer_size = BUFF_SIZE;
     i1.work_buffer_ptr = work_ch_1;
-    i1.work_buffer_size = sizeof(work_ch_1);
+    i1.work_buffer_size = BUFF_SIZE;
     i1.data_buffer_ptr = data_ch_1;
-    i1.data_buffer_size = sizeof(data_ch_1);
+    i1.data_buffer_size = 128;
     initialize_I2C(i1);
     
     i2.channel = I2C_CH_2;
     i2.pb_clk = PB_CLK;
     i2.result_buffer_ptr = results_ch_2;
-    i2.result_buffer_size = sizeof(results_ch_2);
+    i2.result_buffer_size = BUFF_SIZE;
     i2.work_buffer_ptr = work_ch_2;
-    i2.work_buffer_size = sizeof(work_ch_2);
+    i2.work_buffer_size = BUFF_SIZE;
     i2.data_buffer_ptr = data_ch_2;
-    i2.data_buffer_size = sizeof(data_ch_2);
+    i2.data_buffer_size = 128;
     initialize_I2C(i2);
 }
