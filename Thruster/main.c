@@ -15,6 +15,7 @@
 #include "UART.h"
 #include "packetizer.h"
 #include "I2C.h"
+#include "Timer.h"
 
 /*************************************************************************
  Local Includes
@@ -33,7 +34,7 @@
 #include <xc.h>
 
 //select programming pins
-#pragma config ICESEL = ICS_PGx1// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config ICESEL = ICS_PGx2// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 
 // DEVCFG3
 // USERID = No Setting
@@ -101,31 +102,32 @@ int main(void) {
     uart_config.tx_buffer_ptr = uart_tx_buffer;
     uart_config.tx_buffer_size = sizeof(uart_tx_buffer);
     uart_config.tx_en = 1;
-    uart_config.rx_pin = Pin_RPB13;
-    uart_config.tx_pin = Pin_RPB15;
+    uart_config.rx_pin = Pin_RPA4;
+    uart_config.tx_pin = Pin_RPB4;
 
     packet_config.which_channel = PACKET_UART_CH_1;
     packet_config.control_byte = 0x0A;
     packet_config.uart_config = uart_config;
-    packet_config.callback = &packetizer_callback;
+    packet_config.callback = &thruster_packetizer_callback;
     initialize_packetizer(packet_config);
     
-    i2c_config.callback = void;
     i2c_config.channel = I2C_CH_1;
     i2c_config.pb_clk = PB_CLK;
-    i2c_config.rx_buffer_ptr = i2c_rx_buffer;
-    i2c_config.rx_buffer_size = sizeof(i2c_rx_buffer);
-    i2c_config.tx_buffer_ptr = i2c_tx_buffer;
-    i2c_config.tx_buffer_size = sizeof(i2c_tx_buffer);
+    i2c_config.result_buffer_ptr = i2c_rx_buffer;
+    i2c_config.result_buffer_size = sizeof(i2c_rx_buffer);
+    i2c_config.work_buffer_ptr = i2c_tx_buffer;
+    i2c_config.work_buffer_size = sizeof(i2c_tx_buffer);
     initialize_I2C(i2c_config);
     
-    timer_config.callback = &timer_callback;
+    timer_config.callback = &read_thrusters_timer_callback;
     timer_config.enabled = TRUE;
     timer_config.frequency = 1;
     timer_config.pbclk = PB_CLK;
     timer_config.which_timer = Timer_1;
+    initialize_Timer(timer_config);
     
-
+    init_thrusters();
+    
 
     //Global interrupt enable. Do this last!
     enable_Interrupts();
@@ -138,18 +140,18 @@ int main(void) {
     return 0;
 }
 
-/*
- * currently this board expects the computer to send...
- * 
- */
-void packetizer_callback(uint8* data, uint8 data_size)
-{
 
-}
 
 void timer_callback(void)
 {
+    uint8 data[5];
+    data[0] = 'x';
+    data[1] = 'y';
+    data[2] = 'z';
+    data[3] = '!';
     
+    
+    send_packet(PACKET_UART_CH_1, data, 4);
 }
 
 
