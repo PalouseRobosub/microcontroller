@@ -32,7 +32,7 @@
 #include <xc.h>
 
 //select programming pins
-#pragma config ICESEL = ICS_PGx1// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
+#pragma config ICESEL = ICS_PGx2// ICE/ICD Comm Channel Select (Communicate on PGEC1/PGED1)
 
 // DEVCFG3
 // USERID = No Setting
@@ -74,7 +74,9 @@ void packetizer_callback(uint8* data, uint8 data_size);
 void trace_callback(void);
 
 //variable for count idle time
-u32 idle_time;
+volatile u32 idle_time;
+volatile uint8 timer_count;
+volatile uint8 hit;
 
 /*************************************************************************
  Main Function
@@ -92,7 +94,7 @@ int main(void) {
 
     //setup peripherals
 	timer_config.which_timer = Timer_1;
-	timer_config.frequency = 0.1;
+	timer_config.frequency = 1;
 	timer_config.pbclk = PB_CLK;
 	timer_config.enabled = 1;
 	timer_config.callback = &trace_callback;
@@ -108,6 +110,8 @@ int main(void) {
     uart_config.tx_buffer_ptr = uart_tx_buffer;
     uart_config.tx_buffer_size = sizeof(uart_tx_buffer);
     uart_config.tx_en = 1;
+    uart_config.rx_pin = Pin_RPA4;
+    uart_config.tx_pin = Pin_RPB4;
 
     packet_config.which_channel = PACKET_UART_CH_1;
     packet_config.control_byte = 0x0A;
@@ -115,6 +119,8 @@ int main(void) {
     packet_config.callback = &packetizer_callback;
     initialize_packetizer(packet_config);
 
+    timer_count = 0;
+    idle_time = 0;
     //Global interrupt enable. Do this last!
     enable_Interrupts();
     while (1) {
@@ -124,26 +130,39 @@ int main(void) {
 
 		//increment idle time counter
 		++idle_time;
+        if(hit)
+        {
+            hit = 0;
+            idle_time = 0;
+        }
+        
     }
-
     return 0;
 }
 
 void trace_callback(void)
 {
 	uint8 data[4];
+    
+    ++timer_count;
+    
+    if(timer_count > 9)
+    {
+        timer_count = 0;
+        //break idle_time variable into its individual bytes
+        data[0] = (idle_time >> 24);
+        data[1] = (idle_time >> 16);
+        data[2] = (idle_time >> 8);
+        data[3] = idle_time;
 
-	//break idle_time variable into its individual bytes
-	data[0] = (idle_time >> 24);
-	data[1] = (idle_time >> 16);
-	data[2] = (idle_time >> 8);
-	data[3] = idle_time;
+        //send the idle_time up to the computer
+        send_packet(PACKET_UART_CH_1, data, 4);
 
-	//send the idle_time up to the computer
-	send_packet(PACKET_UART_CH_1, data, 4);
+        //reset the idle time
+        hit = 1;
+    }
 
-	//reset the idle time
-	idle_time = 0;
+	
 }
 
 void packetizer_callback(uint8* data, uint8 data_size)
