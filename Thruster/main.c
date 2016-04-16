@@ -83,6 +83,7 @@ int main(void) {
     //buffer for uart ISRs
     uint8 uart_tx_buffer[128], uart_rx_buffer[128];
     uint8 i2c_tx_buffer[10*sizeof(I2C_Node)], i2c_rx_buffer[10*sizeof(I2C_Node)];
+    uint8 i2c_data_buffer[54];
 
     //structures for configuring peripherals
     UART_Config uart_config = {0};
@@ -117,6 +118,8 @@ int main(void) {
     i2c_config.result_buffer_size = sizeof(i2c_rx_buffer);
     i2c_config.work_buffer_ptr = i2c_tx_buffer;
     i2c_config.work_buffer_size = sizeof(i2c_tx_buffer);
+    i2c_config.data_buffer_ptr = i2c_data_buffer;
+    i2c_config.data_buffer_size = sizeof(i2c_data_buffer);
     initialize_I2C(i2c_config);
     
     timer_config.callback = &read_thrusters_timer_callback;

@@ -19,7 +19,6 @@ Error read_thrusters_timer_callback(void)
 {
     int i;
     I2C_Node node;
-    uint8 data[2];
     
     node.channel = I2C_CH_1;
     node.callback = &read_thrusters_i2c_callback;
