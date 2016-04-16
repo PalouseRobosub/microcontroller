@@ -121,20 +121,25 @@ int main(void) {
     
     timer_config.callback = &read_thrusters_timer_callback;
     timer_config.enabled = TRUE;
-    timer_config.frequency = 1;
+    timer_config.frequency = 10;
     timer_config.pbclk = PB_CLK;
     timer_config.which_timer = Timer_1;
     initialize_Timer(timer_config);
     
     init_thrusters();
     
+    //setup led pin
+    TRISBCLR = 1 << 5;
+    LATBCLR = 1 << 5;
 
     //Global interrupt enable. Do this last!
     enable_Interrupts();
 
     while (1) {
+        LATBCLR = 1 << 5;
         //background process for processing received packets
         bg_process_packetizer(PACKET_UART_CH_1);
+        bg_process_I2C(I2C_CH_1, TRUE);
     }
 
     return 0;

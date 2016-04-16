@@ -19,12 +19,13 @@ Error read_thrusters_timer_callback(void)
 {
     int i;
     I2C_Node node;
+    uint8 data[2];
     
     node.channel = I2C_CH_1;
     node.callback = &read_thrusters_i2c_callback;
     node.mode = READ;
-    node.sub_address = 0x00;
-    node.data_size = 12;
+    node.sub_address = 0x02;
+    node.data_size = 9;
     
     for (i=0; i < NUM_THRUSTERS; ++i)
     {
@@ -33,17 +34,15 @@ Error read_thrusters_timer_callback(void)
         
         send_I2C(I2C_CH_1, node);
     }
-    
-    
 }
 
 void read_thrusters_i2c_callback(I2C_Node node)
 {
-    uint8 data[12];
+    uint8 data[9];
     
     get_data_I2C(&node, data);
     
-    send_packet(PACKET_UART_CH_1, data, 12);
+    send_packet(PACKET_UART_CH_1, data, 9);
 }
 
 void thruster_packetizer_callback(uint8* data, uint8 data_size)
@@ -52,26 +51,25 @@ void thruster_packetizer_callback(uint8* data, uint8 data_size)
     I2C_Node node;
     uint8 which_thruster;
     
-    node.channel = I2C_CH_1;
-    node.callback = NULL;
-    node.mode = WRITE;
-    node.sub_address = 0x00;
-    node.data_size = 2;
-    
-    
     packet_type = data[0];
     
     switch(packet_type)
     {
         case THRUSTER_P_COMMAND:
+            LATBSET = 1 << 5;
             which_thruster = data[1];
+            node.channel = I2C_CH_1;
+            node.callback = NULL;
+            node.mode = WRITE;
+            node.sub_address = 0x00;
+            node.data_size = 2;
             node.device_address = thruster_list[which_thruster];
             node.device_id = which_thruster;
+            node.data_buffer = &data[2];
             send_I2C(I2C_CH_1, node);
             break;
             
         default: //unrecognized packet type
             break;
-            
     }
 }
