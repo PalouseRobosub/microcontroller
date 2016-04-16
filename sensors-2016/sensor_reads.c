@@ -8,69 +8,26 @@ char converting_1 = 0, converting_2 = 0;
 char sensors_read = 0;
 
 //Timer callback for reading sensors
-void readSensors()
+void readSensors(int channel)
 {
-    sensors_read = 0;
+    switchChannel(channel); //Switch to channel of mux
     
-    switchChannel(0); //Switch to channel 0 of mux
-    /*
-    //Send depth conversion start packets
-    if (depth_ready_1)
+    //Send depth configuration packet
+    depth_prep.device_id = SID_DEPTH_1 + channel;
+    //send_I2C(I2C_CH_1, depth_prep);
+    
+    //if (channel == 0) 
+        //enable_Timer(WAIT_TIMER);
+    
+    if (channel < 3)
     {
-        depth_read.device_id = SID_DEPTH_1;
-        send_I2C(I2C_CH_1, depth_read);
-        depth_read.device_id = SID_DEPTH_2;
-        send_I2C(I2C_CH_2, depth_read);
-        depth_ready_1 = 0;
+        gyro_read.device_id = SID_GYROSCOPE_1 + channel;
+        mag_read.device_id = SID_MAGNOMETER_1 + channel;
+        accel_read.device_id = SID_ACCELEROMETER_1 + channel;
+        send_I2C(I2C_CH_1, gyro_read);
+        send_I2C(I2C_CH_1, mag_read);
+        send_I2C(I2C_CH_1, accel_read);
     }
-    else if (converting_1 == 0 && !depth_ready_1)
-    {
-        send_I2C(I2C_CH_1, depth_prep);
-        send_I2C(I2C_CH_2, depth_prep);
-        enable_Timer(WAIT_TIMER_1);
-        converting_1 = 1;
-    }*/
-    
-    gyro_read.device_id = SID_GYROSCOPE_1;
-    mag_read.device_id = SID_MAGNOMETER_1;
-    accel_read.device_id = SID_ACCELEROMETER_1;
-    send_I2C(I2C_CH_1, gyro_read);
-    send_I2C(I2C_CH_1, mag_read);
-    send_I2C(I2C_CH_1, accel_read);
-    
-    gyro_read.device_id = SID_GYROSCOPE_2;
-    mag_read.device_id = SID_MAGNOMETER_2;
-    accel_read.device_id = SID_ACCELEROMETER_2;
-    send_I2C(I2C_CH_2, gyro_read);
-    send_I2C(I2C_CH_2, mag_read);
-    send_I2C(I2C_CH_2, accel_read);
-    
-    switchChannel(1); //Switch to channel 1 of mux
-    
-    //Send depth conversion start packets
-    /*
-    if (depth_ready_2)
-    {
-        depth_read.device_id = SID_DEPTH_3;
-        send_I2C(I2C_CH_1, depth_read);
-        depth_read.device_id = SID_DEPTH_4;
-        send_I2C(I2C_CH_2, depth_read);
-        depth_ready_2 = 0;
-    }
-    else if (converting_2 == 0 && !depth_ready_2)
-    {
-        //send_I2C(I2C_CH_1, depth_prep);
-        //send_I2C(I2C_CH_2, depth_prep);
-        enable_Timer(WAIT_TIMER_2);
-        converting_2 = 1;
-    }*/
-    
-    gyro_read.device_id = SID_GYROSCOPE_3;
-    mag_read.device_id = SID_MAGNOMETER_3;
-    accel_read.device_id = SID_ACCELEROMETER_3;
-    send_I2C(I2C_CH_1, gyro_read);
-    send_I2C(I2C_CH_1, mag_read);
-    send_I2C(I2C_CH_1, accel_read);
 }
 
 void timeToRead()
@@ -109,18 +66,17 @@ void sensorRead(I2C_Node node)
     send_packet(PACKET_UART_CH_1, packet, node.data_size + 1);
 }
 
-void readDepth_1()
+void readDepth()
 {
-    disable_Timer(WAIT_TIMER_1);
+    int i = 0;
+    disable_Timer(WAIT_TIMER);
     TMR2 = 0;
-    converting_1 = 0;
-    depth_ready_1 = 1;
-}
-
-void readDepth_2()
-{
-    disable_Timer(WAIT_TIMER_2);
-    TMR3 = 0;
-    converting_2 = 0;
-    depth_ready_2 = 1;
+    
+    //Enqueue depth reads
+    for (i = 0; i < 4; i++)
+    {
+        switchChannel(i);
+        depth_read.device_id = SID_DEPTH_1 + i;
+        send_I2C(I2C_CH_1, depth_read);
+    }
 }

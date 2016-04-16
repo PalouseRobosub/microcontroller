@@ -52,6 +52,8 @@ int main()
     TRISBbits.TRISB15 = 0;
     LATBbits.LATB15 = 1; //I2C is reset
     
+    
+    
     TRISAbits.TRISA3 = 0;
     LATAbits.LATA3 = 0;
     
@@ -74,16 +76,15 @@ int main()
     
     while (1) //Enter the embedded loop
     {
-        //bg_process_packetizer(PACKET_UART_CH_1);
+        bg_process_packetizer(PACKET_UART_CH_1);
         
         if (read)
         {
-            readSensors();
-            //LATAINV |= 1<<3;
+            for (i = 0; i < 4; i++)
+                readSensors(i);
             read = 0;
         }
         bg_process_I2C(I2C_CH_1, FALSE);
-        bg_process_I2C(I2C_CH_2, FALSE);
     }
     
 }

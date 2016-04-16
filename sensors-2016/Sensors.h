@@ -9,7 +9,8 @@
 #define GYRO_ADDR 0b1101000
 #define DEPTH_ADDR 0x76
 #define MAG_ADDR 0x1E
-#define MUX_ADDR 0b1110000
+#define MUX_2_ADDR 0b1110000
+#define MUX_1_ADDR 0b1110001
 
 typedef enum {
     SID_ACCELEROMETER_1,
@@ -38,8 +39,7 @@ typedef enum {
 
 
 #define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer
-#define WAIT_TIMER_2 Timer_3
-#define WAIT_TIMER_1 Timer_2 //Timer 2 is utilized for waitng 20ms for depth conversions to complete
+#define WAIT_TIMER Timer_2 //Timer 2 is utilized for waitng 20ms for depth conversions to complete
     //If wait timer is changed, ALSO must change TMRx = 0 in sensor_reads.c:readDepth
 
 //Function prototypes
@@ -50,14 +50,12 @@ void configureSerial();
 void configureI2C();
 
 //Sensor_Reads.c
-void readSensors(); //Enqueue reads for all of our sensors
+void readSensors(int channel); //Enqueue reads for all of our sensors
 void sensorRead(I2C_Node node); //Sensor read node callback completed
 void timeToRead(); //Read timer callback -> sets read = 1
-void readDepth_1(); //Callback once conversion is complete to read the depth sensors
-void readDepth_2(); //Callback once conversion is complete to read the depth sensors
+void readDepth(); //Callback once conversion is complete to read the depth sensors
 
 //Sensor_Calibration.c
-void config_done(I2C_Node node); //Callback for configuration nodes
 void configureSensors(); //Configuration for all sensors - this will block until all calibration is completed
 void configureAccelerometer(int channel); //Configure accelerometers on channel 0/1
 void configureGyroscope(int channel); //Configure gyroscopes on channel 0/1

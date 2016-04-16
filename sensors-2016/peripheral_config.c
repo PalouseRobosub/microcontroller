@@ -19,15 +19,11 @@ void configureTimer()
     initialize_Timer(t);
     
     t.enabled = FALSE;
-    t.frequency = 1667; //.6 ms
+    t.frequency = 1500; //.6 ms
     t.pbclk = PB_CLK;
-    t.which_timer = WAIT_TIMER_1;
-    t.callback = &readDepth_1;
+    t.which_timer = WAIT_TIMER;
+    t.callback = &readDepth;
     initialize_Timer(t);
-    
-    t.which_timer = WAIT_TIMER_2;
-    t.callback = &readDepth_2;
-    initialize_Timer(t); //Initialize wait timer 2
 }
 
 void configureSerial()
@@ -56,7 +52,7 @@ void configureSerial()
 
 void configureI2C()
 {
-    I2C_Config i1 = {0}, i2 = {0};
+    I2C_Config i1 = {0};
     
     i1.channel = I2C_CH_1;
     i1.pb_clk = PB_CLK;
@@ -67,14 +63,4 @@ void configureI2C()
     i1.data_buffer_ptr = data_ch_1;
     i1.data_buffer_size = 128;
     initialize_I2C(i1);
-    
-    i2.channel = I2C_CH_2;
-    i2.pb_clk = PB_CLK;
-    i2.result_buffer_ptr = results_ch_2;
-    i2.result_buffer_size = BUFF_SIZE;
-    i2.work_buffer_ptr = work_ch_2;
-    i2.work_buffer_size = BUFF_SIZE;
-    i2.data_buffer_ptr = data_ch_2;
-    i2.data_buffer_size = 128;
-    initialize_I2C(i2);
 }

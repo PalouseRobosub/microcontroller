@@ -49,24 +49,48 @@ void configureReadNodes()
 
 void switchChannel(int channel)
 {
+    uint8 config_one = 0, config_two = 0;
+    switch (channel)
+    {
+        case 0:
+            config_one = 0b1;
+            config_two = 0;
+            break;
+        case 1:
+            config_one = 0b10;
+            config_two = 0;
+            break;
+        case 2:
+            config_one = 0;
+            config_two = 0b01;
+            break;
+        case 3:
+            config_one = 0;
+            config_two = 0b10;
+            break;
+        default:
+            config_one = config_two = 0;
+            break;
+    }
     
-    uint8 config = 0;
-    if (channel == 0)
-        config = 1;
-    else if (channel == 1)
-        config = 0b10;
+    I2C_Node mux1 = {0}, mux2 = {0};
+    mux1.callback = NULL;
+    mux1.data_buffer = NULL;
+    mux1.device_address = MUX_1_ADDR;
+    mux1.data_size = 0;
+    mux1.device_id = SID_MUX_1;
+    mux1.sub_address = config_one; //Sub-address does not exist for the mux chip
+    mux1.mode = WRITE;
     
-    I2C_Node i = {0};
-    i.callback = NULL;
-    i.data_buffer = NULL;
-    i.device_address = MUX_ADDR;
-    i.data_size = 0;
-    i.device_id = SID_MUX_1;
-    i.sub_address = config; //Sub-address does not exist for the mux chip
-    i.mode = WRITE;
+    send_I2C(I2C_CH_1, mux1);
     
-    send_I2C(I2C_CH_1, i);
+    mux2.callback = NULL;
+    mux2.data_buffer = NULL;
+    mux2.device_address = MUX_2_ADDR;
+    mux2.data_size = 0;
+    mux2.device_id = SID_MUX_2;
+    mux2.sub_address = config_two;
+    mux2.mode = WRITE;
     
-    i.device_id = SID_MUX_2;
-    send_I2C(I2C_CH_2, i);
+    send_I2C(I2C_CH_2, mux2);
 }

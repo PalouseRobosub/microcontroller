@@ -3,18 +3,14 @@
 
 void configureSensors()
 {
-    
-    switchChannel(0); //Switch to channel 0 active
-    //---------------
-    configureAccelerometer(0); //Configure accelerometers on Channel 0
-    configureGyroscope(0);
-    configureMagnometer(0);
-    
-    switchChannel(1); //Set channel 1 active
-    //---------------
-    configureAccelerometer(1); //Configure accelerometers on Channel 1
-    configureGyroscope(1);
-    configureMagnometer(1);
+    int i = 0;
+    for (i = 0; i < 3; i++)
+    {
+        switchChannel(i);
+        configureAccelerometer(i); 
+        configureGyroscope(i);
+        configureMagnometer(i);
+    }
     
     //While we wait, set up the read nodes
     configureReadNodes();
@@ -33,19 +29,8 @@ void configureAccelerometer(int channel)
     accel_config.device_address = ACCEL_ADDR;
     accel_config.mode = WRITE;
     accel_config.sub_address = 0x2D;
-    
-    if (channel == 0)
-    {
-        accel_config.device_id = SID_ACCELEROMETER_1;
-        send_I2C(I2C_CH_1, accel_config);
-        accel_config.device_id = SID_ACCELEROMETER_2;
-        send_I2C(I2C_CH_2, accel_config);
-    }
-    else if (channel == 1)
-    {
-        accel_config.device_id = SID_ACCELEROMETER_3;
-        send_I2C(I2C_CH_1, accel_config);
-    }
+    accel_config.device_id = SID_ACCELEROMETER_1 + channel;
+    send_I2C(I2C_CH_1, accel_config);
 }
 
 void configureGyroscope(int channel)
@@ -62,18 +47,8 @@ void configureGyroscope(int channel)
     config[0] = 9;
     config[1] = 0x19;
     
-    if (channel == 0)
-    {
-        gyro_config.device_id = SID_GYROSCOPE_1;
-        send_I2C(I2C_CH_1, gyro_config);
-        gyro_config.device_id = SID_GYROSCOPE_2;
-        send_I2C(I2C_CH_2, gyro_config);
-    }
-    else if (channel == 1)
-    {
-        gyro_config.device_id = SID_GYROSCOPE_3;
-        send_I2C(I2C_CH_1, gyro_config);
-    }
+    gyro_config.device_id = SID_GYROSCOPE_1 + channel; //channel should be 0-2
+    send_I2C(I2C_CH_1, gyro_config);
 }
 
 void configureMagnometer(int channel)
@@ -90,17 +65,6 @@ void configureMagnometer(int channel)
     mag_config.device_address = MAG_ADDR;
     mag_config.mode = WRITE;
     mag_config.sub_address = 0x00;
-    
-    if (channel == 0)
-    {
-        mag_config.device_id = SID_MAGNOMETER_1;
-        send_I2C(I2C_CH_1, mag_config);
-        mag_config.device_id = SID_MAGNOMETER_2;
-        send_I2C(I2C_CH_2, mag_config);
-    }
-    else if (channel == 1)
-    {
-        mag_config.device_id = SID_MAGNOMETER_3;
-        send_I2C(I2C_CH_1, mag_config);
-    }
+    mag_config.device_id = SID_MAGNOMETER_1 + channel;
+    send_I2C(I2C_CH_1, mag_config);
 }
