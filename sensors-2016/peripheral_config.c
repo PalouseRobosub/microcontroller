@@ -60,21 +60,17 @@ void configureI2C()
     
     i1.channel = I2C_CH_1;
     i1.pb_clk = PB_CLK;
-    i1.result_buffer_ptr = results_ch_1;
-    i1.result_buffer_size = BUFF_SIZE;
-    i1.work_buffer_ptr = work_ch_1;
-    i1.work_buffer_size = BUFF_SIZE;
-    i1.data_buffer_ptr = data_ch_1;
-    i1.data_buffer_size = 128;
+    i1.rx_buffer_ptr = results_ch_1;
+    i1.rx_buffer_size = BUFF_SIZE;
+    i1.tx_buffer_ptr = work_ch_1;
+    i1.tx_buffer_size = BUFF_SIZE;
     initialize_I2C(i1);
     
     i2.channel = I2C_CH_2;
     i2.pb_clk = PB_CLK;
-    i2.result_buffer_ptr = results_ch_2;
-    i2.result_buffer_size = BUFF_SIZE;
-    i2.work_buffer_ptr = work_ch_2;
-    i2.work_buffer_size = BUFF_SIZE;
-    i2.data_buffer_ptr = data_ch_2;
-    i2.data_buffer_size = 128;
-    initialize_I2C(i2);
+    i2.rx_buffer_ptr = results_ch_2;
+    i2.rx_buffer_size = BUFF_SIZE;
+    i2.tx_buffer_ptr = work_ch_2;
+    i2.tx_buffer_size = BUFF_SIZE;
+    //initialize_I2C(i2);
 }

@@ -1,6 +1,10 @@
 #include "Sensors.h"
 #include "sublibinal.h"
 
+    uint8 config_mag[3] = {0};
+    uint8 configuration_accel;
+    uint8 config_gyro[2] = {0};
+    
 void configureSensors()
 {
     
@@ -22,13 +26,12 @@ void configureSensors()
 
 void configureAccelerometer(int channel)
 {
-    uint8 configuration;
-    configuration = 1 << 3; //Turn the device on and enable reading
+    configuration_accel = 1 << 3; //Turn the device on and enable reading
     
     //First, configure the Accelerometer
     I2C_Node accel_config = {0};
     accel_config.callback = NULL;
-    accel_config.data_buffer = &configuration;
+    accel_config.data_buffer = &configuration_accel;
     accel_config.data_size = 1;
     accel_config.device_address = ACCEL_ADDR;
     accel_config.mode = WRITE;
@@ -39,7 +42,7 @@ void configureAccelerometer(int channel)
         accel_config.device_id = SID_ACCELEROMETER_1;
         send_I2C(I2C_CH_1, accel_config);
         accel_config.device_id = SID_ACCELEROMETER_2;
-        send_I2C(I2C_CH_2, accel_config);
+        //send_I2C(I2C_CH_2, accel_config);
     }
     else if (channel == 1)
     {
@@ -50,24 +53,23 @@ void configureAccelerometer(int channel)
 
 void configureGyroscope(int channel)
 {
-    uint8 config[2] = {0};
     I2C_Node gyro_config = {0};
     gyro_config.callback = NULL;
-    gyro_config.data_buffer = config;
+    gyro_config.data_buffer = config_gyro;
     gyro_config.data_size = 2;
     gyro_config.device_address = GYRO_ADDR;
     gyro_config.mode = WRITE;
     gyro_config.sub_address = 0x15;
     
-    config[0] = 9;
-    config[1] = 0x19;
+    config_gyro[0] = 9;
+    config_gyro[1] = 0x19;
     
     if (channel == 0)
     {
         gyro_config.device_id = SID_GYROSCOPE_1;
         send_I2C(I2C_CH_1, gyro_config);
         gyro_config.device_id = SID_GYROSCOPE_2;
-        send_I2C(I2C_CH_2, gyro_config);
+        //send_I2C(I2C_CH_2, gyro_config);
     }
     else if (channel == 1)
     {
@@ -78,14 +80,13 @@ void configureGyroscope(int channel)
 
 void configureMagnometer(int channel)
 {
-    uint8 config[3] = {0};
-    config[0] = 0b00011000; 
-    config[1] = 0b00100000;
-    config[2] = 0b00000000; //Set Magnetometer to Continuous-Measurement Mode
+    config_mag[0] = 0b00011000; 
+    config_mag[1] = 0b00100000;
+    config_mag[2] = 0b00000000; //Set Magnetometer to Continuous-Measurement Mode
     
     I2C_Node mag_config = {0};
     mag_config.callback = NULL;
-    mag_config.data_buffer = config;
+    mag_config.data_buffer = config_mag;
     mag_config.data_size = 3;
     mag_config.device_address = MAG_ADDR;
     mag_config.mode = WRITE;
@@ -96,7 +97,7 @@ void configureMagnometer(int channel)
         mag_config.device_id = SID_MAGNOMETER_1;
         send_I2C(I2C_CH_1, mag_config);
         mag_config.device_id = SID_MAGNOMETER_2;
-        send_I2C(I2C_CH_2, mag_config);
+        //send_I2C(I2C_CH_2, mag_config);
     }
     else if (channel == 1)
     {

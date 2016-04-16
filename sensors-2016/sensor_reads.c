@@ -5,12 +5,10 @@ I2C_Node gyro_read, mag_read, accel_read, depth_read, depth_prep;
 extern char read;
 char depth_ready_1 = 0, depth_ready_2 = 0;
 char converting_1 = 0, converting_2 = 0;
-char sensors_read = 0;
 
 //Timer callback for reading sensors
 void readSensors()
 {
-    sensors_read = 0;
     
     switchChannel(0); //Switch to channel 0 of mux
     /*
@@ -41,9 +39,9 @@ void readSensors()
     gyro_read.device_id = SID_GYROSCOPE_2;
     mag_read.device_id = SID_MAGNOMETER_2;
     accel_read.device_id = SID_ACCELEROMETER_2;
-    send_I2C(I2C_CH_2, gyro_read);
-    send_I2C(I2C_CH_2, mag_read);
-    send_I2C(I2C_CH_2, accel_read);
+    //send_I2C(I2C_CH_2, gyro_read);
+    //send_I2C(I2C_CH_2, mag_read);
+    //send_I2C(I2C_CH_2, accel_read);
     
     switchChannel(1); //Switch to channel 1 of mux
     
@@ -85,7 +83,7 @@ void sensorRead(I2C_Node node)
     uint8 tmp;
     int i;
     packet[0] = node.device_id;
-    get_data_I2C(&node, &packet[1]);
+    memcpy(&packet[1], node.data_buffer, node.data_size);
     
     switch (node.device_id)
     {
