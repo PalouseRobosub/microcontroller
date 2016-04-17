@@ -38,6 +38,8 @@ void timeToRead()
 //Sensor has been read callback function
 void sensorRead(I2C_Node node)
 {
+    TMR3 = 0; //Reset the reset timer count
+    
     uint8 packet[10];
     uint8 tmp;
     int i;

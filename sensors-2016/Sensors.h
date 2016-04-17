@@ -35,10 +35,12 @@ typedef enum {
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define READ_RATE 10 //Read the sensors at 100Hz
+#define READ_RATE 200 //Read the sensors at 100Hz
 
 
 #define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer
+#define SCK_RST Timer_4 //SCK 200KHz timer for i2c clock reset
+#define RESET_TIMER Timer_3 //If this is changed, also change it in sensor read callback!!!
 #define WAIT_TIMER Timer_2 //Timer 2 is utilized for waitng 20ms for depth conversions to complete
     //If wait timer is changed, ALSO must change TMRx = 0 in sensor_reads.c:readDepth
 

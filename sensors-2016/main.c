@@ -43,6 +43,7 @@
     #endif
 
 char read = 0;
+char contended = 0;
 
 int main()
 {
@@ -73,6 +74,7 @@ int main()
     configureSensors(); //Configure sensors on startup.
     
     enable_Timer(READ_TIMER); //Enable the sensor read timer for sensor data acqusition
+    enable_Timer(RESET_TIMER); //Enable the reset timer to notice bus contention
     
     while (1) //Enter the embedded loop
     {
@@ -80,8 +82,11 @@ int main()
         
         if (read)
         {
-            for (i = 0; i < 4; i++)
-                readSensors(i);
+            if (!contended)
+            {
+                for (i = 0; i < 4; i++)
+                    readSensors(i);
+            }
             read = 0;
         }
         bg_process_I2C(I2C_CH_1, FALSE);

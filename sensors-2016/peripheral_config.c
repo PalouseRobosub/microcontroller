@@ -8,6 +8,36 @@ uint8 rx[BUFF_SIZE], tx[BUFF_SIZE];
 uint8 work_ch_1[BUFF_SIZE], data_ch_1[128], results_ch_1[BUFF_SIZE];
 uint8 work_ch_2[BUFF_SIZE], data_ch_2[128], results_ch_2[BUFF_SIZE];
 
+char toggleCount = 0;
+extern char contended;
+
+void toggle()
+{
+    LATBINV = 1<<8;
+    toggleCount++;
+    if (toggleCount >= 20)
+    {
+        disable_Timer(SCK_RST);
+        enable_Timer(RESET_TIMER);
+        I2C1CONbits.ON = 1;
+        TMR3 = TMR4 = 0;
+        contended = 0;
+        IFS1bits.I2C1MIF = 1; //Interrupt I2C to ensure that it runs
+    }
+}
+
+void reset()
+{
+    //If this is called, we must send 9 clocks on the I2C clock line to clear bus contention
+    I2C1CONbits.ON = 0;
+    contended = 1;
+    toggleCount = 0;
+    enable_Timer(SCK_RST);
+    disable_Timer(RESET_TIMER);
+    LATBbits.LATB8 = 1; //output a 1
+    TRISBbits.TRISB8 = 0;
+}
+
 void configureTimer()
 {
     Timer_Config t = {0};
@@ -24,6 +54,18 @@ void configureTimer()
     t.which_timer = WAIT_TIMER;
     t.callback = &readDepth;
     initialize_Timer(t);
+    
+    t.which_timer = RESET_TIMER;
+    t.frequency = .9 * READ_RATE;
+    t.callback = &reset;
+    initialize_Timer(t);
+    
+    t.which_timer = SCK_RST;
+    t.callback = &toggle;
+    t.frequency = I2C_SPEED * 2;
+    initialize_Timer(t);
+    
+    
 }
 
 void configureSerial()
