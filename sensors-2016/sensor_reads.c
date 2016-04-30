@@ -4,6 +4,8 @@
 I2C_Node gyro_read, mag_read, accel_read, depth_read, depth_prep, temp_prep, temp_read;
 extern char read;
 
+extern uint8 depthConfigurations[4][6][2];
+
 char read_temp = 0;
 
 //Timer callback for reading sensors
@@ -38,8 +40,13 @@ void sensorRead(I2C_Node node)
     packet[0] = node.device_id;
     get_data_I2C(&node, &packet[1]);
     
-    if (node.device_id > SID_MUX_2)
-        i++;
+    if (node.device_id > SID_DEPTH_CON_1_1)
+    {
+        i = node.device_id - SID_DEPTH_CON_1_1;
+        //Store into configuration structure for querying later as well
+        depthConfigurations[i/6][i%6][0] = packet[1];
+        depthConfigurations[i/6][i%6][1] = packet[2];
+    }
     
     switch (node.device_id)
     {

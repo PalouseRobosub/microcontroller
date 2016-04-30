@@ -49,7 +49,7 @@ void configureTimer()
     initialize_Timer(t);
     
     t.enabled = FALSE;
-    t.frequency = 225; //~5ms overhead
+    t.frequency = 225; //~20ms overhead
     t.pbclk = PB_CLK;
     t.which_timer = WAIT_TIMER;
     t.callback = &readDepth;
@@ -85,7 +85,7 @@ void configureSerial()
     u.tx_pin = Pin_RPB4;
     u.which_uart = UART_CH_1;
     
-    p.callback = NULL;
+    p.callback = &packetizerCallback;
     p.control_byte = CONTROL_BYTE;
     p.uart_config = u;
     p.which_channel = PACKET_UART_CH_1;

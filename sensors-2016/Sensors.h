@@ -58,7 +58,6 @@ typedef enum {
     SID_DEPTH_CON_4_6
 } Sensor_ID;
 
-
 //General definitions
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
@@ -73,6 +72,7 @@ typedef enum {
     //If wait timer is changed, ALSO must change TMRx = 0 in sensor_reads.c:readDepth
 
 //Function prototypes
+void packetizerCallback(uint8 *data, uint8 size);
 
 //Peripheral_Config.h
 void configureTimer();
