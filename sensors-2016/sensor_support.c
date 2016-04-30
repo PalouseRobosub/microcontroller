@@ -35,7 +35,7 @@ void configureReadNodes()
     depth_prep.device_address = DEPTH_ADDR;
     depth_prep.device_id = SID_DEPTH_1; //Modified each time the node is enqueued
     depth_prep.mode = WRITE;
-    depth_prep.sub_address = 0x40; //Command byte to start conversion of depth. Sub-address is not used. OSR = 256
+    depth_prep.sub_address = 0x4A; //Command byte to start conversion of depth. Sub-address is not used. OSR = 256
     
     depth_read.callback = &sensorRead;
     depth_read.data_buffer = NULL;
@@ -50,7 +50,7 @@ void configureReadNodes()
     
     temp_prep = depth_prep;
     temp_prep.device_id = SID_TEMP_1;
-    temp_prep.sub_address = 0x50; //OSR = 256 for temp reading
+    temp_prep.sub_address = 0x5A; //OSR = 256 for temp reading
 }
 
 void switchChannel(int channel)

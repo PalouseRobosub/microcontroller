@@ -83,6 +83,7 @@ void configureI2C();
 void readSensors(int channel); //Enqueue reads for all of our sensors
 void sensorRead(I2C_Node node); //Sensor read node callback completed
 void timeToRead(); //Read timer callback -> sets read = 1
+void readTemperature(); //Every 10 callbacks, enqueue a temp read
 void readDepth(); //Callback once conversion is complete to read the depth sensors
 
 //Sensor_Calibration.c

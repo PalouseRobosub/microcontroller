@@ -6,7 +6,7 @@ extern char read;
 
 extern uint8 depthConfigurations[4][6][2];
 
-char read_temp = 0;
+char read_temp = 1, temp_prepped = 0; //Initialize read_temp to 1 to get an initial read
 
 //Timer callback for reading sensors
 void readSensors(int channel)
@@ -21,6 +21,17 @@ void readSensors(int channel)
         send_I2C(I2C_CH_1, gyro_read);
         send_I2C(I2C_CH_1, mag_read);
         send_I2C(I2C_CH_1, accel_read);
+    }
+}
+
+int cnt = 0;
+void readTemperature()
+{
+    cnt++;
+    if (cnt >= 1) //Read temperature every 10 triggers of this interrupt
+    {
+        read_temp = 1;
+        cnt = 0;
     }
 }
 
@@ -63,31 +74,15 @@ void sensorRead(I2C_Node node)
                 packet[i+2] = tmp;
             }
             break;
+        case SID_TEMP_1:
+        case SID_TEMP_2:
+        case SID_TEMP_3:
+        case SID_TEMP_4: 
         case SID_DEPTH_1:
         case SID_DEPTH_2:
         case SID_DEPTH_3:
         case SID_DEPTH_4:
             if (!read_temp)
-            {
-                for ( i = 0; i < 4; i++)
-                {
-                    temp_prep.device_id = SID_TEMP_1 + i;
-                    if (i == 3)
-                    {
-                        switchChannel(i);
-                        send_I2C(I2C_CH_1, temp_prep);
-                    }
-                }
-                enable_Timer(WAIT_TIMER);
-                read_temp = 1;
-            }
-            break;
-        case SID_TEMP_1:
-        case SID_TEMP_2:
-        case SID_TEMP_3:
-        case SID_TEMP_4: 
-            //Enqueue a depth read
-            if (read_temp)
             {
                 for ( i = 0; i < 4; i++)
                 {
@@ -98,9 +93,21 @@ void sensorRead(I2C_Node node)
                         send_I2C(I2C_CH_1, depth_prep);
                     }
                 }
-                enable_Timer(WAIT_TIMER);
-                read_temp = 0;
             }
+            else
+            {
+                for ( i = 0; i < 4; i++)
+                {
+                    temp_prep.device_id = SID_TEMP_1 + i;
+                    if (i == 3)
+                    {
+                        switchChannel(i);
+                        send_I2C(I2C_CH_1, temp_prep);
+                    }
+                }
+                temp_prepped = 1;
+            }
+            enable_Timer(WAIT_TIMER);
             break;
         default:
             break;
@@ -113,10 +120,11 @@ void readDepth()
 {
     LATAINV |= 1<<3;
     int i = 0;
+    
     disable_Timer(WAIT_TIMER);
     TMR2 = 0;
     
-    if (read_temp)
+    if (temp_prepped)
     {
         //Enqueue a temp read
         for (i = 0; i < 4; i++)
@@ -128,6 +136,8 @@ void readDepth()
                 send_I2C(I2C_CH_1, temp_read);
             }
         }
+        read_temp = 0; //Temperature reads have been enqueued
+        temp_prepped = 0; //Temperature read is enqueued. reset.
     }
     else
     {

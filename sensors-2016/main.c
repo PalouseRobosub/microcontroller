@@ -94,8 +94,6 @@ int main()
     
     while (1) //Enter the embedded loop
     {
-        bg_process_packetizer(PACKET_UART_CH_1);
-        
         if (read)
         {
             if (!contended)

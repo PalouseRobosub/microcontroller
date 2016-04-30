@@ -1,12 +1,13 @@
 #include "Sensors.h"
 #include "sublibinal.h"
-#define BUFF_SIZE 1024
+#define BUFF_SIZE 2048
+#define UART_BUFF_SIZE 512
+#define DATA_BUFF_SIZE 1024
 //Global RX and TX buffers
-uint8 rx[BUFF_SIZE], tx[BUFF_SIZE];
+uint8 rx[UART_BUFF_SIZE], tx[UART_BUFF_SIZE];
 
 //Global I2C work and results buffer
-uint8 work_ch_1[BUFF_SIZE], data_ch_1[128], results_ch_1[BUFF_SIZE];
-uint8 work_ch_2[BUFF_SIZE], data_ch_2[128], results_ch_2[BUFF_SIZE];
+uint8 work_ch_1[BUFF_SIZE], data_ch_1[DATA_BUFF_SIZE], results_ch_1[BUFF_SIZE];
 
 char toggleCount = 0;
 extern char contended;
@@ -49,14 +50,14 @@ void configureTimer()
     initialize_Timer(t);
     
     t.enabled = FALSE;
-    t.frequency = 225; //~20ms overhead
+    t.frequency = 40; //~20ms overhead
     t.pbclk = PB_CLK;
     t.which_timer = WAIT_TIMER;
     t.callback = &readDepth;
     initialize_Timer(t);
     
     t.which_timer = RESET_TIMER;
-    t.frequency = .9 * READ_RATE;
+    t.frequency = READ_RATE * .9;
     t.callback = &reset;
     initialize_Timer(t);
     
@@ -65,6 +66,11 @@ void configureTimer()
     t.frequency = I2C_SPEED * 2;
     initialize_Timer(t);
     
+    t.which_timer = Timer_5;
+    t.callback = &readTemperature;
+    t.frequency = 1;
+    t.enabled = TRUE;
+    //initialize_Timer(t);
     
 }
 
@@ -76,11 +82,11 @@ void configureSerial()
     u.speed = UART_SPEED;
     u.pb_clk = PB_CLK;
     u.rx_buffer_ptr = rx;
-    u.rx_buffer_size = BUFF_SIZE;
+    u.rx_buffer_size = UART_BUFF_SIZE;
     u.rx_en = TRUE;
     u.rx_pin = Pin_RPA4;
     u.tx_buffer_ptr = tx;
-    u.tx_buffer_size = BUFF_SIZE;
+    u.tx_buffer_size = UART_BUFF_SIZE;
     u.tx_en = TRUE;
     u.tx_pin = Pin_RPB4;
     u.which_uart = UART_CH_1;
@@ -103,6 +109,6 @@ void configureI2C()
     i1.work_buffer_ptr = work_ch_1;
     i1.work_buffer_size = BUFF_SIZE;
     i1.data_buffer_ptr = data_ch_1;
-    i1.data_buffer_size = 128;
+    i1.data_buffer_size = DATA_BUFF_SIZE;
     initialize_I2C(i1);
 }
