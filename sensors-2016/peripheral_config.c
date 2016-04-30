@@ -49,7 +49,7 @@ void configureTimer()
     initialize_Timer(t);
     
     t.enabled = FALSE;
-    t.frequency = 1500; //.6 ms
+    t.frequency = 225; //~5ms overhead
     t.pbclk = PB_CLK;
     t.which_timer = WAIT_TIMER;
     t.callback = &readDepth;

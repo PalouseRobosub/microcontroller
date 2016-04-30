@@ -26,8 +26,36 @@ typedef enum {
     SID_DEPTH_2,
     SID_DEPTH_3,
     SID_DEPTH_4,
+    SID_TEMP_1,
+    SID_TEMP_2,
+    SID_TEMP_3,
+    SID_TEMP_4,
     SID_MUX_1,
-    SID_MUX_2
+    SID_MUX_2,
+    SID_DEPTH_CON_1_1,
+    SID_DEPTH_CON_1_2,
+    SID_DEPTH_CON_1_3,
+    SID_DEPTH_CON_1_4,
+    SID_DEPTH_CON_1_5,
+    SID_DEPTH_CON_1_6,
+    SID_DEPTH_CON_2_1,
+    SID_DEPTH_CON_2_2,
+    SID_DEPTH_CON_2_3,
+    SID_DEPTH_CON_2_4,
+    SID_DEPTH_CON_2_5,
+    SID_DEPTH_CON_2_6,
+    SID_DEPTH_CON_3_1,
+    SID_DEPTH_CON_3_2,
+    SID_DEPTH_CON_3_3,
+    SID_DEPTH_CON_3_4,
+    SID_DEPTH_CON_3_5,
+    SID_DEPTH_CON_3_6,
+    SID_DEPTH_CON_4_1,
+    SID_DEPTH_CON_4_2,
+    SID_DEPTH_CON_4_3,
+    SID_DEPTH_CON_4_4,
+    SID_DEPTH_CON_4_5,
+    SID_DEPTH_CON_4_6
 } Sensor_ID;
 
 
@@ -35,7 +63,7 @@ typedef enum {
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define READ_RATE 200 //Read the sensors at 100Hz
+#define READ_RATE 100 //Read the sensors at 100Hz
 
 
 #define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer
@@ -62,6 +90,7 @@ void configureSensors(); //Configuration for all sensors - this will block until
 void configureAccelerometer(int channel); //Configure accelerometers on channel 0/1
 void configureGyroscope(int channel); //Configure gyroscopes on channel 0/1
 void configureMagnometer(int channel); //Configure mangometers on channel 0/1
+void configureDepth(int channel);
 
 
 //Sensor_Support.c

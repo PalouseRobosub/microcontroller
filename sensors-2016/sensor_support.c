@@ -1,7 +1,7 @@
 #include "Sensors.h"
 #include "sublibinal.h"
 
-extern I2C_Node gyro_read, mag_read, accel_read, depth_read, depth_prep;
+extern I2C_Node gyro_read, mag_read, accel_read, depth_read, depth_prep, temp_read, temp_prep;
 
 void configureReadNodes()
 {
@@ -45,6 +45,12 @@ void configureReadNodes()
     depth_read.mode = READ;
     depth_read.sub_address = 0; //send 0x00 to initiate a depth_read
 
+    temp_read = depth_read;
+    temp_read.device_id = SID_TEMP_1;
+    
+    temp_prep = depth_prep;
+    temp_prep.device_id = SID_TEMP_1;
+    temp_prep.sub_address = 0x50; //OSR = 256 for temp reading
 }
 
 void switchChannel(int channel)
@@ -92,5 +98,5 @@ void switchChannel(int channel)
     mux2.sub_address = config_two;
     mux2.mode = WRITE;
     
-    send_I2C(I2C_CH_2, mux2);
+    send_I2C(I2C_CH_1, mux2);
 }

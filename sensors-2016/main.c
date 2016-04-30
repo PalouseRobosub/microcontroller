@@ -45,6 +45,8 @@
 char read = 0;
 char contended = 0;
 
+extern I2C_Node depth_prep;
+
 int main()
 {
     int i = 0;
@@ -75,6 +77,17 @@ int main()
     
     enable_Timer(READ_TIMER); //Enable the sensor read timer for sensor data acqusition
     enable_Timer(RESET_TIMER); //Enable the reset timer to notice bus contention
+    
+    for (i = 0; i < 4; i++)
+    {
+        depth_prep.device_id = SID_DEPTH_1 + i;
+        if (i == 3)
+        {
+            switchChannel(i);
+            send_I2C(I2C_CH_1, depth_prep); //Begin back and forth continuous depth/temp reads
+        }
+    }
+    enable_Timer(WAIT_TIMER);
     
     while (1) //Enter the embedded loop
     {

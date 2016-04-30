@@ -4,13 +4,14 @@
 void configureSensors()
 {
     int i = 0;
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 4; i++)
     {
         switchChannel(i);
         configureAccelerometer(i); 
         configureGyroscope(i);
         configureMagnometer(i);
     }
+    configureDepth(3);
     
     //While we wait, set up the read nodes
     configureReadNodes();
@@ -67,4 +68,31 @@ void configureMagnometer(int channel)
     mag_config.sub_address = 0x00;
     mag_config.device_id = SID_MAGNOMETER_1 + channel;
     send_I2C(I2C_CH_1, mag_config);
+}
+
+void configureDepth(int channel)
+{
+    int i = 0;
+    
+    I2C_Node depth_config = {0};
+    depth_config.callback = NULL;
+    depth_config.channel = I2C_CH_1;
+    depth_config.data_buffer = NULL;
+    depth_config.data_size = 0;
+    depth_config.device_address = DEPTH_ADDR;
+    depth_config.device_id = SID_DEPTH_1 + channel;
+    depth_config.mode = WRITE;
+    depth_config.sub_address = 0x1E; //Reset command
+    
+    send_I2C(I2C_CH_1, depth_config);
+    
+    depth_config.callback = &sensorRead;
+    depth_config.mode = READ;
+    depth_config.data_size = 2;
+    for (i = 0; i < 6; i++)
+    {
+        depth_config.device_id = SID_DEPTH_CON_1_1 + channel * 6 + i;
+        depth_config.sub_address = 0xA2 + i*2;
+        send_I2C(I2C_CH_1, depth_config); //Read PROM
+    }
 }
