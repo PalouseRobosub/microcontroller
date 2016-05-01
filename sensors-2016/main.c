@@ -49,6 +49,7 @@ char contended = 0;
 uint8 depthConfigurations[4][6][2];
 
 extern I2C_Node depth_prep;
+extern char prep_sent;
 
 int main()
 {
@@ -89,6 +90,7 @@ int main()
             switchChannel(i);
             send_I2C(I2C_CH_1, depth_prep); //Begin back and forth continuous depth/temp reads
         }
+        prep_sent = 1;
     }
     enable_Timer(WAIT_TIMER);
     
