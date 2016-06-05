@@ -55,8 +55,8 @@ void thruster_packetizer_callback(uint8* data, uint8 data_size)
         case CMD_THROTTLE:
             node.callback = NULL;
             node.mode = WRITE;
-            node.sub_address = 0x00;
-            node.data_size = 2;
+            node.sub_address = THROTTLE_REG_ADDR;
+            node.data_size = THROTTLE_REG_SIZE;
             node.data_buffer = &data[2];
             send_I2C(I2C_CH_1, node);
             break;
@@ -65,7 +65,7 @@ void thruster_packetizer_callback(uint8* data, uint8 data_size)
             node.callback = &CMD_READ_SENSOR_i2c_callback;
             node.mode = READ;
             node.sub_address = data[2];
-            node.data_size = 2;
+            node.data_size = SENSOR_REG_SIZE;
             send_I2C(I2C_CH_1, node);
             break;
             

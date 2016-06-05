@@ -17,6 +17,9 @@ extern "C" {
 #include "packetizer.h"
     
     //SPECIAL CONSTANTS
+    #define THROTTLE_REG_ADDR 0x00     //address of of the first throttle control register
+    #define THROTTLE_REG_SIZE 2        //number of bytes for a throttle size
+    #define SENSOR_REG_SIZE 2          //number of bytes for a throttle size
     #define SENSOR_REG_START_ADDR 0x02 //address of first sensor register
     #define NUM_SENSOR_REG 8           //number of sensor registers
     #define ALIVE_REG_ADDR 0x0A        //address of the isAlive? register
