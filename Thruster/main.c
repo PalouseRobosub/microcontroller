@@ -15,7 +15,6 @@
 #include "UART.h"
 #include "packetizer.h"
 #include "I2C.h"
-#include "Timer.h"
 
 /*************************************************************************
  Local Includes
@@ -82,14 +81,13 @@ int main(void) {
 
     //buffer for uart ISRs
     uint8 uart_tx_buffer[128], uart_rx_buffer[128];
-    uint8 i2c_tx_buffer[10*sizeof(I2C_Node)], i2c_rx_buffer[10*sizeof(I2C_Node)];
-    uint8 i2c_data_buffer[54];
+    uint8 i2c_tx_buffer[100*sizeof(I2C_Node)], i2c_rx_buffer[100*sizeof(I2C_Node)];
+    uint8 i2c_data_buffer[100];
 
     //structures for configuring peripherals
     UART_Config uart_config = {0};
     Packetizer_Config packet_config = {0};
     I2C_Config i2c_config = {0};
-    Timer_Config timer_config = {0};
 
 
     //setup peripherals
@@ -122,24 +120,11 @@ int main(void) {
     i2c_config.data_buffer_size = sizeof(i2c_data_buffer);
     initialize_I2C(i2c_config);
     
-    timer_config.callback = &read_thrusters_timer_callback;
-    timer_config.enabled = TRUE;
-    timer_config.frequency = 10;
-    timer_config.pbclk = PB_CLK;
-    timer_config.which_timer = Timer_1;
-    initialize_Timer(timer_config);
-    
-    init_thrusters();
-    
-    //setup led pin
-    TRISBCLR = 1 << 5;
-    LATBCLR = 1 << 5;
-
     //Global interrupt enable. Do this last!
     enable_Interrupts();
 
     while (1) {
-        LATBCLR = 1 << 5;
+        //LATBCLR = 1 << 5;
         //background process for processing received packets
         bg_process_packetizer(PACKET_UART_CH_1);
         bg_process_I2C(I2C_CH_1, TRUE);
@@ -147,19 +132,4 @@ int main(void) {
 
     return 0;
 }
-
-
-
-void timer_callback(void)
-{
-    uint8 data[5];
-    data[0] = 'x';
-    data[1] = 'y';
-    data[2] = 'z';
-    data[3] = '!';
-    
-    
-    send_packet(PACKET_UART_CH_1, data, 4);
-}
-
 

@@ -16,32 +16,31 @@ extern "C" {
 #include "I2C.h"
 #include "packetizer.h"
     
-#define NUM_THRUSTERS 8
-
-    typedef enum
-    {
-        THRUSTER_ADDR_1 = 0x29,
-        THRUSTER_ADDR_2 = 0x29,
-        THRUSTER_ADDR_3 = 0x29,
-        THRUSTER_ADDR_4 = 0x29,
-        THRUSTER_ADDR_5 = 0x29,
-        THRUSTER_ADDR_6 = 0x29,
-        THRUSTER_ADDR_7 = 0x29,
-        THRUSTER_ADDR_8 = 0x29
-        
-    }THRUSTER_I2C_ADDRESS;
+    //SPECIAL CONSTANTS
+    #define SENSOR_REG_START_ADDR 0x02 //address of first sensor register
+    #define NUM_SENSOR_REG 8           //number of sensor registers
+    #define ALIVE_REG_ADDR 0x0A        //address of the isAlive? register
+    #define ALIVE_VALUE 0xAB           //value that should be in isAlive? register
     
     typedef enum
     {
-        THRUSTER_P_COMMAND = 0x00
+        CMD_THROTTLE = 0x00,
+        CMD_READ_SENSOR = 0x01,
+        CMD_READ_ALL_SENSORS = 0x02,
+        CMD_CHECK_ALIVE = 0x03
+    }THRUSTER_CMD_ID;
+    
+    typedef enum
+    {
+        RESP_READ_SENSOR = CMD_READ_SENSOR,
+        RESP_READ_ALL_SENSORS = CMD_READ_ALL_SENSORS,
+        RESP_CHECK_ALIVE = CMD_CHECK_ALIVE
         
-    }THRUSTER_PACKET_TYPES;
+    }THRUSTER_REPONSE_ID;
     
-    
-    Error read_thrusters(void);
-    void init_thrusters(void);
-    Error read_thrusters_timer_callback(void);
-    void read_thrusters_i2c_callback(I2C_Node);
+    void CMD_READ_SENSOR_i2c_callback(I2C_Node node);
+    void CMD_READ_ALL_SENSORS_i2c_callback(I2C_Node node);
+    void CMD_CHECK_ALIVE_i2c_callback(I2C_Node node);
     void thruster_packetizer_callback(uint8* data, uint8 data_size);
     
 
