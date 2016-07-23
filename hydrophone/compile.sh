@@ -1,0 +1,1 @@
+/opt/microchip/xc32/v1.34/bin/xc32-gcc main.c ../lib/src/Timer.c ../lib/src/System.c ../lib/src/packetizer.c ../lib/src/Queue.c data.s ../lib/src/UART.c -I ../lib/include/ -mprocessor=32MX250F128B -o hydrophones.elf
