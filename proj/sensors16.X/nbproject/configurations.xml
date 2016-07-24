@@ -16,8 +16,11 @@
       <itemPath>../../sensors-2016/main.c</itemPath>
       <itemPath>../../sensors-2016/peripheral_config.c</itemPath>
       <itemPath>../../sensors-2016/sensor_calibration.c</itemPath>
-      <itemPath>../../sensors-2016/sensor_reads.c</itemPath>
       <itemPath>../../sensors-2016/sensor_support.c</itemPath>
+      <itemPath>../../sensors-2016/mux.c</itemPath>
+      <itemPath>../../sensors-2016/sensor_tasks.c</itemPath>
+      <itemPath>../../sensors-2016/callbacks.c</itemPath>
+      <itemPath>../../sensors-2016/i2c_correction.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

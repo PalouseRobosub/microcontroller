@@ -79,32 +79,13 @@ int main()
     
     configureSensors(); //Configure sensors on startup.
     
-    enable_Timer(READ_TIMER); //Enable the sensor read timer for sensor data acqusition
+    enable_Timer(GYRO_ACCEL_TIMER); //Enable timer to read gyro and accel.
+    enable_Timer(MAG_TIMER); //Enable timer to read magnetometer.
     enable_Timer(RESET_TIMER); //Enable the reset timer to notice bus contention
-    
-    for (i = 0; i < 4; i++)
-    {
-        depth_prep.device_id = SID_DEPTH_1 + i;
-        if (i == 3)
-        {
-            switchChannel(i);
-            send_I2C(I2C_CH_1, depth_prep); //Begin back and forth continuous depth/temp reads
-        }
-        prep_sent = 1;
-    }
-    enable_Timer(WAIT_TIMER);
+    enable_Timer(DEPTH_TIMER); //Enable the timer to read depth.
     
     while (1) //Enter the embedded loop
     {
-        if (read)
-        {
-            if (!contended)
-            {
-                for (i = 0; i < 4; i++)
-                    readSensors(i);
-            }
-            read = 0;
-        }
         bg_process_I2C(I2C_CH_1, FALSE);
         bg_process_packetizer(PACKET_UART_CH_1);
     }

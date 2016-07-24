@@ -3,14 +3,24 @@
 
 void configureSensors()
 {
-    int i = 0;
-    for (i = 0; i < 4; i++)
-    {
-        switchChannel(i);
-        configureAccelerometer(i); 
-        configureGyroscope(i);
-        configureMagnometer(i);
-    }
+    set_mux(MUX_1_ADDR, channel_one);
+    set_mux(MUX_2_ADDR, channel_none);
+    configureAccelerometer(0); 
+    configureGyroscope(0);
+    configureMagnometer(0);
+    configureDepth(0);
+    set_mux(MUX_1_ADDR, channel_two);
+    configureAccelerometer(1); 
+    configureGyroscope(1);
+    configureMagnometer(1);
+    configureDepth(1);
+    set_mux(MUX_1_ADDR, channel_none);
+    set_mux(MUX_2_ADDR, channel_one);
+    configureAccelerometer(2); 
+    configureGyroscope(2);
+    configureMagnometer(2);
+    configureDepth(2);
+    set_mux(MUX_2_ADDR, channel_two);
     configureDepth(3);
     
     //While we wait, set up the read nodes
@@ -76,7 +86,6 @@ void configureDepth(int channel)
     
     I2C_Node depth_config = {0};
     depth_config.callback = NULL;
-    depth_config.channel = I2C_CH_1;
     depth_config.data_buffer = NULL;
     depth_config.data_size = 0;
     depth_config.device_address = DEPTH_ADDR;
@@ -86,6 +95,8 @@ void configureDepth(int channel)
     
     send_I2C(I2C_CH_1, depth_config);
     
+    /*
+     * Grab depth configuration from EEPROM.
     depth_config.callback = &sensorRead;
     depth_config.mode = READ;
     depth_config.data_size = 2;
@@ -95,4 +106,5 @@ void configureDepth(int channel)
         depth_config.sub_address = 0xA2 + i*2;
         send_I2C(I2C_CH_1, depth_config); //Read PROM
     }
+     */
 }

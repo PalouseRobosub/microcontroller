@@ -1,8 +1,6 @@
 #include "Sensors.h"
 #include "sublibinal.h"
-#define BUFF_SIZE 2048
-#define UART_BUFF_SIZE 512
-#define DATA_BUFF_SIZE 1024
+
 //Global RX and TX buffers
 uint8 rx[UART_BUFF_SIZE], tx[UART_BUFF_SIZE];
 
@@ -10,51 +8,23 @@ uint8 rx[UART_BUFF_SIZE], tx[UART_BUFF_SIZE];
 uint8 work_ch_1[BUFF_SIZE], data_ch_1[DATA_BUFF_SIZE], results_ch_1[BUFF_SIZE];
 
 char toggleCount = 0;
-extern char contended;
-
-void toggle()
-{
-    LATBINV = 1<<8;
-    toggleCount++;
-    if (toggleCount >= 22)
-    {
-        disable_Timer(SCK_RST);
-        enable_Timer(RESET_TIMER);
-        I2C1CONbits.ON = 1;
-        TMR3 = TMR4 = 0;
-        contended = 0;
-        IFS1bits.I2C1MIF = 1; //Interrupt I2C to ensure that it runs
-        LATA &= ~(1<<3);
-    }
-}
-
-void reset()
-{
-    LATA |= 1<<3;
-    //If this is called, we must send 9 clocks on the I2C clock line to clear bus contention
-    I2C1CONbits.ON = 0;
-    contended = 1;
-    toggleCount = 0;
-    enable_Timer(SCK_RST);
-    disable_Timer(RESET_TIMER);
-    LATBbits.LATB8 = 1; //output a 1
-    TRISBbits.TRISB8 = 0;
-}
-
 void configureTimer()
 {
     Timer_Config t = {0};
-    t.callback = &timeToRead;
     t.enabled = FALSE;
-    t.frequency = READ_RATE;
     t.pbclk = PB_CLK;
-    t.which_timer = READ_TIMER;
+    t.frequency = GYRO_ACCEL_FREQUENCY;
+    t.which_timer = GYRO_ACCEL_TIMER;
+    t.callback = &readGyroAccel;
     initialize_Timer(t);
     
-    t.enabled = FALSE;
-    t.frequency = 40; //~20ms overhead
-    t.pbclk = PB_CLK;
-    t.which_timer = WAIT_TIMER;
+    t.frequency = MAG_FREQUENCY;
+    t.which_timer = MAG_TIMER;
+    t.callback = &readMag;
+    initialize_Timer(t);
+    
+    t.frequency = DEPTH_FREQUENCY; //~20ms overhead
+    t.which_timer = DEPTH_TIMER;
     t.callback = &readDepth;
     initialize_Timer(t);
     
@@ -67,13 +37,6 @@ void configureTimer()
     t.callback = &toggle;
     t.frequency = I2C_SPEED * 2;
     initialize_Timer(t);
-    
-    t.which_timer = Timer_5;
-    t.callback = &readTemperature;
-    t.frequency = 1;
-    t.enabled = TRUE;
-    initialize_Timer(t);
-    
 }
 
 void configureSerial()
@@ -93,7 +56,7 @@ void configureSerial()
     u.tx_pin = Pin_RPB4;
     u.which_uart = UART_CH_1;
     
-    p.callback = &packetizerCallback;
+    p.callback = NULL;
     p.control_byte = CONTROL_BYTE;
     p.uart_config = u;
     p.which_channel = PACKET_UART_CH_1;

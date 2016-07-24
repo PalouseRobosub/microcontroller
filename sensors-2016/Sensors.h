@@ -13,15 +13,15 @@
 #define MUX_1_ADDR 0b1110001
 
 typedef enum {
-    SID_ACCELEROMETER_1,
-    SID_ACCELEROMETER_2,
-    SID_ACCELEROMETER_3,
     SID_GYROSCOPE_1,
     SID_GYROSCOPE_2,
     SID_GYROSCOPE_3,
-    SID_MAGNOMETER_1,
-    SID_MAGNOMETER_2,
-    SID_MAGNOMETER_3,
+    SID_ACCELEROMETER_1,
+    SID_ACCELEROMETER_2,
+    SID_ACCELEROMETER_3,
+    SID_MAGNETOMETER_1,
+    SID_MAGNETOMETER_2,
+    SID_MAGNETOMETER_3,
     SID_DEPTH_1,
     SID_DEPTH_2,
     SID_DEPTH_3,
@@ -58,45 +58,64 @@ typedef enum {
     SID_DEPTH_CON_4_6
 } Sensor_ID;
 
-//General definitions
+typedef enum {
+    GYROSCOPE_ACCELEROMETER_DATA,
+    MAGNETOMETER_DATA,
+    DEPTH_DATA,
+    TEMP_DATA
+} Data_Packet_Types;
+
+typedef enum {
+    channel_none,
+    channel_one,
+    channel_two
+} Mux_Channel;
+
+/*
+ * Peripheral configuration definitions.
+ */
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define READ_RATE 100 //Read the sensors at 100Hz
+#define BUFF_SIZE 2048 //I2C Node buffer size
+#define UART_BUFF_SIZE 512
+#define DATA_BUFF_SIZE 1024 //I2C Data buffer size
 
+/*
+ * These outline what timers are used for what purpose.
+ */
+#define DEPTH_TIMER Timer_1
+#define MAG_TIMER Timer_2
+#define RESET_TIMER Timer_3 //If this is changed, also change it in sensor read callback!
+#define SCK_RST Timer_4 //SCK 2*(I2C freq) timer for i2c clock reset
+#define GYRO_ACCEL_TIMER Timer_5
 
-#define READ_TIMER Timer_1 //Utilizing timer 1 as our sensor timer
-#define SCK_RST Timer_4 //SCK 200KHz timer for i2c clock reset
-#define RESET_TIMER Timer_3 //If this is changed, also change it in sensor read callback!!!
-#define WAIT_TIMER Timer_2 //Timer 2 is utilized for waitng 20ms for depth conversions to complete
-    //If wait timer is changed, ALSO must change TMRx = 0 in sensor_reads.c:readDepth
+/*
+ * These outline the rates at which sensors are read.
+ */
+#define DEPTH_FREQUENCY 40
+#define MAG_FREQUENCY 75
+#define GYRO_ACCEL_FREQUENCY 100
 
-//Function prototypes
-void packetizerCallback(uint8 *data, uint8 size);
+//callbacks.c
+void readDepth();
+void readMag();
+void readGyroAccel();
 
-//Peripheral_Config.h
+//peripheral_config.c
 void configureTimer();
 void configureSerial();
 void configureI2C();
 
-//Sensor_Reads.c
-void readSensors(int channel); //Enqueue reads for all of our sensors
-void sensorRead(I2C_Node node); //Sensor read node callback completed
-void timeToRead(); //Read timer callback -> sets read = 1
-void readTemperature(); //Every 10 callbacks, enqueue a temp read
-void readDepth(); //Callback once conversion is complete to read the depth sensors
+//sensor_calibration.c
+void configureSensors(); 
+void configureAccelerometer(int channel); 
+void configureGyroscope(int channel); 
+void configureMagnometer(int channel); 
+void configureDepth(int channel); 
 
-//Sensor_Calibration.c
-void configureSensors(); //Configuration for all sensors - this will block until all calibration is completed
-void configureAccelerometer(int channel); //Configure accelerometers on channel 0/1
-void configureGyroscope(int channel); //Configure gyroscopes on channel 0/1
-void configureMagnometer(int channel); //Configure mangometers on channel 0/1
-void configureDepth(int channel);
-
-
-//Sensor_Support.c
-void switchChannel(int channel); //Switch to specified channel - will block until channel is switched
-void switchComplete(I2C_Node node); //Callback function for switch nodes
+//sensor_support.c
 void configureReadNodes(); //Set up the values of the read nodes once
 
+//i2c_correction.c
 #endif
