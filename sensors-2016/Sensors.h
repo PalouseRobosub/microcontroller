@@ -101,6 +101,7 @@ typedef enum {
 void readDepth();
 void readMag();
 void readGyroAccel();
+void sensorRead(I2C_Node node);
 
 //peripheral_config.c
 void configureTimer();
@@ -118,4 +119,7 @@ void configureDepth(int channel);
 void configureReadNodes(); //Set up the values of the read nodes once
 
 //i2c_correction.c
+void reset();
+void toggle();
+
 #endif

@@ -29,7 +29,7 @@ void configureTimer()
     initialize_Timer(t);
     
     t.which_timer = RESET_TIMER;
-    t.frequency = READ_RATE * .9;
+    t.frequency = GYRO_ACCEL_TIMER * .9;
     t.callback = &reset;
     initialize_Timer(t);
     

@@ -76,7 +76,7 @@ void configureMagnometer(int channel)
     mag_config.device_address = MAG_ADDR;
     mag_config.mode = WRITE;
     mag_config.sub_address = 0x00;
-    mag_config.device_id = SID_MAGNOMETER_1 + channel;
+    mag_config.device_id = SID_MAGNETOMETER_1 + channel;
     send_I2C(I2C_CH_1, mag_config);
 }
 

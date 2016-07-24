@@ -60,7 +60,6 @@ int main()
     LATBbits.LATB15 = 1; //I2C is reset
     
     
-    
     TRISAbits.TRISA3 = 0;
     LATAbits.LATA3 = 0;
     
@@ -87,29 +86,6 @@ int main()
     while (1) //Enter the embedded loop
     {
         bg_process_I2C(I2C_CH_1, FALSE);
-        bg_process_packetizer(PACKET_UART_CH_1);
     }
     
-}
-
-void packetizerCallback(uint8 *data, uint8 size)
-{
-    uint8 transmit[5];
-    Sensor_ID id;
-    int i, j;
-    if (data[0] == 0xDA)
-    {
-        //Respond with configuration settings
-        for (i = 0; i < 4; i++)
-        {
-            id = SID_DEPTH_CON_1_1 + i*6;
-            for (j = 0; j < 6; j++)
-            {
-                transmit[0] = id + j;
-                transmit[1] = depthConfigurations[i][j][0];
-                transmit[2] = depthConfigurations[i][j][1];
-                send_packet(PACKET_UART_CH_1, transmit, 3);
-            }
-        }
-    }
 }

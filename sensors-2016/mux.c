@@ -16,7 +16,7 @@ void set_mux(uint8 i2c_address, Mux_Channel channel)
     mux.data_buffer = NULL;
     mux.device_address = i2c_address;
     mux.data_size = 0;
-    mux.device_id = NULL;
+    mux.device_id = 0;
     mux.mode = WRITE;
     switch (channel)
     {

@@ -15,7 +15,7 @@ extern I2C_Node gyro_read, mag_read, accel_read, depth_read, depth_prep, temp_re
  * 
  * @note This function is inlined to save time in an ISR.
  */
-inline void __attribute__((always_inlined)) gyroscope_accelerometer_read_task()
+inline void __attribute__((always_inline)) gyroscope_accelerometer_read_task()
 {
     set_mux(MUX_1_ADDR, channel_one);
     set_mux(MUX_2_ADDR, channel_none);
@@ -42,7 +42,7 @@ inline void __attribute__((always_inlined)) gyroscope_accelerometer_read_task()
  *
  * @return None.
  */
-inline void __attribute__((always_inlined)) magnetometer_read_task()
+inline void __attribute__((always_inline)) magnetometer_read_task()
 {
     set_mux(MUX_1_ADDR, channel_one);
     set_mux(MUX_2_ADDR, channel_none);
@@ -67,7 +67,7 @@ inline void __attribute__((always_inlined)) magnetometer_read_task()
  * 
  * @return None.
  */
-inline void __attribute__((always_inlined)) depth_read_depth_prep_task()
+inline void __attribute__((always_inline)) depth_read_depth_prep_task()
 {
     set_mux(MUX_1_ADDR, channel_one);
     set_mux(MUX_2_ADDR, channel_none);
@@ -96,7 +96,7 @@ inline void __attribute__((always_inlined)) depth_read_depth_prep_task()
  * 
  * @return None.
  */
-inline void __attribute__((always_inlined)) depth_read_temp_prep_task()
+inline void __attribute__((always_inline)) depth_read_temp_prep_task()
 {
     set_mux(MUX_1_ADDR, channel_one);
     set_mux(MUX_2_ADDR, channel_none);
@@ -123,7 +123,7 @@ inline void __attribute__((always_inlined)) depth_read_temp_prep_task()
  * 
  * @return None.
  */
-inline void __attribute__((always_inlined)) temp_read_depth_prep_task()
+inline void __attribute__((always_inline)) temp_read_depth_prep_task()
 {
     set_mux(MUX_1_ADDR, channel_one);
     set_mux(MUX_2_ADDR, channel_none);
