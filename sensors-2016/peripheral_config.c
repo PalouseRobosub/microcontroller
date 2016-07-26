@@ -33,10 +33,12 @@ void configureTimer()
     t.callback = &reset;
     initialize_Timer(t);
     
-    t.which_timer = SCK_RST;
-    t.callback = &toggle;
-    t.frequency = I2C_SPEED * 2;
+    t.enabled = FALSE;
+    t.which_timer = TIMESTAMP_TIMER;
+    t.callback = NULL;
     initialize_Timer(t);
+    update_divider_Timer(TIMESTAMP_TIMER, Div_256);
+    update_period_Timer(TIMESTAMP_TIMER, 65535);
 }
 
 void configureSerial()
@@ -76,4 +78,32 @@ void configureI2C()
     i1.data_buffer_ptr = data_ch_1;
     i1.data_buffer_size = DATA_BUFF_SIZE;
     initialize_I2C(i1);
+}
+
+inline void start_scl_reset()
+{
+    Timer_Config t = {0};
+    
+    disable_Timer(SCK_RST_TIMER);
+    
+    t.enabled = TRUE;
+    t.which_timer = SCK_RST_TIMER;
+    t.callback = &toggle;
+    t.pbclk = PB_CLK;
+    t.frequency = I2C_SPEED * 2;
+    initialize_Timer(t);
+}
+
+inline void start_scl_watch()
+{
+    Timer_Config t = {0};
+    
+    disable_Timer(RESET_TIMER);
+    
+    t.callback = &reset;
+    t.enabled = TRUE;
+    t.frequency = GYRO_ACCEL_FREQUENCY * .9;
+    t.which_timer = RESET_TIMER;
+    t.pbclk = PB_CLK;
+    initialize_Timer(t);
 }

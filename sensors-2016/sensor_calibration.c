@@ -48,6 +48,8 @@ void configureGyroscope(int channel)
 {
     uint8 config[2] = {0};
     I2C_Node gyro_config = {0};
+    uint8 config_two = 1;
+    
     gyro_config.callback = NULL;
     gyro_config.data_buffer = config;
     gyro_config.data_size = 2;
@@ -55,8 +57,8 @@ void configureGyroscope(int channel)
     gyro_config.mode = WRITE;
     gyro_config.sub_address = 0x15;
     
-    config[0] = 9;
-    config[1] = 0x19;
+    config[0] = 7;
+    config[1] = 0x18;
     
     gyro_config.device_id = SID_GYROSCOPE_1 + channel; //channel should be 0-2
     send_I2C(I2C_CH_1, gyro_config);

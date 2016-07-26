@@ -77,7 +77,7 @@ typedef enum {
 #define CONTROL_BYTE 0x0A //packetizer control byte
 #define UART_SPEED 115200 //115.2k baud rate
 #define PB_CLK 15000000 //15MHz
-#define BUFF_SIZE 2048 //I2C Node buffer size
+#define BUFF_SIZE sizeof(I2C_Node) * 50 //I2C Node buffer size
 #define UART_BUFF_SIZE 512
 #define DATA_BUFF_SIZE 1024 //I2C Data buffer size
 
@@ -87,7 +87,8 @@ typedef enum {
 #define DEPTH_TIMER Timer_1
 #define MAG_TIMER Timer_2
 #define RESET_TIMER Timer_3 //If this is changed, also change it in sensor read callback!
-#define SCK_RST Timer_4 //SCK 2*(I2C freq) timer for i2c clock reset
+#define SCK_RST_TIMER RESET_TIMER
+#define TIMESTAMP_TIMER Timer_4
 #define GYRO_ACCEL_TIMER Timer_5
 
 /*
@@ -107,6 +108,8 @@ void sensorRead(I2C_Node node);
 void configureTimer();
 void configureSerial();
 void configureI2C();
+void start_scl_reset();
+void start_scl_watch();
 
 //sensor_calibration.c
 void configureSensors(); 

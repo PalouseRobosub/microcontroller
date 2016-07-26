@@ -81,7 +81,8 @@ int main()
     enable_Timer(GYRO_ACCEL_TIMER); //Enable timer to read gyro and accel.
     enable_Timer(MAG_TIMER); //Enable timer to read magnetometer.
     enable_Timer(RESET_TIMER); //Enable the reset timer to notice bus contention
-    enable_Timer(DEPTH_TIMER); //Enable the timer to read depth.
+    //enable_Timer(DEPTH_TIMER); //Enable the timer to read depth.
+    enable_Timer(TIMESTAMP_TIMER);
     
     while (1) //Enter the embedded loop
     {

@@ -10,13 +10,12 @@ void toggle()
     toggleCount++;
     if (toggleCount >= 22)
     {
-        disable_Timer(SCK_RST);
-        enable_Timer(RESET_TIMER);
+        disable_Timer(SCK_RST_TIMER);
         I2C1CONbits.ON = 1;
-        TMR3 = TMR4 = 0;
         contended = 0;
         IFS1bits.I2C1MIF = 1; //Interrupt I2C to ensure that it runs
         LATA &= ~(1<<3);
+        start_scl_watch();
     }
 }
 
@@ -27,8 +26,7 @@ void reset()
     I2C1CONbits.ON = 0;
     contended = 1;
     toggleCount = 0;
-    enable_Timer(SCK_RST);
-    disable_Timer(RESET_TIMER);
+    start_scl_reset();
     LATBbits.LATB8 = 1; //output a 1
     TRISBbits.TRISB8 = 0;
 }

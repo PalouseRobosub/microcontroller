@@ -73,23 +73,26 @@ void readGyroAccel()
 void sensorRead(I2C_Node node)
 {
     static uint8 data_registers[SID_TEMP_4 + 1][8];
-    static uint8 message[43];
+    static uint8 message[45];
     uint8 cursor = 0;
+    unsigned int timestamp;
     int i;
     
     TMR3 = 0; //Reset the reset timer count
-    
-    memcpy(data_registers[node.device_id], node.data_buffer, node.data_size);
+    get_data_I2C(&node, data_registers[node.device_id]);
     
     /*
      * Store the data in internal registers until we are ready to send it.
      * 
      * If we are currently at the end of a device set, send data over UART.
      */
+    timestamp = TMR4;
     switch (node.device_id)
     {
         case SID_ACCELEROMETER_3:
             message[cursor++] = GYROSCOPE_ACCELEROMETER_DATA;
+            message[cursor++] = timestamp >> 8 & 0xFF;
+            message[cursor++] = timestamp & 0xFF;
             for (i = SID_GYROSCOPE_1; i <= SID_GYROSCOPE_3; ++i)
             {
                 memcpy(&message[cursor], data_registers[i], 8);
@@ -105,6 +108,8 @@ void sensorRead(I2C_Node node)
             
         case SID_MAGNETOMETER_3:
             message[cursor++] = MAGNETOMETER_DATA;
+            message[cursor++] = timestamp >> 8 & 0xFF;
+            message[cursor++] = timestamp & 0xFF;
             for (i = SID_MAGNETOMETER_1; i <= SID_MAGNETOMETER_3; ++i)
             {
                 memcpy(&message[cursor], data_registers[i], 6);
@@ -114,6 +119,8 @@ void sensorRead(I2C_Node node)
             break;
         case SID_DEPTH_4:
             message[cursor++] = DEPTH_DATA;
+            message[cursor++] = timestamp >> 8 & 0xFF;
+            message[cursor++] = timestamp & 0xFF;
             for (i = SID_DEPTH_1; i <= SID_DEPTH_4; ++i)
             {
                 memcpy(&message[cursor], data_registers[i], 3);
@@ -124,6 +131,8 @@ void sensorRead(I2C_Node node)
             
         case SID_TEMP_4:
             message[cursor++] = TEMP_DATA;
+            message[cursor++] = timestamp >> 8 & 0xFF;
+            message[cursor++] = timestamp & 0xFF;
             for (i = SID_TEMP_1; i <= SID_TEMP_4; ++i)
             {
                 memcpy(&message[cursor], data_registers[i], 3);
