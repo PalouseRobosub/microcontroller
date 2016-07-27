@@ -58,7 +58,7 @@ void configureSerial()
     u.tx_pin = Pin_RPB4;
     u.which_uart = UART_CH_1;
     
-    p.callback = NULL;
+    p.callback = &packetizer_callback;
     p.control_byte = CONTROL_BYTE;
     p.uart_config = u;
     p.which_channel = PACKET_UART_CH_1;

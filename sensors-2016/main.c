@@ -46,7 +46,7 @@
 char read = 0;
 char contended = 0;
 
-uint8 depthConfigurations[4][6][2];
+extern uint16 configurations[4][6];
 
 extern I2C_Node depth_prep;
 extern char prep_sent;
@@ -72,7 +72,7 @@ int main()
     LATBbits.LATB15 = 0; //I2C is not reset
     
     //delay to allow sensors to power up before configuring
-    for(i=0; i < 1000000; ++i); //This delay is necessary for magnometer
+    for(i=0; i < 1500000; ++i); //This delay is necessary for magnometer
     
     enable_Interrupts(); //Globally enable interrupts
     
@@ -81,12 +81,13 @@ int main()
     enable_Timer(GYRO_ACCEL_TIMER); //Enable timer to read gyro and accel.
     enable_Timer(MAG_TIMER); //Enable timer to read magnetometer.
     enable_Timer(RESET_TIMER); //Enable the reset timer to notice bus contention
-    //enable_Timer(DEPTH_TIMER); //Enable the timer to read depth.
+    enable_Timer(DEPTH_TIMER); //Enable the timer to read depth.
     enable_Timer(TIMESTAMP_TIMER);
     
     while (1) //Enter the embedded loop
     {
         bg_process_I2C(I2C_CH_1, FALSE);
+        bg_process_packetizer(PACKET_UART_CH_1);
     }
     
 }

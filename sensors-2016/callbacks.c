@@ -1,5 +1,6 @@
 #include "Sensors.h"
 
+uint16 configurations[4][6];
 extern uint8 contended;
 
 /**
@@ -14,15 +15,25 @@ extern uint8 contended;
 void readDepth()
 {
     static int calls = 0;
-    static uint8 temp = FALSE;
+    static uint8 temp = TRUE;
+    static uint8 cnt = 1;
     
     if (contended) return;
     
     calls++;
     
-    if (temp == TRUE)
+    /*
+     * On the first read, we don't quite have enough time to get a valid sample.
+     */
+    if (cnt > 0)
+    {
+        temp_read_temp_prep_task();
+        cnt--;
+    }
+    else if (temp == TRUE)
     {
         temp_read_depth_prep_task();
+        temp = FALSE;
     }
     else if (calls%(DEPTH_FREQUENCY<<4) == 0)
     {
@@ -145,4 +156,67 @@ void sensorRead(I2C_Node node)
             break;
     }
     
+}
+
+void configRead(I2C_Node node)
+{
+    get_data_I2C(&node, &(configurations[(node.device_id - SID_DEPTH_CON_1_1) / 6][node.device_id%6]));
+}
+
+void packetizer_callback(uint8 *data, uint8 len)
+{
+    uint8 cursor = 0;
+    int i;
+    uint8 message[49];
+    if (*data == RESET_COMMAND)
+    {
+        disable_Interrupts();
+
+        /*
+         * Disable timers.
+         */
+        disable_Timer(GYRO_ACCEL_TIMER);
+        disable_Timer(MAG_TIMER);
+        disable_Timer(RESET_TIMER);
+        disable_Timer(DEPTH_TIMER);
+
+        
+        LATBbits.LATB15 = 1; //I2C is reset.
+        flush_queue_I2C(I2C_CH_1);
+        configureSensors();
+        LATBbits.LATB15 = 0; //I2C is not reset.
+        for (i = 0; i < 1500000; ++i);
+
+        /*
+         * Enable timers.
+         */
+        enable_Timer(GYRO_ACCEL_TIMER);
+        enable_Timer(MAG_TIMER);
+        enable_Timer(RESET_TIMER);
+        enable_Timer(DEPTH_TIMER);
+        enable_Interrupts();
+    }
+    else if (*data == GET_EEPROM_COMMAND)
+    {
+        message[cursor++] = DEPTH_CONFIG_DATA;
+        for (i = 0; i < 4; ++i)
+        {
+            memcpy(&message[cursor], configurations[i], 12);
+            cursor += 12;
+        }
+        send_packet(PACKET_UART_CH_1, message, cursor);
+    }
+    else if (*data == QUERY_DEPTH_CONFIG_COMMAND)
+    {
+        set_mux(MUX_1_ADDR, channel_one);
+        set_mux(MUX_2_ADDR, channel_none);
+        queryDepthConfig(0);
+        set_mux(MUX_1_ADDR, channel_two);
+        queryDepthConfig(1);
+        set_mux(MUX_1_ADDR, channel_none);
+        set_mux(MUX_2_ADDR, channel_one);
+        queryDepthConfig(2);
+        set_mux(MUX_2_ADDR, channel_two);
+        queryDepthConfig(3);
+    }
 }

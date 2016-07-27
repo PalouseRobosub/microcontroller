@@ -62,8 +62,15 @@ typedef enum {
     GYROSCOPE_ACCELEROMETER_DATA,
     MAGNETOMETER_DATA,
     DEPTH_DATA,
-    TEMP_DATA
+    TEMP_DATA,
+    DEPTH_CONFIG_DATA
 } Data_Packet_Types;
+
+typedef enum {
+    QUERY_DEPTH_CONFIG_COMMAND,
+    GET_EEPROM_COMMAND,
+    RESET_COMMAND
+} Commands;
 
 typedef enum {
     channel_none,
@@ -94,7 +101,7 @@ typedef enum {
 /*
  * These outline the rates at which sensors are read.
  */
-#define DEPTH_FREQUENCY 40
+#define DEPTH_FREQUENCY 35
 #define MAG_FREQUENCY 75
 #define GYRO_ACCEL_FREQUENCY 100
 
@@ -103,6 +110,8 @@ void readDepth();
 void readMag();
 void readGyroAccel();
 void sensorRead(I2C_Node node);
+void configRead(I2C_Node node);
+void packetizer_callback(uint8 *data, uint8 len);
 
 //peripheral_config.c
 void configureTimer();
@@ -117,6 +126,7 @@ void configureAccelerometer(int channel);
 void configureGyroscope(int channel); 
 void configureMagnometer(int channel); 
 void configureDepth(int channel); 
+void queryDepthConfig(int channel);
 
 //sensor_support.c
 void configureReadNodes(); //Set up the values of the read nodes once
